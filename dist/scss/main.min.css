@@ -1,0 +1,389 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+/*colors*/
+/*colors*/
+/*breakpoints*/
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+  list-style: none;
+}
+
+li {
+  list-style: none;
+}
+
+a {
+  color: #2b2b2b;
+}
+
+html {
+  font-size: 62.5%;
+  font-family: "Poppins", "sans-serif";
+}
+
+body {
+  font-size: 2rem;
+  line-height: 1.4;
+  color: #2b2b2b;
+}
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+font,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+input,
+textarea,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td {
+  font-family: "Poppins", "sans-serif";
+  font-size: 100%;
+  margin: 0;
+  outline: 0;
+  padding: 0;
+  vertical-align: baseline;
+  scroll-behavior: smooth;
+  list-style: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+article,
+aside,
+footer,
+header,
+nav,
+section,
+time {
+  display: block;
+}
+
+a {
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  width: 100%;
+}
+
+.kamote__wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 5rem;
+}
+
+.container {
+  width: 100%;
+  max-width: 100rem;
+  margin: 0 auto;
+  padding: 0 5rem;
+}
+
+.material-icons-outlined {
+  vertical-align: middle;
+  line-height: 1px;
+  font-size: 10px;
+}
+
+.sidenav__wrapper {
+  width: 100%;
+  max-width: 100rem;
+  margin: 0 auto;
+}
+.sidenav__img {
+  padding: 1rem 0;
+  width: 60%;
+  margin: 0 auto;
+}
+.sidenav-list {
+  margin-top: 2rem;
+}
+.sidenav-list ul li {
+  padding: 1.2rem 0;
+  transition: 0.2s ease;
+}
+.sidenav-list ul li:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+.sidenav-list ul li a {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.2rem;
+  font-weight: 500;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+.sidenav-list ul li a span {
+  margin-right: 1rem;
+}
+.sidenav-list ul li .dropdown-content {
+  display: block;
+  overflow: hidden;
+  opacity: 0;
+  max-height: 0;
+  transition: max-height 0.5s ease, opacity 0.5s ease;
+  transition: 0.3s ease;
+}
+.sidenav-list ul li .dropdown-content li {
+  padding: 1rem 0;
+  transition: 0.2s ease;
+}
+.sidenav-list ul li .dropdown-content li:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+.sidenav-list ul li .dropdown-content li a {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.1rem;
+  padding: 0px 4.5rem;
+}
+.sidenav-list ul li.open .dropdown-content {
+  opacity: 1;
+  max-height: 500px;
+  margin-top: 1rem;
+  transition: 0.3s ease;
+}
+.sidenav-list ul li a .chevron-icon {
+  transition: transform 0.3s ease;
+}
+.sidenav-list ul li.open a .chevron-icon {
+  transform: rotate(180deg);
+}
+
+.dashboard-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2rem;
+  margin: 20px 0;
+  color: rgba(255, 255, 255, 0.95);
+}
+.dashboard-card__wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.dashboard-card__wrapper > .material-icons-outlined {
+  font-size: 2rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 25px;
+  border-radius: 5px;
+}
+.card .material-icons-outlined {
+  font-size: 2.2rem;
+}
+.card h2 {
+  font-size: 1.2rem;
+}
+.card h3 {
+  font-size: 1.6rem;
+}
+.card:first-child {
+  background-color: #2962ff;
+}
+.card:nth-child(2) {
+  background-color: #ff6d00;
+}
+.card:nth-child(3) {
+  background-color: #2e7d32;
+}
+
+.login__wrapper {
+  display: flex;
+}
+.login__left {
+  display: flex;
+  background-color: #082F78;
+  justify-content: center;
+  align-items: center;
+  padding: 22.8rem 15rem;
+}
+.login__left__wrapper {
+  text-align: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 9rem;
+}
+.login__left__details {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 30rem;
+}
+.login__left__details input {
+  padding: 1.2rem;
+  border-radius: 10px;
+  color: black;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border: none;
+  background-color: #F9F9F9;
+}
+.login__left__details input:focus::-webkit-input-placeholder {
+  font-size: 0.75em;
+  position: relative;
+  top: -15px;
+  -webkit-transition: 0.2s ease-out;
+  transition: 0.2s ease-out;
+}
+.login__left__title h2 {
+  color: #ffffff;
+}
+.login__left__btn a {
+  color: #ffffff;
+  text-decoration: none;
+}
+.login__left__signup h3 {
+  color: #ffffff;
+  font-size: 1.7rem;
+}
+.login__left__signup a {
+  color: #20BA81;
+  text-decoration: none;
+  font-size: 1.7rem;
+}
+.login__left__form {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+.login__left__btn {
+  background-color: #20BA81;
+  padding: 0.7rem;
+  border-radius: 2rem;
+}
+.login__left__btn a {
+  font-weight: 700;
+}
+.login__desc {
+  width: 100rem;
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+  text-align: center;
+  align-items: center;
+}
+.login__desc__wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+}
+.login__desc__img img {
+  width: 68rem;
+}
+.login__desc__title {
+  font-size: 3rem;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 260px 1fr 1fr 1fr;
+  grid-template-rows: 0.2fr 3fr;
+  grid-template-areas: "sidenav header header header" "sidenav main main main";
+  height: 100vh;
+}
+
+.header {
+  grid-area: header;
+  background-color: #1d2634;
+  color: white;
+  padding: 1rem 0;
+  box-shadow: 0 6px 7px -3px rgba(0, 0, 0, 0.35);
+}
+.header__wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header__wrapper .branding img {
+  width: 15%;
+}
+.header__wrapper .profile-details {
+  display: flex;
+  align-items: center;
+  justify-content: right;
+}
+.header__wrapper .profile-details h3 {
+  color: #ffffff;
+  display: block;
+}
+.header__wrapper .profile-details img {
+  width: 10%;
+}
+
+#sidenav {
+  grid-area: sidenav;
+  height: 100%;
+  background-color: #263043;
+  overflow-y: auto;
+  transition: all 0.5s;
+}
+
+.main-container {
+  grid-area: main;
+  overflow-y: auto;
+  padding: 20px 20px;
+}/*# sourceMappingURL=main.min.css.map */

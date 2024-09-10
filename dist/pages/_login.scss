@@ -1,0 +1,100 @@
+.login{
+    &__wrapper{
+        display: flex;
+    }
+    &__left{
+        display: flex;
+        background-color: $clr-primary;
+        justify-content: center;
+        align-items: center;
+        padding: 22.8rem 15rem;
+
+        &__wrapper{
+            text-align: center;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            gap: 9rem;
+        }
+
+        &__details{
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            width:30rem;
+            input{
+                padding: 1.2rem;
+                border-radius: 10px;
+                color: black;
+                font-size: 1.2rem;
+                font-weight: 700;
+                border: none;
+                background-color: $bg-white;
+            }
+            input:focus::-webkit-input-placeholder {
+                font-size: .75em;
+                position: relative;
+                top: -15px; 
+                transition: 0.2s ease-out;
+            }
+        }
+        &__title{
+            h2{
+                color: $clr-light;
+            }
+        }
+        &__btn{
+            a{
+                color: $clr-light;
+                text-decoration: none;
+            }
+        }
+        &__signup{
+            h3{
+                color: $clr-light;
+                font-size: 1.7rem;
+            }
+            a{
+                color: $clr-green;
+                text-decoration: none;
+                font-size: 1.7rem;
+            }
+        }
+        &__form{
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+        }
+        &__btn{
+            background-color: $clr-green;
+            padding: 0.7rem;
+            border-radius: 2rem;
+            a{
+                font-weight: 700;
+
+            }
+        }
+    }
+    &__desc{
+        width: 100rem;
+        display: flex;
+        justify-content: center;
+        margin: 0 auto;
+        text-align: center;
+        align-items: center;
+        &__wrapper{
+            display: flex;
+            flex-direction: column;
+            gap: 5rem;
+        }
+        &__img{
+            img{
+                width: 68rem;
+            }
+        }
+        &__title{
+            font-size: 3rem;
+        }
+    }
+
+}
