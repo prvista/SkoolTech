@@ -40,12 +40,14 @@ if (isset($_SESSION['notification_message'])) {
     unset($_SESSION['notification_message']); // Clear message after use
 }
 
-// Fetch all quizzes excluding those already taken by the student
-$sql_quizzes = "SELECT DISTINCT q.*, DATE_FORMAT(q.deadline, '%b %d - %I:%i %p') AS formatted_deadline 
-                FROM quizzes q
-                LEFT JOIN quiz_results qr ON q.id = qr.quiz_id AND qr.student_username = '$loggedInUsername'
-                WHERE qr.quiz_id IS NULL";
-$result_quizzes = $conn->query($sql_quizzes);
+// Fetch all exams excluding those already taken by the student
+$sql_exams = "
+    SELECT DISTINCT e.*, DATE_FORMAT(e.deadline, '%b %d - %I:%i %p') AS formatted_deadline
+    FROM exams e
+    LEFT JOIN student_exams se ON e.id = se.exam_id AND se.student_id = (SELECT id FROM students WHERE username = '$loggedInUsername')
+    WHERE se.exam_id IS NULL
+";
+$result_exams = $conn->query($sql_exams);
 
 ?>
 
@@ -54,7 +56,7 @@ $result_quizzes = $conn->query($sql_quizzes);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz List - SkoolTech</title>
+    <title>Exam List - SkoolTech</title>
     <link rel="icon" href="./dist/img/skooltech-icon.png">
     <link rel="stylesheet" href="./dist/scss/main.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
@@ -79,17 +81,17 @@ $result_quizzes = $conn->query($sql_quizzes);
         .notification.hide {
             opacity: 0;
         }
-        .quiz-item {
+        .exam-item {
             margin-bottom: 20px;
             padding: 15px;
             border: 1px solid #ddd;
             border-radius: 5px;
             background-color: #f9f9f9;
         }
-        .quiz-title {
+        .exam-title {
             font-weight: bold;
         }
-        .quiz-deadline {
+        .exam-deadline {
             color: #888;
         }
     </style>
@@ -119,7 +121,7 @@ $result_quizzes = $conn->query($sql_quizzes);
                         <ul class="dropdown-content">
                             <li><a href="#">Assignment</a></li>
                             <li><a href="./task_quiz.php">Quiz</a></li>
-                            <li><a href="#">Exam</a></li>
+                            <li><a href="./task_exam.php">Exam</a></li>
                         </ul>
                     </li>
                     <li>
@@ -143,23 +145,23 @@ $result_quizzes = $conn->query($sql_quizzes);
         <h2>Welcome, <?php echo htmlspecialchars($student['username']); ?>!</h2>
         <p><strong>Student Number:</strong> <?php echo htmlspecialchars($student['student_number']); ?></p>
         <br>
-        <h2>Available Quizzes</h2>
+        <h2>Available Exams</h2>
         
         <?php
         if (!empty($alert_message)) {
             echo "<div id='notification' class='notification show'>$alert_message</div>";
         }
 
-        if ($result_quizzes->num_rows > 0) {
-            while ($row = $result_quizzes->fetch_assoc()) {
-                echo "<div class='quiz-item'>";
-                echo "<p class='quiz-title'>{$row['title']}</p>";
-                echo "<p class='quiz-deadline'>Deadline: {$row['formatted_deadline']}</p>";
-                echo "<a href='take_quiz.php?quiz_id={$row['id']}'>Start Quiz</a>";
+        if ($result_exams->num_rows > 0) {
+            while ($row = $result_exams->fetch_assoc()) {
+                echo "<div class='exam-item'>";
+                echo "<p class='exam-title'>{$row['title']}</p>";
+                echo "<p class='exam-deadline'>Deadline: {$row['formatted_deadline']}</p>";
+                echo "<a href='take_exam.php?exam_id={$row['id']}'>Start Exam</a>";
                 echo "</div>";
             }
         } else {
-            echo "<p>No quizzes available</p>";
+            echo "<p>No exams available</p>";
         }
         ?>
     </main>

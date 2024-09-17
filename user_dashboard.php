@@ -31,6 +31,15 @@ if ($result->num_rows == 1) {
     exit();
 }
 
+
+// Extract initials from the professor's name
+$nameParts = explode(' ', $student['name']);
+$initials = strtoupper($nameParts[0][0]); // First character of the first name
+
+if (isset($nameParts[1])) {
+    $initials .= strtoupper($nameParts[1][0]); // First character of the second name
+}
+
 ?>
 
 
@@ -65,7 +74,12 @@ if ($result->num_rows == 1) {
         <div class="header">
             <div class="container">
                 <div class="header__wrapper">
-
+                    <div class="header__right">
+                        <a href="#"><span class="material-icons-outlined chevron-icon">notifications</span></a>
+                        <div class="initials-bg">
+                            <p><?php echo $initials; ?></p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -88,7 +102,7 @@ if ($result->num_rows == 1) {
                             <ul class="dropdown-content">
                                 <li><a href="#">Assignment</a></li>
                                 <li><a href="./task_quiz.php">Quiz</a></li>
-                                <li><a href="#">Exam</a></li>
+                                <li><a href="task_exam.php">Exam</a></li>
                             </ul>
                         </li>
                         
@@ -143,6 +157,7 @@ if ($result->num_rows == 1) {
 
             <h2>User Dashboard</h2>
             <h2>Welcome, <?php echo htmlspecialchars($student['username']); ?>!</h2>
+            <h2>Welcome, <?php echo htmlspecialchars($student['name']); ?>!</h2>
             <p><strong>Student Number:</strong> <?php echo htmlspecialchars($student['student_number']); ?></p>
         </main>
     </div>

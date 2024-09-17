@@ -27,7 +27,7 @@ if (!isset($_GET['quiz_id']) || empty($_GET['quiz_id'])) {
 
 $quiz_id = intval($_GET['quiz_id']);
 
-// Fetch quiz details
+// Fetch quiz details including time limit
 $sql_quiz = "SELECT * FROM quizzes WHERE id = $quiz_id";
 $result_quiz = $conn->query($sql_quiz);
 
@@ -35,6 +35,9 @@ if ($result_quiz->num_rows == 0) {
     echo "Error: No such quiz found.";
     exit();
 }
+
+$quiz = $result_quiz->fetch_assoc();
+$time_limit = $quiz['time_limit'] * 60; // Time limit in seconds
 
 // Fetch questions for the quiz
 $sql_questions = "SELECT * FROM quiz_questions WHERE quiz_id = $quiz_id";
@@ -63,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if (!$result_correct_answer) {
             $_SESSION['notification_message'] = "SQL Error: " . $conn->error;
-            header("Location: task_quiz.php");
+            header("Location: take_quiz.php?quiz_id=" . $quiz_id);
             exit();
         }
 
@@ -95,7 +98,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -160,6 +162,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .timer {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -186,7 +192,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </a>
                         <ul class="dropdown-content">
                             <li><a href="#">Assignment</a></li>
-                            <li><a href="task_quiz.php">Quiz</a></li>
+                            <li><a href="take_quiz.php">Quiz</a></li>
                             <li><a href="#">Exam</a></li>
                         </ul>
                     </li>
@@ -210,6 +216,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <main class="main-container">
         <h2>Quiz</h2>
 
+        <div class="timer" id="timer"></div>
+
         <form id="quizForm" action="take_quiz.php?quiz_id=<?php echo htmlspecialchars($quiz_id); ?>" method="POST">
             <?php while ($row = $result_questions->fetch_assoc()): ?>
                 <div class="question">
@@ -232,52 +240,61 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </label>
                 </div>
             <?php endwhile; ?>
+
             <button type="submit">Submit</button>
         </form>
 
-        <?php if (!empty($notification_message)): ?>
-            <div id="notification" class="notification show">
-                <?php echo htmlspecialchars($notification_message); ?>
-            </div>
-        <?php endif; ?>
+        <div class="notification" id="notification">
+            <p>Time is up! Your quiz is automatically submitted.</p>
+        </div>
 
-        <div id="loading" class="loading">
+        <div class="loading" id="loading">
             <div class="spinner"></div>
         </div>
     </main>
 </div>
 
-<script src="./dist/js/dropdown.js"></script>
 <script>
-    document.getElementById('quizForm').addEventListener('submit', function() {
-        var loading = document.getElementById('loading');
-        
-        // Show loading animation
-        loading.classList.add('show');
+document.addEventListener("DOMContentLoaded", function() {
+    var timeLimit = <?php echo $time_limit; ?>; // Time limit in seconds
+    var timerElement = document.getElementById('timer');
+    var formElement = document.getElementById('quizForm');
+    var notificationElement = document.getElementById('notification');
 
-        // Redirect after 3 seconds
-        setTimeout(function() {
-            window.location.href = 'task_quiz.php';
-        }, 3000); // 3 seconds delay
-    });
+    function updateTimer(seconds) {
+        var minutes = Math.floor(seconds / 60);
+        var remainingSeconds = seconds % 60;
+        timerElement.textContent = minutes + "m " + remainingSeconds + "s";
+    }
 
-    // Hide notification after 7 seconds
-    window.onload = function() {
-        var notification = document.getElementById('notification');
-        if (notification) {
-            setTimeout(function() {
-                notification.classList.add('hide');
+    function countdown() {
+        var remainingTime = timeLimit;
+        updateTimer(remainingTime);
+
+        var interval = setInterval(function() {
+            remainingTime--;
+            updateTimer(remainingTime);
+
+            if (remainingTime <= 0) {
+                clearInterval(interval);
+                notificationElement.classList.add('show');
                 setTimeout(function() {
-                    notification.style.display = 'none';
-                }, 500); // Additional delay to ensure opacity transition
-            }, 7000); // Show for 7 seconds
-        }
-    };
+                    formElement.submit(); // Automatically submit the form after notification
+                }, 2000); // Delay to show the notification before redirecting
+            }
+        }, 1000);
+    }
+
+    countdown(); // Start the timer
+
+    // Handle form submission with redirection
+    formElement.addEventListener('submit', function() {
+        // Disable the timer when the form is submitted manually
+        clearInterval(interval);
+    });
+});
 </script>
 
 </body>
 </html>
 
-<?php
-$conn->close();
-?>

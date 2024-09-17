@@ -21,25 +21,51 @@
     &__wrapper{
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        
-        .branding{
-            img{
-                width: 15%;
-            }
-        }
-        .profile-details{
+        justify-content: right;
+
+        .header__right{
             display: flex;
+            gap: 1rem;
             align-items: center;
-            justify-content: right;
-            h3{
+
+            a{
                 color: $clr-light;
-                display: block;
+
+                &:hover{
+                    
+                }
             }
-            img{
-                width: 10%;
+
+            .initials-bg{
+                background: #0866ff;
+                padding: .4rem;
+                border-radius: 2rem;
+
+                p{
+                    font-weight: 500;
+                    font-family: $ff-primary;
+                }
             }
+
         }
+        
+        // .branding{
+        //     img{
+        //         width: 15%;
+        //     }
+        // }
+        // .profile-details{
+        //     display: flex;
+        //     align-items: center;
+        //     justify-content: right;
+        //     h3{
+        //         color: $clr-light;
+        //         display: block;
+        //     }
+        //     img{
+        //         width: 10%;
+        //     }
+        // }
     }
 }
 
