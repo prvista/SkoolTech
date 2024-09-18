@@ -47,6 +47,15 @@ $sql_quizzes = "SELECT DISTINCT q.*, DATE_FORMAT(q.deadline, '%b %d - %I:%i %p')
                 WHERE qr.quiz_id IS NULL";
 $result_quizzes = $conn->query($sql_quizzes);
 
+
+// Extract initials from the user's name
+$nameParts = explode(' ', $student['name']);
+$initials = strtoupper($nameParts[0][0]); // First character of the first name
+
+if (isset($nameParts[1])) {
+    $initials .= strtoupper($nameParts[1][0]); // First character of the second name
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -99,7 +108,14 @@ $result_quizzes = $conn->query($sql_quizzes);
 <div class="grid-container">
     <div class="header">
         <div class="container">
-            <div class="header__wrapper"></div>
+            <div class="header__wrapper">
+                <div class="header__right">
+                    <a href="#"><span class="material-icons-outlined chevron-icon">notifications</span></a>
+                    <div class="initials-bg">
+                        <p><?php echo $initials; ?></p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -118,8 +134,8 @@ $result_quizzes = $conn->query($sql_quizzes);
                         </a>
                         <ul class="dropdown-content">
                             <li><a href="#">Assignment</a></li>
-                            <li><a href="./task_quiz.php">Quiz</a></li>
-                            <li><a href="#">Exam</a></li>
+                            <li><a href="#">Quiz</a></li>
+                            <li><a href="./task_exam.php">Exam</a></li>
                         </ul>
                     </li>
                     <li>

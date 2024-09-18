@@ -32,7 +32,7 @@ if ($result->num_rows == 1) {
 }
 
 
-// Extract initials from the professor's name
+// Extract initials from the user's name
 $nameParts = explode(' ', $student['name']);
 $initials = strtoupper($nameParts[0][0]); // First character of the first name
 

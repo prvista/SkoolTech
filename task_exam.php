@@ -49,6 +49,14 @@ $sql_exams = "
 ";
 $result_exams = $conn->query($sql_exams);
 
+// Extract initials from the user's name
+$nameParts = explode(' ', $student['name']);
+$initials = strtoupper($nameParts[0][0]); // First character of the first name
+
+if (isset($nameParts[1])) {
+    $initials .= strtoupper($nameParts[1][0]); // First character of the second name
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -101,7 +109,14 @@ $result_exams = $conn->query($sql_exams);
 <div class="grid-container">
     <div class="header">
         <div class="container">
-            <div class="header__wrapper"></div>
+            <div class="header__wrapper">
+                <div class="header__right">
+                    <a href="#"><span class="material-icons-outlined chevron-icon">notifications</span></a>
+                    <div class="initials-bg">
+                        <p><?php echo $initials; ?></p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -121,7 +136,7 @@ $result_exams = $conn->query($sql_exams);
                         <ul class="dropdown-content">
                             <li><a href="#">Assignment</a></li>
                             <li><a href="./task_quiz.php">Quiz</a></li>
-                            <li><a href="./task_exam.php">Exam</a></li>
+                            <li><a href="#">Exam</a></li>
                         </ul>
                     </li>
                     <li>
