@@ -27,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $time = $_POST['time'];
     $deadline = $date . ' ' . $time;
     $professor_username = $_SESSION['username'];
+    $subject = $_POST['subject']; // Get selected subject
 
     // Get professor ID
     $stmt_professor = $conn->prepare("SELECT id FROM professors WHERE username = ?");
@@ -42,8 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $professor_id = $result_professor->fetch_assoc()['id'];
     
     // Insert quiz
-    $stmt_quiz = $conn->prepare("INSERT INTO quizzes (title, time_limit, created_by, deadline) VALUES (?, ?, ?, ?)");
-    $stmt_quiz->bind_param("siis", $title, $time_limit, $professor_id, $deadline);
+    $stmt_quiz = $conn->prepare("INSERT INTO quizzes (title, time_limit, created_by, deadline, subject) VALUES (?, ?, ?, ?, ?)");
+    $stmt_quiz->bind_param("siiss", $title, $time_limit, $professor_id, $deadline, $subject);
     
     if (!$stmt_quiz->execute()) {
         echo "<script>window.location.href = 'admin_dashboard.php?status=error&message=" . urlencode($stmt_quiz->error) . "';</script>";
@@ -75,7 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -85,7 +85,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="./dist/scss/main.min.css">
     <link rel="icon" href="./dist/img/skooltech-icon.png">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
-
 </head>
 <body>
     <div class="grid-container">
@@ -115,7 +114,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <main class="main-container">
             <h2>Create Quiz</h2>
             <form action="task_creator.php" method="POST" id="quiz-form">
-                <!-- quiz details -->
                 <div class="quiz_details">
                     <label for="title">Quiz Title:</label>
                     <input type="text" name="title" id="title" required><br>
@@ -134,6 +132,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     <label for="time">Deadline Time:</label>
                     <input type="time" name="time" id="time" required><br>
+
+                    <label for="subject">Subject:</label>
+                    <select name="subject" id="subject" required>
+                        <option value="English">English</option>
+                        <option value="Science">Science</option>
+                        <option value="Math">Math</option>
+                    </select><br>
                 </div>
 
                 <div id="questions-container">
@@ -165,9 +170,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
 
                 <div class="button__wrapper">
-                <a href="#" id="add-question-btn">Add Another Question</a>
-                <button type="submit" id="submit-quiz-btn">Create Quiz</button>
-            </div>
+                    <a href="#" id="add-question-btn">Add Another Question</a>
+                    <button type="submit" id="submit-quiz-btn">Create Quiz</button>
+                </div>
             </form>
         </main> 
     </div>
@@ -180,82 +185,56 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <script src="./dist/js/dropdown.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-        const questionsContainer = document.getElementById('questions-container');
-        const addQuestionButton = document.getElementById('add-question-btn');
-        const submitQuizButton = document.getElementById('submit-quiz-btn');
-        const notificationElement = document.getElementById('notification');
-        const loadingElement = document.getElementById('loading');
-        const quizForm = document.getElementById('quiz-form');
-        let questionCount = 1;
+            const questionsContainer = document.getElementById('questions-container');
+            const addQuestionButton = document.getElementById('add-question-btn');
+            const submitQuizButton = document.getElementById('submit-quiz-btn');
+            const loadingElement = document.getElementById('loading');
+            const quizForm = document.getElementById('quiz-form');
+            let questionCount = 1;
 
-        // Function to add a new question form
-        function addQuestionForm() {
-            questionCount++;
-            const questionForm = document.createElement('div');
-            questionForm.className = 'question-form';
-            questionForm.id = `question-form-${questionCount}`;
-            
-            questionForm.innerHTML = `
-                <h4>Question ${questionCount}</h4>
-                <label for="question_text_${questionCount}">Question Text:</label>
-                <input type="text" name="questions[${questionCount}][question_text]" id="question_text_${questionCount}" required><br>
+            function addQuestionForm() {
+                questionCount++;
+                const questionForm = document.createElement('div');
+                questionForm.className = 'question-form';
+                questionForm.id = `question-form-${questionCount}`;
                 
-                <label for="choice_a_${questionCount}">Choice A:</label>
-                <input type="text" name="questions[${questionCount}][choice_a]" id="choice_a_${questionCount}" required><br>
+                questionForm.innerHTML = `
+                    <h4>Question ${questionCount}</h4>
+                    <label for="question_text_${questionCount}">Question Text:</label>
+                    <input type="text" name="questions[${questionCount}][question_text]" id="question_text_${questionCount}" required><br>
+                    
+                    <label for="choice_a_${questionCount}">Choice A:</label>
+                    <input type="text" name="questions[${questionCount}][choice_a]" id="choice_a_${questionCount}" required><br>
 
-                <label for="choice_b_${questionCount}">Choice B:</label>
-                <input type="text" name="questions[${questionCount}][choice_b]" id="choice_b_${questionCount}" required><br>
+                    <label for="choice_b_${questionCount}">Choice B:</label>
+                    <input type="text" name="questions[${questionCount}][choice_b]" id="choice_b_${questionCount}" required><br>
 
-                <label for="choice_c_${questionCount}">Choice C:</label>
-                <input type="text" name="questions[${questionCount}][choice_c]" id="choice_c_${questionCount}" required><br>
+                    <label for="choice_c_${questionCount}">Choice C:</label>
+                    <input type="text" name="questions[${questionCount}][choice_c]" id="choice_c_${questionCount}" required><br>
 
-                <label for="choice_d_${questionCount}">Choice D:</label>
-                <input type="text" name="questions[${questionCount}][choice_d]" id="choice_d_${questionCount}" required><br>
+                    <label for="choice_d_${questionCount}">Choice D:</label>
+                    <input type="text" name="questions[${questionCount}][choice_d]" id="choice_d_${questionCount}" required><br>
 
-                <label for="correct_answer_${questionCount}">Correct Answer:</label>
-                <select name="questions[${questionCount}][correct_answer]" id="correct_answer_${questionCount}" required>
-                    <option value="A">A</option>
-                    <option value="B">B</option>
-                    <option value="C">C</option>
-                    <option value="D">D</option>
-                </select><br><br>
-            `;
-            
-            questionsContainer.appendChild(questionForm);
-        }
+                    <label for="correct_answer_${questionCount}">Correct Answer:</label>
+                    <select name="questions[${questionCount}][correct_answer]" id="correct_answer_${questionCount}" required>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </select><br><br>
+                `;
+                questionsContainer.appendChild(questionForm);
+            }
 
-        // Add question form on click
-        addQuestionButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            addQuestionForm();
+            addQuestionButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                addQuestionForm();
+            });
+
+            quizForm.addEventListener('submit', function() {
+                loadingElement.style.display = 'block';
+            });
         });
-
-        // Function to show loading spinner
-        function showLoading() {
-            loadingElement.classList.add('show');
-        }
-
-        // Function to hide loading spinner
-        function hideLoading() {
-            loadingElement.classList.remove('show');
-        }
-
-        // Add event listener for form submission
-        quizForm.addEventListener('submit', function(event) {
-            showLoading();
-
-            // Delay the redirection until after the loader has been visible for at least 1.5 seconds
-            setTimeout(() => {
-                hideLoading();
-                quizForm.submit(); // Submit the form manually after the delay
-            }, 1500); // 1500 milliseconds = 1.5 seconds
-        });
-    });
     </script>
-
-
 </body>
 </html>
-<?php
-$conn->close();
-?>

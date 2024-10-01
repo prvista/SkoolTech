@@ -15,6 +15,7 @@ $dbname = "skooltech";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
+// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -23,34 +24,33 @@ if ($conn->connect_error) {
 $sql_students = "SELECT * FROM students";
 $result_students = $conn->query($sql_students);
 
-// Get all quiz results and average scores
-$sql_results = "SELECT 
-                    s.student_number, 
-                    s.username, 
-                    q.title AS quiz_title, 
-                    COUNT(q.id) AS total_questions,
-                    SUM(CASE WHEN qq.correct_answer = 'A' THEN 1 ELSE 0 END) AS correct_answers, 
-                    CONCAT(SUM(CASE WHEN qq.correct_answer = 'A' THEN 1 ELSE 0 END), '/', COUNT(q.id)) AS score_fraction,
-                    ROUND((SUM(CASE WHEN qq.correct_answer = 'A' THEN 1 ELSE 0 END) / COUNT(q.id)) * 100, 2) AS percentage
+// Get the number of quizzes/tasks
+$sql_quizzes = "SELECT COUNT(*) AS total_quizzes FROM quizzes";
+$result_quizzes = $conn->query($sql_quizzes);
+$total_quizzes = $result_quizzes->fetch_assoc()['total_quizzes'];
+
+// Get all quiz results including raw scores
+$sql_results = "SELECT s.student_number, s.username, s.name, q.title AS quiz_title, qr.score, qr.raw_score 
                 FROM quiz_results qr
-                JOIN students s ON qr.student_username = s.username
-                JOIN quizzes q ON qr.quiz_id = q.id
-                JOIN quiz_questions qq ON qq.quiz_id = q.id
-                GROUP BY s.username, q.id";
+                JOIN students s ON qr.student_id = s.id
+                JOIN quizzes q ON qr.quiz_id = q.id";
+
 $result_results = $conn->query($sql_results);
 
-// Fetch status and message from query parameters
-$status = isset($_GET['status']) ? $_GET['status'] : '';
-$message = isset($_GET['message']) ? $_GET['message'] : '';
+if (!$result_results) {
+    die("Error fetching quiz results: " . $conn->error);
+}
 
 // Fetch professor's details
 $stmt = $conn->prepare("SELECT name FROM professors WHERE username = ?");
 $stmt->bind_param("s", $_SESSION['username']);
 $stmt->execute();
 $result = $stmt->get_result();
-if ($result->num_rows > 0) {
-    $professor = $result->fetch_assoc(); // Fetch professor data
-}
+$professor = $result->num_rows > 0 ? $result->fetch_assoc() : null;
+
+// Fetch status and message from query parameters
+$status = isset($_GET['status']) ? $_GET['status'] : '';
+$message = isset($_GET['message']) ? $_GET['message'] : '';
 ?>
 
 <!DOCTYPE html>
@@ -83,19 +83,29 @@ if ($result->num_rows > 0) {
         .notification.hide {
             opacity: 0;
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #ccc;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
     </style>
 </head>
 <body>
-    <!-- grid -->
     <div class="grid-container">
-        <!-- header -->
         <div class="header">
             <div class="container">
                 <div class="header__wrapper"></div>
             </div>
         </div>
 
-        <!-- sidenav -->
         <div id="sidenav">
             <div class="sidenav__wrapper">
                 <div class="sidenav__img">
@@ -108,16 +118,16 @@ if ($result->num_rows > 0) {
                             <a href="#" class="dropdown-toggle">
                                 <span class="material-icons-outlined">app_registration</span> Task Creator
                                 <div class="arrow-down">
-                                <span class="material-icons-outlined chevron-icon">keyboard_arrow_down</span>
+                                    <span class="material-icons-outlined chevron-icon">keyboard_arrow_down</span>
                                 </div>
                             </a>
                             <ul class="dropdown-content">
-                                <li><a href="#">Assignment</a></li>
+                                <li><a href="./task_creator_assignment.php">Assignment</a></li>
                                 <li><a href="./task_creator.php">Quiz</a></li>
                                 <li><a href="./task_creator_exam.php">Exam</a></li>
                             </ul>
                         </li>
-                        <li><a href=""><span class="material-icons-outlined">sort</span>Results</a></li>
+                        <li><a href="./admin_assignments.php"><span class="material-icons-outlined">sort</span>Results</a></li>
                         <li><a href=""><span class="material-icons-outlined">group</span>Students</a></li>
                         <li><a href="logout.php"><span class="material-icons-outlined">logout</span>Logout</a></li>
                     </ul>
@@ -125,10 +135,7 @@ if ($result->num_rows > 0) {
             </div>
         </div>
 
-        <!-- main container -->
         <main class="main-container">
-        
-            <!-- Notification -->
             <div class="notification <?php echo htmlspecialchars($status); ?> <?php echo $status ? 'show' : ''; ?>" id="notification">
                 <?php echo htmlspecialchars($message); ?>
             </div>
@@ -147,7 +154,7 @@ if ($result->num_rows > 0) {
                         <h2>TASKS</h2>
                         <span class="material-icons-outlined">category</span>
                     </div>
-                    <h3><?php // Count the number of quizzes/tasks ?></h3>
+                    <h3><?php echo $total_quizzes; ?></h3>
                 </div>
 
                 <div class="card">
@@ -158,10 +165,11 @@ if ($result->num_rows > 0) {
                     <h3><?php echo $result_results->num_rows; ?></h3>
                 </div>
             </div>
-            <h2>Welcome, <?php echo $professor['name']; ?>!</h2>
-            <h2>Class List</h2>
 
-            <table border="1">
+            <h2>Welcome, <?php echo htmlspecialchars($professor['name']); ?>!</h2>
+
+            <h2>Class List</h2>
+            <table>
                 <tr>
                     <th>Student Number</th>
                     <th>Username</th>
@@ -187,9 +195,9 @@ if ($result->num_rows > 0) {
                 <tr>
                     <th>Student Number</th>
                     <th>Username</th>
+                    <th>Name</th>
                     <th>Quiz Title</th>
-                    <th>Raw Score</th>
-                    <th>Average Score</th>
+                    <th>Score</th>
                 </tr>
                 <?php
                 if ($result_results->num_rows > 0) {
@@ -197,31 +205,31 @@ if ($result->num_rows > 0) {
                         echo "<tr>";
                         echo "<td>" . htmlspecialchars($row['student_number']) . "</td>";
                         echo "<td>" . htmlspecialchars($row['username']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['name']) . "</td>";
                         echo "<td>" . htmlspecialchars($row['quiz_title']) . "</td>";
-                        echo "<td>" . htmlspecialchars($row['score_fraction']) . "</td>";
-                        echo "<td>" . htmlspecialchars($row['percentage']) . "%</td>";
+                        echo "<td>" . htmlspecialchars($row['score']) . "%</td>";
                         echo "</tr>";
                     }
                 } else {
-                    echo "<tr><td colspan='5'>No quiz results found</td></tr>";
+                    echo "<tr><td colspan='6'>No quiz results found</td></tr>";
                 }
                 ?>
             </table>
-
         </main>
     </div>
 
     <script src="./dist/js/dropdown.js"></script>
     <script>
-        // Function to hide the notification after 5 seconds
-        document.addEventListener('DOMContentLoaded', function() {
+        // Show notification if it exists
+        window.onload = function() {
             const notification = document.getElementById('notification');
             if (notification.classList.contains('show')) {
-                setTimeout(() => {
+                setTimeout(function() {
                     notification.classList.remove('show');
-                }, 5000);
+                    notification.classList.add('hide');
+                }, 3000);
             }
-        });
+        }
     </script>
 </body>
 </html>

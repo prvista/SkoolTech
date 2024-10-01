@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $date = $_POST['date'];
     $time = $_POST['time'];
     $deadline = $date . ' ' . $time;
+    $subject = $_POST['subject']; // New subject selection
     $professor_username = $_SESSION['username'];
 
     // Get professor ID
@@ -42,8 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $professor_id = $result_professor->fetch_assoc()['id'];
     
     // Insert exam
-    $stmt_exam = $conn->prepare("INSERT INTO exams (title, time_limit, created_by, deadline) VALUES (?, ?, ?, ?)");
-    $stmt_exam->bind_param("siis", $title, $time_limit, $professor_id, $deadline);
+    $stmt_exam = $conn->prepare("INSERT INTO exams (title, time_limit, created_by, deadline, subject) VALUES (?, ?, ?, ?, ?)");
+    $stmt_exam->bind_param("siiss", $title, $time_limit, $professor_id, $deadline, $subject);
     
     if (!$stmt_exam->execute()) {
         echo "<script>window.location.href = 'admin_dashboard.php?status=error&message=" . urlencode($stmt_exam->error) . "';</script>";
@@ -123,7 +124,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <main class="main-container">
             <h2>Create Exam</h2>
             <form action="task_creator_exam.php" method="POST" id="exam-form">
-                <!-- Exam details -->
                 <div class="exam_details">
                     <label for="title">Exam Title:</label>
                     <input type="text" name="title" id="title" required><br>
@@ -142,10 +142,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     <label for="time">Deadline Time:</label>
                     <input type="time" name="time" id="time" required><br>
+
+                    <label for="subject">Subject:</label>
+                    <select name="subject" id="subject" required>
+                        <option value="English">English</option>
+                        <option value="Science">Science</option>
+                        <option value="Math">Math</option>
+                    </select><br>
                 </div>
 
                 <div id="questions-container">
-                    <!-- Initial question form -->
                     <div class="question-form" id="question-form-1">
                         <h4>Question 1</h4>
                         <label for="question_type_1">Question Type:</label>
@@ -183,12 +189,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <div id="truefalse_1" style="display:none;">
                             <label for="true_false_1">Correct Answer:</label>
                             <label><input type="radio" name="questions[1][correct_answer]" value="true"> True</label>
-                            <label><input type="radio" name="questions[1][correct_answer]" value="false"> False</label><br><br>
+                            <label><input type="radio" name="questions[1][correct_answer]" value="false"> False</label>
                         </div>
 
                         <div id="identification_1" style="display:none;">
-                            <label for="identification_answer_1">Correct Answer:</label>
-                            <input type="text" name="questions[1][identification_answer]" id="identification_answer_1"><br><br>
+                            <label for="identification_answer_1">Identification Answer:</label>
+                            <input type="text" name="questions[1][identification_answer]" id="identification_answer_1"><br>
                         </div>
                     </div>
                 </div>
@@ -198,67 +204,69 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </form>
         </main>
     </div>
+
     <script>
-        let questionCount = 1;
-
         document.getElementById('add-question').addEventListener('click', function() {
-            questionCount++;
-            const newQuestionHTML = `
-                <div class="question-form" id="question-form-${questionCount}">
-                    <h4>Question ${questionCount}</h4>
-                    <label for="question_type_${questionCount}">Question Type:</label>
-                    <select name="questions[${questionCount}][question_type]" id="question_type_${questionCount}" required>
-                        <option value="multiple_choice">Multiple Choice</option>
-                        <option value="identification">Identification</option>
-                        <option value="true_false">True/False</option>
-                    </select><br>
+            const questionCount = document.querySelectorAll('.question-form').length + 1;
+            const newQuestionForm = document.createElement('div');
+            newQuestionForm.classList.add('question-form');
+            newQuestionForm.id = 'question-form-' + questionCount;
+            newQuestionForm.innerHTML = `
+                <h4>Question ${questionCount}</h4>
+                <label for="question_type_${questionCount}">Question Type:</label>
+                <select name="questions[${questionCount}][question_type]" id="question_type_${questionCount}" required>
+                    <option value="multiple_choice">Multiple Choice</option>
+                    <option value="identification">Identification</option>
+                    <option value="true_false">True/False</option>
+                </select><br>
+                
+                <label for="question_text_${questionCount}">Question Text:</label>
+                <input type="text" name="questions[${questionCount}][question_text]" id="question_text_${questionCount}" required><br>
+                
+                <div id="choices_${questionCount}">
+                    <label for="choice_a_${questionCount}">Choice A:</label>
+                    <input type="text" name="questions[${questionCount}][choice_a]" id="choice_a_${questionCount}"><br>
 
-                    <label for="question_text_${questionCount}">Question Text:</label>
-                    <input type="text" name="questions[${questionCount}][question_text]" id="question_text_${questionCount}" required><br>
-                    
-                    <div id="choices_${questionCount}" style="display:none;">
-                        <label for="choice_a_${questionCount}">Choice A:</label>
-                        <input type="text" name="questions[${questionCount}][choice_a]" id="choice_a_${questionCount}"><br>
+                    <label for="choice_b_${questionCount}">Choice B:</label>
+                    <input type="text" name="questions[${questionCount}][choice_b]" id="choice_b_${questionCount}"><br>
 
-                        <label for="choice_b_${questionCount}">Choice B:</label>
-                        <input type="text" name="questions[${questionCount}][choice_b]" id="choice_b_${questionCount}"><br>
+                    <label for="choice_c_${questionCount}">Choice C:</label>
+                    <input type="text" name="questions[${questionCount}][choice_c]" id="choice_c_${questionCount}"><br>
 
-                        <label for="choice_c_${questionCount}">Choice C:</label>
-                        <input type="text" name="questions[${questionCount}][choice_c]" id="choice_c_${questionCount}"><br>
+                    <label for="choice_d_${questionCount}">Choice D:</label>
+                    <input type="text" name="questions[${questionCount}][choice_d]" id="choice_d_${questionCount}"><br>
 
-                        <label for="choice_d_${questionCount}">Choice D:</label>
-                        <input type="text" name="questions[${questionCount}][choice_d]" id="choice_d_${questionCount}"><br>
+                    <label for="correct_answer_${questionCount}">Correct Answer:</label>
+                    <select name="questions[${questionCount}][correct_answer]" id="correct_answer_${questionCount}">
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </select><br><br>
+                </div>
 
-                        <label for="correct_answer_${questionCount}">Correct Answer:</label>
-                        <select name="questions[${questionCount}][correct_answer]" id="correct_answer_${questionCount}">
-                            <option value="A">A</option>
-                            <option value="B">B</option>
-                            <option value="C">C</option>
-                            <option value="D">D</option>
-                        </select><br><br>
-                    </div>
+                <div id="truefalse_${questionCount}" style="display:none;">
+                    <label for="true_false_${questionCount}">Correct Answer:</label>
+                    <label><input type="radio" name="questions[${questionCount}][correct_answer]" value="true"> True</label>
+                    <label><input type="radio" name="questions[${questionCount}][correct_answer]" value="false"> False</label>
+                </div>
 
-                    <div id="truefalse_${questionCount}" style="display:none;">
-                        <label for="true_false_${questionCount}">Correct Answer:</label>
-                        <label><input type="radio" name="questions[${questionCount}][correct_answer]" value="true"> True</label>
-                        <label><input type="radio" name="questions[${questionCount}][correct_answer]" value="false"> False</label><br><br>
-                    </div>
-
-                    <div id="identification_${questionCount}" style="display:none;">
-                        <label for="identification_answer_${questionCount}">Correct Answer:</label>
-                        <input type="text" name="questions[${questionCount}][identification_answer]" id="identification_answer_${questionCount}"><br><br>
-                    </div>
+                <div id="identification_${questionCount}" style="display:none;">
+                    <label for="identification_answer_${questionCount}">Identification Answer:</label>
+                    <input type="text" name="questions[${questionCount}][identification_answer]" id="identification_answer_${questionCount}"><br>
                 </div>
             `;
-            document.getElementById('questions-container').insertAdjacentHTML('beforeend', newQuestionHTML);
+            document.getElementById('questions-container').appendChild(newQuestionForm);
         });
 
-        document.getElementById('questions-container').addEventListener('change', function(event) {
-            if (event.target.matches('[id^="question_type_"]')) {
-                const id = event.target.id.split('_')[2];
-                document.getElementById(`choices_${id}`).style.display = (event.target.value === 'multiple_choice') ? 'block' : 'none';
-                document.getElementById(`truefalse_${id}`).style.display = (event.target.value === 'true_false') ? 'block' : 'none';
-                document.getElementById(`identification_${id}`).style.display = (event.target.value === 'identification') ? 'block' : 'none';
+        document.getElementById('questions-container').addEventListener('change', function(e) {
+            if (e.target.matches('[id^="question_type_"]')) {
+                const questionId = e.target.id.split('_')[2];
+                const questionType = e.target.value;
+
+                document.getElementById(`choices_${questionId}`).style.display = questionType === 'multiple_choice' ? 'block' : 'none';
+                document.getElementById(`truefalse_${questionId}`).style.display = questionType === 'true_false' ? 'block' : 'none';
+                document.getElementById(`identification_${questionId}`).style.display = questionType === 'identification' ? 'block' : 'none';
             }
         });
     </script>

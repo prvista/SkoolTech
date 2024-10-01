@@ -27,7 +27,7 @@ if (!isset($_GET['exam_id']) || empty($_GET['exam_id'])) {
 
 $exam_id = intval($_GET['exam_id']);
 
-// Fetch exam details with prepared statements
+// Fetch exam details
 $sql_exam = "SELECT * FROM exams WHERE id = ?";
 $stmt_exam = $conn->prepare($sql_exam);
 $stmt_exam->bind_param("i", $exam_id);
@@ -44,7 +44,7 @@ $time_limit = $exam['time_limit'] * 60; // Time limit in seconds
 
 // Fetch student details
 $student_username = $_SESSION['username'];
-$sql_student = "SELECT id FROM students WHERE username = ?";
+$sql_student = "SELECT id, name FROM students WHERE username = ?";
 $stmt_student = $conn->prepare($sql_student);
 $stmt_student->bind_param("s", $student_username);
 $stmt_student->execute();
@@ -57,8 +57,9 @@ if ($result_student->num_rows == 0) {
 
 $student = $result_student->fetch_assoc();
 $student_id = $student['id'];
+$student_name = $student['name']; // Fetch the student's name
 
-// Fetch questions for the exam with prepared statements
+// Fetch questions for the exam
 $sql_questions = "SELECT * FROM exam_questions WHERE exam_id = ?";
 $stmt_questions = $conn->prepare($sql_questions);
 $stmt_questions->bind_param("i", $exam_id);
@@ -78,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
-    $answers = $_POST['answers']; // This will be an array of answers
+    $answers = $_POST['answers'];
     $total_questions = count($answers);
     $correct_answers = 0;
 
@@ -98,13 +99,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $correct_answer = $correct_answer_row['correct_answer'];
         $question_type = $correct_answer_row['question_type'];
 
-        // Handle true/false questions specifically
+        // Handle answer checking
         if ($question_type === 'true_false') {
-            $correct_answer = strtolower($correct_answer) === 'true' ? 'true' : 'false';
-            if ($correct_answer === strtolower($answer)) {
+            if (strtolower($correct_answer) === strtolower($answer)) {
                 $correct_answers++;
             }
-        } elseif (($question_type === 'multiple_choice') && $correct_answer == $answer) {
+        } elseif ($question_type === 'multiple_choice' && $correct_answer == $answer) {
             $correct_answers++;
         } elseif ($question_type === 'identification' && strtolower(trim($correct_answer)) == strtolower(trim($answer))) {
             $correct_answers++;
@@ -113,9 +113,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $score = ($correct_answers / $total_questions) * 100;
 
-    // Save score to the database
-    $stmt_insert_result = $conn->prepare("INSERT INTO exam_results (student_username, exam_id, score) VALUES (?, ?, ?)");
-    $stmt_insert_result->bind_param("sid", $student_username, $exam_id, $score);
+    // Fetch the subject for this exam
+    $subject = $exam['subject'];
+
+    // Save score to the exam_results table
+    $stmt_insert_result = $conn->prepare("INSERT INTO exam_results (student_id, exam_id, score, subject) VALUES (?, ?, ?, ?)");
+    $stmt_insert_result->bind_param("iiss", $student_id, $exam_id, $score, $subject);    
 
     if ($stmt_insert_result->execute()) {
         // Record that the student has completed the exam
@@ -123,7 +126,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt_insert_student_exam->bind_param("ii", $student_id, $exam_id);
 
         if ($stmt_insert_student_exam->execute()) {
-            $_SESSION['notification_message'] = "You scored $score%! Your result has been saved!";
+            // Copy score and subject into the subject_scores table
+            $stmt_insert_subject_score = $conn->prepare("INSERT INTO subject_scores (student_id, student_name, subject, exam_score) VALUES (?, ?, ?, ?)");
+            $stmt_insert_subject_score->bind_param("issi", $student_id, $student_name, $subject, $score);
+            
+            if ($stmt_insert_subject_score->execute()) {
+                $_SESSION['notification_message'] = "You scored $score%! Your result has been saved!";
+            } else {
+                $_SESSION['notification_message'] = "Error storing subject score: " . $stmt_insert_subject_score->error;
+            }
         } else {
             $_SESSION['notification_message'] = "Error marking the exam as completed: " . $stmt_insert_student_exam->error;
         }

@@ -40,22 +40,33 @@ if (isset($_SESSION['notification_message'])) {
     unset($_SESSION['notification_message']); // Clear message after use
 }
 
+// Fetch student ID
+$student_id = $student['id'];
+
 // Fetch all quizzes excluding those already taken by the student
-$sql_quizzes = "SELECT DISTINCT q.*, DATE_FORMAT(q.deadline, '%b %d - %I:%i %p') AS formatted_deadline 
+$sql_quizzes = "SELECT q.*, DATE_FORMAT(q.deadline, '%b %d - %I:%i %p') AS formatted_deadline 
                 FROM quizzes q
-                LEFT JOIN quiz_results qr ON q.id = qr.quiz_id AND qr.student_username = '$loggedInUsername'
-                WHERE qr.quiz_id IS NULL";
+                LEFT JOIN quiz_results qr ON q.id = qr.quiz_id AND qr.student_id = $student_id
+                WHERE qr.quiz_id IS NULL"; // Exclude taken quizzes
+
 $result_quizzes = $conn->query($sql_quizzes);
 
-
-// Extract initials from the user's name
-$nameParts = explode(' ', $student['name']);
-$initials = strtoupper($nameParts[0][0]); // First character of the first name
-
-if (isset($nameParts[1])) {
-    $initials .= strtoupper($nameParts[1][0]); // First character of the second name
+if (!$result_quizzes) {
+    die("Query failed: " . $conn->error);
 }
 
+// Extract initials from the user's name
+$initials = ""; // Initialize the variable
+if (isset($student)) {
+    $nameParts = explode(' ', $student['name']);
+    $initials = strtoupper($nameParts[0][0]); // First character of the first name
+
+    if (isset($nameParts[1])) {
+        $initials .= strtoupper($nameParts[1][0]); // First character of the second name
+    }
+} else {
+    $initials = "AB"; // Fallback initials if student not found
+}
 ?>
 
 <!DOCTYPE html>

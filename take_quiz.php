@@ -27,9 +27,12 @@ if (!isset($_GET['quiz_id']) || empty($_GET['quiz_id'])) {
 
 $quiz_id = intval($_GET['quiz_id']);
 
-// Fetch quiz details including time limit
-$sql_quiz = "SELECT * FROM quizzes WHERE id = $quiz_id";
-$result_quiz = $conn->query($sql_quiz);
+// Fetch quiz details
+$sql_quiz = "SELECT * FROM quizzes WHERE id = ?";
+$stmt_quiz = $conn->prepare($sql_quiz);
+$stmt_quiz->bind_param("i", $quiz_id);
+$stmt_quiz->execute();
+$result_quiz = $stmt_quiz->get_result();
 
 if ($result_quiz->num_rows == 0) {
     echo "Error: No such quiz found.";
@@ -39,14 +42,29 @@ if ($result_quiz->num_rows == 0) {
 $quiz = $result_quiz->fetch_assoc();
 $time_limit = $quiz['time_limit'] * 60; // Time limit in seconds
 
-// Fetch questions for the quiz
-$sql_questions = "SELECT * FROM quiz_questions WHERE quiz_id = $quiz_id";
-$result_questions = $conn->query($sql_questions);
+// Fetch student details
+$student_username = $_SESSION['username'];
+$sql_student = "SELECT id, name FROM students WHERE username = ?";
+$stmt_student = $conn->prepare($sql_student);
+$stmt_student->bind_param("s", $student_username);
+$stmt_student->execute();
+$result_student = $stmt_student->get_result();
 
-if (!$result_questions) {
-    echo "SQL Error: " . $conn->error;
+if ($result_student->num_rows == 0) {
+    echo "Error: No such student found.";
     exit();
 }
+
+$student = $result_student->fetch_assoc();
+$student_id = $student['id'];
+$student_name = $student['name'];
+
+// Fetch questions for the quiz
+$sql_questions = "SELECT * FROM quiz_questions WHERE quiz_id = ?";
+$stmt_questions = $conn->prepare($sql_questions);
+$stmt_questions->bind_param("i", $quiz_id);
+$stmt_questions->execute();
+$result_questions = $stmt_questions->get_result();
 
 if ($result_questions->num_rows == 0) {
     echo "Error: No questions found for this quiz.";
@@ -55,40 +73,59 @@ if ($result_questions->num_rows == 0) {
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $answers = $_POST['answers']; // This will be an array of answers
+    if (!isset($_POST['answers']) || empty($_POST['answers'])) {
+        $_SESSION['notification_message'] = "No answers submitted!";
+        header("Location: task_quiz.php?quiz_id=" . $quiz_id);
+        exit();
+    }
+
+    $answers = $_POST['answers'];
     $total_questions = count($answers);
     $correct_answers = 0;
 
     // Calculate score
     foreach ($answers as $question_id => $answer) {
-        $sql_correct_answer = "SELECT correct_answer FROM quiz_questions WHERE id = $question_id";
-        $result_correct_answer = $conn->query($sql_correct_answer);
-
-        if (!$result_correct_answer) {
-            $_SESSION['notification_message'] = "SQL Error: " . $conn->error;
-            header("Location: take_quiz.php?quiz_id=" . $quiz_id);
-            exit();
-        }
+        $sql_correct_answer = "SELECT correct_answer, question_type FROM quiz_questions WHERE id = ?";
+        $stmt_correct_answer = $conn->prepare($sql_correct_answer);
+        $stmt_correct_answer->bind_param("i", $question_id);
+        $stmt_correct_answer->execute();
+        $result_correct_answer = $stmt_correct_answer->get_result();
 
         if ($result_correct_answer->num_rows == 0) {
             continue; // Skip if no such question exists
         }
 
         $correct_answer_row = $result_correct_answer->fetch_assoc();
-        if ($correct_answer_row['correct_answer'] == $answer) {
+        $correct_answer = $correct_answer_row['correct_answer'];
+        $question_type = $correct_answer_row['question_type'];
+
+        // Handle answer checking
+        if (($question_type === 'true_false' && strtolower($correct_answer) === strtolower($answer)) ||
+            ($question_type === 'multiple_choice' && $correct_answer == $answer) ||
+            ($question_type === 'identification' && strtolower(trim($correct_answer)) == strtolower(trim($answer)))) {
             $correct_answers++;
         }
     }
 
     $score = ($correct_answers / $total_questions) * 100;
 
-    // Save score to the database
-    $student_username = $_SESSION['username'];
-    $stmt_insert_result = $conn->prepare("INSERT INTO quiz_results (student_username, quiz_id, score) VALUES (?, ?, ?)");
-    $stmt_insert_result->bind_param("sid", $student_username, $quiz_id, $score);
+    // Fetch the subject for this quiz
+    $subject = $quiz['subject'];
+
+    // Save score to the quiz_results table
+    $stmt_insert_result = $conn->prepare("INSERT INTO quiz_results (student_id, quiz_id, score, subject) VALUES (?, ?, ?, ?)");
+    $stmt_insert_result->bind_param("iiss", $student_id, $quiz_id, $score, $subject);
 
     if ($stmt_insert_result->execute()) {
-        $_SESSION['notification_message'] = "You scored $score%! Your result has been saved.";
+        // Copy score and subject into the subject_scores table
+        $stmt_insert_subject_score = $conn->prepare("INSERT INTO subject_scores (student_id, student_name, subject, quiz_score) VALUES (?, ?, ?, ?)");
+        $stmt_insert_subject_score->bind_param("issi", $student_id, $student_name, $subject, $score);
+        
+        if ($stmt_insert_subject_score->execute()) {
+            $_SESSION['notification_message'] = "You scored $score%! Your result has been saved!";
+        } else {
+            $_SESSION['notification_message'] = "Error storing subject score: " . $stmt_insert_subject_score->error;
+        }
     } else {
         $_SESSION['notification_message'] = "Error storing quiz result: " . $stmt_insert_result->error;
     }
@@ -98,6 +135,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
 }
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -116,9 +155,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             display: block;
             margin-bottom: 5px;
         }
-        .question input {
-            margin-right: 10px;
-        }
         .notification {
             display: none;
             position: fixed;
@@ -135,32 +171,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         .notification.show {
             display: block;
             opacity: 1;
-        }
-        .notification.hide {
-            opacity: 0;
-        }
-        .loading {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1000;
-        }
-        .loading.show {
-            display: block;
-        }
-        .loading .spinner {
-            border: 16px solid #f3f3f3;
-            border-radius: 50%;
-            border-top: 16px solid #3498db;
-            width: 120px;
-            height: 120px;
-            animation: spin 2s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
         .timer {
             font-size: 1.2em;
@@ -215,7 +225,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <main class="main-container">
         <h2>Quiz</h2>
-
         <div class="timer" id="timer"></div>
 
         <form id="quizForm" action="take_quiz.php?quiz_id=<?php echo htmlspecialchars($quiz_id); ?>" method="POST">
@@ -240,61 +249,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </label>
                 </div>
             <?php endwhile; ?>
-
-            <button type="submit">Submit</button>
+            <button type="submit">Submit Quiz</button>
         </form>
 
-        <div class="notification" id="notification">
-            <p>Time is up! Your quiz is automatically submitted.</p>
-        </div>
-
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-        </div>
+        <?php if (isset($_SESSION['notification_message'])): ?>
+            <div class="notification show"><?php echo $_SESSION['notification_message']; unset($_SESSION['notification_message']); ?></div>
+        <?php endif; ?>
     </main>
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    var timeLimit = <?php echo $time_limit; ?>; // Time limit in seconds
-    var timerElement = document.getElementById('timer');
-    var formElement = document.getElementById('quizForm');
-    var notificationElement = document.getElementById('notification');
+    // Timer functionality
+    let timeLimit = <?php echo $time_limit; ?>;
+    let timerDisplay = document.getElementById('timer');
 
-    function updateTimer(seconds) {
-        var minutes = Math.floor(seconds / 60);
-        var remainingSeconds = seconds % 60;
-        timerElement.textContent = minutes + "m " + remainingSeconds + "s";
-    }
-
-    function countdown() {
-        var remainingTime = timeLimit;
-        updateTimer(remainingTime);
-
-        var interval = setInterval(function() {
-            remainingTime--;
-            updateTimer(remainingTime);
-
-            if (remainingTime <= 0) {
-                clearInterval(interval);
-                notificationElement.classList.add('show');
-                setTimeout(function() {
-                    formElement.submit(); // Automatically submit the form after notification
-                }, 2000); // Delay to show the notification before redirecting
-            }
-        }, 1000);
-    }
-
-    countdown(); // Start the timer
-
-    // Handle form submission with redirection
-    formElement.addEventListener('submit', function() {
-        // Disable the timer when the form is submitted manually
-        clearInterval(interval);
-    });
-});
+    const timerInterval = setInterval(() => {
+        if (timeLimit <= 0) {
+            clearInterval(timerInterval);
+            document.getElementById('quizForm').submit();
+        } else {
+            timerDisplay.textContent = `Time left: ${Math.floor(timeLimit / 60)}:${String(timeLimit % 60).padStart(2, '0')}`;
+            timeLimit--;
+        }
+    }, 1000);
 </script>
-
 </body>
 </html>
-
