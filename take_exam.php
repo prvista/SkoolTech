@@ -243,9 +243,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <span class="material-icons-outlined chevron-icon">keyboard_arrow_down</span>
                         </a>
                         <ul class="dropdown-content">
-                            <li><a href="#">Assignment</a></li>
-                            <li><a href="task_quiz.php">Quiz</a></li>
-                            <li><a href="task_exam.php">Exam</a></li>
+                            <li><a href="./student_assignments.php">Assignment</a></li>
+                            <li><a href="./task_quiz.php">Quiz</a></li>
+                            <li><a href="./task_exam.php">Exam</a></li>
                         </ul>
                     </li>
                     <li>

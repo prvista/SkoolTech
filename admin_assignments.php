@@ -299,46 +299,44 @@ $result = $conn->query($sql);
                     </tr>
                 </thead>
                 <tbody>
-    <?php
-    if ($result && $result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            echo "<tr>";
-            echo "<td>" . htmlspecialchars($row['title'] ?? 'N/A') . "</td>";
-            echo "<td>" . htmlspecialchars($row['submission_date'] ?? 'N/A') . "</td>";
-            echo "<td>" . htmlspecialchars($row['raw_score'] ?? 'N/A') . "</td>"; // Raw Score
-            echo "<td>" . htmlspecialchars(number_format($row['grade'], 2)) . "%</td>"; // Correct Grade (Percentage)
-            echo "<td>";
+                    <?php
+                    if ($result && $result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            echo "<tr>";
+                            echo "<td>" . htmlspecialchars($row['title'] ?? 'N/A') . "</td>";
+                            echo "<td>" . htmlspecialchars($row['submission_date'] ?? 'N/A') . "</td>";
+                            echo "<td>" . htmlspecialchars($row['raw_score'] ?? 'N/A') . "</td>"; // Raw Score
+                            echo "<td>" . htmlspecialchars(number_format($row['grade'], 2)) . "%</td>"; // Correct Grade (Percentage)
+                            echo "<td>";
 
-            // Link to view the assignment that opens a modal
-            if (!empty($row['submitted_file'])) {
-                $filePath = 'uploads/' . htmlspecialchars($row['submitted_file']);
-                echo "<a href='#' class='view-file' data-file='" . $filePath . "'>View Assignment</a>";
-            } else {
-                echo "File not available";
-            }
+                            // Link to view the assignment that opens a modal
+                            if (!empty($row['submitted_file'])) {
+                                $filePath = 'uploads/' . htmlspecialchars($row['submitted_file']);
+                                echo "<a href='#' class='view-file' data-file='" . $filePath . "'>View Assignment</a>";
+                            } else {
+                                echo "File not available";
+                            }
 
-            echo "</td>";
-            echo "<td>
-                <form action='admin_assignments.php' method='POST'>
-                    <input type='hidden' name='submission_id' value='" . htmlspecialchars($row['submission_id'] ?? '') . "'>
-                    <input type='number' name='score' value='" . htmlspecialchars($row['raw_score'] ?? '0') . "' min='0' required>
-                    <select name='highest_score' required>
-                        <option value='10'" . ($row['total_grade'] == 10 ? ' selected' : '') . ">10</option>
-                        <option value='20'" . ($row['total_grade'] == 20 ? ' selected' : '') . ">20</option>
-                        <option value='30'" . ($row['total_grade'] == 30 ? ' selected' : '') . ">30</option>
-                    </select>
-                    <button type='submit'>Update Score</button>
-                </form>
-            </td>";
-            echo "</tr>";
-        }
-    } else {
-        echo "<tr><td colspan='6'>No submissions found.</td></tr>";
-    }
-    ?>
-</tbody>
-
-
+                            echo "</td>";
+                            echo "<td>
+                                <form action='admin_assignments.php' method='POST'>
+                                    <input type='hidden' name='submission_id' value='" . htmlspecialchars($row['submission_id'] ?? '') . "'>
+                                    <input type='number' name='score' value='" . htmlspecialchars($row['raw_score'] ?? '0') . "' min='0' required>
+                                    <select name='highest_score' required>
+                                        <option value='10'" . ($row['total_grade'] == 10 ? ' selected' : '') . ">10</option>
+                                        <option value='20'" . ($row['total_grade'] == 20 ? ' selected' : '') . ">20</option>
+                                        <option value='30'" . ($row['total_grade'] == 30 ? ' selected' : '') . ">30</option>
+                                    </select>
+                                    <button type='submit'>Update Score</button>
+                                </form>
+                            </td>";
+                            echo "</tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='6'>No submissions found.</td></tr>";
+                    }
+                    ?>
+                </tbody>
             </table>
         </main>
     </div>
@@ -351,6 +349,8 @@ $result = $conn->query($sql);
         </div>
     </div>
 
+
+    <script src="./dist/js/dropdown.js"></script>
     <script>
         // Get the modal
         var modal = document.getElementById("fileModal");

@@ -29,8 +29,8 @@ $sql_quizzes = "SELECT COUNT(*) AS total_quizzes FROM quizzes";
 $result_quizzes = $conn->query($sql_quizzes);
 $total_quizzes = $result_quizzes->fetch_assoc()['total_quizzes'];
 
-// Get all quiz results including raw scores and subjects
-$sql_results = "SELECT s.student_number, s.username, s.name, q.title AS quiz_title, q.subject, qr.score, qr.raw_score 
+// Get all quiz results including raw scores
+$sql_results = "SELECT s.student_number, s.username, s.name, q.title AS quiz_title, qr.score, qr.raw_score 
                 FROM quiz_results qr
                 JOIN students s ON qr.student_id = s.id
                 JOIN quizzes q ON qr.quiz_id = q.id";
@@ -63,26 +63,6 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
     <link rel="icon" href="./dist/img/skooltech-icon.png">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     <style>
-        .notification {
-            display: none;
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            padding: 15px;
-            border-radius: 5px;
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            z-index: 1000;
-            transition: opacity 1s ease;
-        }
-        .notification.show {
-            display: block;
-            opacity: 1;
-        }
-        .notification.hide {
-            opacity: 0;
-        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -113,7 +93,7 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                 </div>
                 <div class="sidenav-list">
                     <ul>
-                        <li><a href="#"><span class="material-icons-outlined">dashboard</span>Dashboard</a></li>
+                        <li><a href="admin_dashboard.php"><span class="material-icons-outlined">dashboard</span>Dashboard</a></li>
                         <li>
                             <a href="#" class="dropdown-toggle">
                                 <span class="material-icons-outlined">app_registration</span> Task Creator
@@ -128,7 +108,7 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                             </ul>
                         </li>
                         <li><a href="./admin_assignments.php"><span class="material-icons-outlined">sort</span>Results</a></li>
-                        <li><a href="./admin_students.php"><span class="material-icons-outlined">group</span>Students</a></li>
+                        <li><a href=""><span class="material-icons-outlined">group</span>Students</a></li>
                         <li><a href="logout.php"><span class="material-icons-outlined">logout</span>Logout</a></li>
                     </ul>
                 </div>
@@ -136,107 +116,37 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
         </div>
 
         <main class="main-container">
+            
             <div class="notification <?php echo htmlspecialchars($status); ?> <?php echo $status ? 'show' : ''; ?>" id="notification">
                 <?php echo htmlspecialchars($message); ?>
             </div>
 
-            <div class="dashboard-card">
-                <div class="card">
-                    <div class="dashboard-card__wrapper">
-                        <h2>STUDENTS</h2>
-                        <span class="material-icons-outlined">groups</span>
-                    </div>
-                    <h3><?php echo $result_students->num_rows; ?></h3>
-                </div>
 
-                <div class="card">
-                    <div class="dashboard-card__wrapper">
-                        <h2>TASKS</h2>
-                        <span class="material-icons-outlined">category</span>
-                    </div>
-                    <h3><?php echo $total_quizzes; ?></h3>
-                </div>
+            <h2>Number of Students <?php echo $result_students->num_rows; ?></h2>
 
-                <div class="card">
-                    <div class="dashboard-card__wrapper">
-                        <h2>RESULTS</h2>
-                        <span class="material-icons-outlined">picture_in_picture</span>
-                    </div>
-                    <h3><?php echo $result_results->num_rows; ?></h3>
-                </div>
-            </div>
-
-            <h2>Welcome, <?php echo htmlspecialchars($professor['name']); ?>!</h2>
-
-            <h2>Quiz Results</h2>
-            <table border="1">
+            <h2>Class List</h2>
+            <table>
                 <tr>
                     <th>Student Number</th>
                     <th>Username</th>
                     <th>Name</th>
-                    <th>Quiz Title</th>
-                    <th>Subject</th>
-                    <th>Score</th>
                 </tr>
                 <?php
-                // Initialize arrays for names, scores, quiz titles, and subjects
-                $studentNames = [];
-                $quizScores = [];
-                $quizTitles = [];
-                $subjects = []; // New array for subjects
-
-                if ($result_results->num_rows > 0) {
-                    while ($row = $result_results->fetch_assoc()) {
+                if ($result_students->num_rows > 0) {
+                    while ($row = $result_students->fetch_assoc()) {
                         echo "<tr>";
                         echo "<td>" . htmlspecialchars($row['student_number']) . "</td>";
                         echo "<td>" . htmlspecialchars($row['username']) . "</td>";
                         echo "<td>" . htmlspecialchars($row['name']) . "</td>";
-                        echo "<td>" . htmlspecialchars($row['quiz_title']) . "</td>";
-                        echo "<td>" . htmlspecialchars($row['subject']) . "</td>"; // Displaying subject
-                        echo "<td>" . htmlspecialchars($row['score']) . "%</td>";
                         echo "</tr>";
-
-                        // Push names, scores, quiz titles, and subjects to arrays
-                        $studentNames[] = htmlspecialchars($row['name']);
-                        $quizScores[] = htmlspecialchars($row['score']);
-                        $quizTitles[] = htmlspecialchars($row['quiz_title']);
-                        $subjects[] = htmlspecialchars($row['subject']); // Add subject to the array
                     }
                 } else {
-                    echo "<tr><td colspan='6'>No quiz results found</td></tr>";
+                    echo "<tr><td colspan='3'>No students found</td></tr>";
                 }
-
-                // Convert arrays to JSON for use in JavaScript
-                $studentNamesJson = json_encode($studentNames);
-                $quizScoresJson = json_encode($quizScores);
-                $quizTitlesJson = json_encode($quizTitles);
-                $subjectsJson = json_encode($subjects); // Convert subjects array to JSON
                 ?>
             </table>
-
-            <br>
-            <br>
-            <br>
-            <br>
-
-
-            <!-- chart -->
-            <canvas id="quizBarChart" width="200" height="200"></canvas>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <canvas id="barChart" width="200" height="200"></canvas>
-
         </main>
     </div>
-
-    <!-- charts -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="./dist/js/PieChart.js"></script>
-    <script src="./dist/js/quizBarChart.js"></script>
 
     <script src="./dist/js/dropdown.js"></script>
 
@@ -251,15 +161,6 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                 }, 3000);
             }
         }
-    </script>
-
-    <!-- quiz bar chart -->
-    <script>
-        var studentNames = <?php echo $studentNamesJson; ?>;
-        var quizScores = <?php echo $quizScoresJson; ?>;
-        var quizTitles = <?php echo $quizTitlesJson; ?>;
-        var subjects = <?php echo $subjectsJson; ?>;
-        createQuizBarChart(studentNames, quizScores, quizTitles, subjects);
     </script>
 
 </body>

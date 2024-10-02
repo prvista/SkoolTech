@@ -169,6 +169,7 @@ CREATE TABLE subject_scores (
     UNIQUE KEY (student_id, subject)
 );
 
+
 -- Insert sample quiz
 INSERT INTO quizzes (title, time_limit, deadline, created_by, subject)
 VALUES ('Math Quiz 1', 15, '2024-10-01 17:00:00', 1, 'Math');

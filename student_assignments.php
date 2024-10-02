@@ -120,22 +120,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['assignment_file'])) {
                 </div>
                 <div class="sidenav-list">
                     <ul>
-                        <li><a href="./student_dashboard.php"><span class="material-icons-outlined">dashboard</span>Dashboard</a></li>
+                        <li><a href="./user_dashboard.php"><span class="material-icons-outlined">dashboard</span>Dashboard</a></li>
                         <li>
                             <a href="#" class="dropdown-toggle">
-                                <span class="material-icons-outlined">app_registration</span> Task Creator
-                                <div class="arrow-down">
-                                    <span class="material-icons-outlined chevron-icon">keyboard_arrow_down</span>
-                                </div>
+                                <span class="material-icons-outlined">checklist</span> Tasks
+                                <span class="material-icons-outlined chevron-icon">keyboard_arrow_down</span>
                             </a>
                             <ul class="dropdown-content">
                                 <li><a href="#">Assignment</a></li>
-                                <li><a href="./task_creator.php">Quiz</a></li>
-                                <li><a href="./task_creator_exam.php">Exam</a></li>
+                                <li><a href="task_quiz.php">Quiz</a></li>
+                                <li><a href="task_exam.php">Exam</a></li>
                             </ul>
                         </li>
-                        <li><a href=""><span class="material-icons-outlined">sort</span>Results</a></li>
-                        <li><a href=""><span class="material-icons-outlined">group</span>Students</a></li>
+                        <li>
+                            <a href="#" class="dropdown-toggle">
+                                <span class="material-icons-outlined">library_books</span> Subjects
+                                <span class="material-icons-outlined chevron-icon">keyboard_arrow_down</span>
+                            </a>
+                            <ul class="dropdown-content">
+                                <li><a href="#">English</a></li>
+                                <li><a href="#">Science</a></li>
+                                <li><a href="#">Math</a></li>
+                            </ul>
+                        </li>
                         <li><a href="logout.php"><span class="material-icons-outlined">logout</span>Logout</a></li>
                     </ul>
                 </div>

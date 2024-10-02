@@ -113,7 +113,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="sidenav-list">
                 <ul>
                     <li><a href="./admin_dashboard.php"><span class="material-icons-outlined">dashboard</span>Dashboard</a></li>
-                    <li><a href="#"><span class="material-icons-outlined">app_registration</span>Tasks Creator</a></li>
+                    <li>
+                        <a href="#" class="dropdown-toggle">
+                            <span class="material-icons-outlined">app_registration</span> Task Creator
+                            <div class="arrow-down">
+                                <span class="material-icons-outlined chevron-icon">keyboard_arrow_down</span>
+                            </div>
+                        </a>
+                        <ul class="dropdown-content">
+                            <li><a href="./task_creator_assignment.php">Assignment</a></li>
+                            <li><a href="./task_creator.php">Quiz</a></li>
+                            <li><a href="./task_creator_exam.php">Exam</a></li>
+                        </ul>
+                    </li>
                     <li><a href="#"><span class="material-icons-outlined">sort</span>Results</a></li>
                     <li><a href="#"><span class="material-icons-outlined">group</span>Students</a></li>
                     <li><a href="logout.php"><span class="material-icons-outlined">logout</span>Logout</a></li>
@@ -205,6 +217,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </main>
     </div>
 
+    <script src="./dist/js/dropdown.js"></script>
     <script>
         document.getElementById('add-question').addEventListener('click', function() {
             const questionCount = document.querySelectorAll('.question-form').length + 1;

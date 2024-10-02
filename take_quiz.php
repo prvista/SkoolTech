@@ -117,15 +117,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt_insert_result->bind_param("iiss", $student_id, $quiz_id, $score, $subject);
 
     if ($stmt_insert_result->execute()) {
-        // Copy score and subject into the subject_scores table
-        $stmt_insert_subject_score = $conn->prepare("INSERT INTO subject_scores (student_id, student_name, subject, quiz_score) VALUES (?, ?, ?, ?)");
-        $stmt_insert_subject_score->bind_param("issi", $student_id, $student_name, $subject, $score);
-        
-        if ($stmt_insert_subject_score->execute()) {
-            $_SESSION['notification_message'] = "You scored $score%! Your result has been saved!";
+        // Check if an entry already exists in subject_scores for this student and subject
+        $stmt_check_subject_score = $conn->prepare("SELECT id FROM subject_scores WHERE student_id = ? AND subject = ?");
+        $stmt_check_subject_score->bind_param("is", $student_id, $subject);
+        $stmt_check_subject_score->execute();
+        $result_check_subject_score = $stmt_check_subject_score->get_result();
+
+        if ($result_check_subject_score->num_rows > 0) {
+            // If exists, update the quiz_score
+            $stmt_update_subject_score = $conn->prepare("UPDATE subject_scores SET quiz_score = ? WHERE student_id = ? AND subject = ?");
+            $stmt_update_subject_score->bind_param("iis", $score, $student_id, $subject);
+            $stmt_update_subject_score->execute();
         } else {
-            $_SESSION['notification_message'] = "Error storing subject score: " . $stmt_insert_subject_score->error;
+            // Otherwise, insert a new entry
+            $stmt_insert_subject_score = $conn->prepare("INSERT INTO subject_scores (student_id, student_name, subject, quiz_score) VALUES (?, ?, ?, ?)");
+            $stmt_insert_subject_score->bind_param("issi", $student_id, $student_name, $subject, $score);
+            $stmt_insert_subject_score->execute();
         }
+
+        $_SESSION['notification_message'] = "You scored $score%! Your result has been saved!";
     } else {
         $_SESSION['notification_message'] = "Error storing quiz result: " . $stmt_insert_result->error;
     }
@@ -135,6 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
 }
 ?>
+
 
 
 
