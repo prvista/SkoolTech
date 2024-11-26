@@ -86,6 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -126,15 +127,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <li><a href="./task_creator_exam.php">Exam</a></li>
                         </ul>
                     </li>
-                    <li><a href="#"><span class="material-icons-outlined">sort</span>Results</a></li>
+                    <li>
+                            <a href="#" class="dropdown-toggle">
+                            <span class="material-icons-outlined">sort</span> Results
+                                <div class="arrow-down">
+                                    <span class="material-icons-outlined chevron-icon">keyboard_arrow_down</span>
+                                </div>
+                            </a>
+                            <ul class="dropdown-content">
+                                <li><a href="./admin_analysis.php">Analysis</a></li>
+                                <li><a href="./admin_assignments.php">Ass Results</a></li>
+                            </ul>
+                        </li>
                     <li><a href="#"><span class="material-icons-outlined">group</span>Students</a></li>
+                    <li><a href="./admin_reportcard.php"><span class="material-icons-outlined">credit_card</span>Report Card</a></li>
                     <li><a href="logout.php"><span class="material-icons-outlined">logout</span>Logout</a></li>
                 </ul>
             </div>
         </div>
 
         <main class="main-container">
-            <h2>Create Exam</h2>
+            <div class="task__banner">
+                <div class="container">
+                    <div class="task__banner__wrapper">
+                        <div class="task__banner__text">
+                            <h2>Task Creator - Exam</h2>
+                            <p>Welcome to the Task Creator for Assignments! Create, manage, and customize assignments with ease. Set due dates, grading criteria, and assign subjects, all while ensuring seamless tracking of student progress and performance.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <form action="task_creator_exam.php" method="POST" id="exam-form">
                 <div class="exam_details">
                     <label for="title">Exam Title:</label>
@@ -211,8 +233,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                 </div>
 
-                <button type="button" id="add-question">Add Another Question</button>
-                <button type="submit">Create Exam</button>
+                <div class="quiz_buttons">
+                    <a href="#" id="add-question">Add Another Question</a>
+                    <button type="submit" id="quiz-create">Create Exam</button>
+                </div>
+                <!-- <button type="button" id="add-question">Add Another Question</button> -->
             </form>
         </main>
     </div>

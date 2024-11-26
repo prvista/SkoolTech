@@ -144,7 +144,7 @@ if (isset($student)) {
                             <span class="material-icons-outlined chevron-icon">keyboard_arrow_down</span>
                         </a>
                         <ul class="dropdown-content">
-                            <li><a href="#">Assignment</a></li>
+                            <li><a href="./student_assignments.php">Assignment</a></li>
                             <li><a href="#">Quiz</a></li>
                             <li><a href="./task_exam.php">Exam</a></li>
                         </ul>
@@ -167,8 +167,16 @@ if (isset($student)) {
     </div>
 
     <main class="main-container">
-        <h2>Welcome, <?php echo htmlspecialchars($student['username']); ?>!</h2>
-        <p><strong>Student Number:</strong> <?php echo htmlspecialchars($student['student_number']); ?></p>
+        <div class="dashboard__banner">
+            <div class="container">
+                <div class="dashboard__banner__wrapper">
+                    <div class="dashboard__banner__text">
+                        <h2>Quiz</h2>
+                        <p>Welcome to SkoolTech's Quiz Portal! Dive into your quizzes, test your knowledge, track your performance, and receive instant results to help you stay on top of your learning journey.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
         <br>
         <h2>Available Quizzes</h2>
         

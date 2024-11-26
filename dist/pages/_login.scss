@@ -1,14 +1,20 @@
 .login{
     &__wrapper{
         display: flex;
+        height: 100vh;
     }
     &__left{
         display: flex;
         background-color: $clr-primary;
         justify-content: center;
         align-items: center;
-        padding: 22.8rem 15rem;
-
+        padding: 13.7rem 15rem;
+        
+        &__img{
+            img{
+                width: 30rem;
+            }
+        }
         &__wrapper{
             text-align: center;
             align-items: center;
@@ -50,20 +56,41 @@
             }
         }
         &__signup{
+            margin-top: 2rem;
             h3{
                 color: $clr-light;
-                font-size: 1.7rem;
+                font-size: 0.8rem;
             }
             a{
                 color: $clr-green;
                 text-decoration: none;
-                font-size: 1.7rem;
+                font-size: 0.8rem;
             }
         }
         &__form{
-            display: flex;
-            flex-direction: column;
-            gap: 3rem;
+            form{
+                display: flex;
+                flex-direction: column;
+                input{
+                    border-radius: 0.7rem;
+                    padding: 0.4rem;
+                    border-color: transparent;
+                    width: 20rem;
+                }
+                .btn__login{
+                    background-color: $clr-green;
+                    color: $clr-light;
+                    padding: 0.4rem;
+                    font-size: 1.1rem;
+                    font-weight: 600;
+                }
+                label{
+                    color: $clr-light;
+                    font-weight: 500;
+                    margin-left: 0.5rem;
+                    display: flex;
+                }
+            }
         }
         &__btn{
             background-color: $clr-green;
@@ -86,15 +113,21 @@
             display: flex;
             flex-direction: column;
             gap: 5rem;
+            justify-content: center;
+            align-items: center;
         }
         &__img{
             img{
-                width: 68rem;
+                width: 45rem;
             }
         }
         &__title{
             font-size: 3rem;
+            margin-bottom: 2rem;
+        }
+        &__info{
+            display: flex;
+            flex-direction: column;
         }
     }
-
 }

@@ -58,6 +58,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Create Assignment</title>
     <link rel="stylesheet" href="./dist/scss/main.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
+    <style>
+        
+    </style>
 </head>
 <body>
     <div class="grid-container">
@@ -88,30 +92,52 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <li><a href="./task_creator_exam.php">Exam</a></li>
                             </ul>
                         </li>
-                        <li><a href=""><span class="material-icons-outlined">sort</span>Results</a></li>
+                        <li>
+                            <a href="#" class="dropdown-toggle">
+                            <span class="material-icons-outlined">sort</span> Results
+                                <div class="arrow-down">
+                                    <span class="material-icons-outlined chevron-icon">keyboard_arrow_down</span>
+                                </div>
+                            </a>
+                            <ul class="dropdown-content">
+                                <li><a href="./admin_analysis.php">Analysis</a></li>
+                                <li><a href="./admin_assignments.php">Ass Results</a></li>
+                            </ul>
+                        </li>
                         <li><a href=""><span class="material-icons-outlined">group</span>Students</a></li>
+                        <li><a href="./admin_reportcard.php"><span class="material-icons-outlined">credit_card</span>Report Card</a></li>
                         <li><a href="logout.php"><span class="material-icons-outlined">logout</span>Logout</a></li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <main class="main-container">
-            <h1>Create Assignment</h1>
+        <main class="assignment-creator">
+            <div class="task__banner">
+                <div class="container">
+                    <div class="task__banner__wrapper">
+                        <div class="task__banner__text">
+                            <h2>Task Creator - Assignment</h2>
+                            <p>Welcome to the Task Creator for Assignments! Create, manage, and customize assignments with ease. Set due dates, grading criteria, and assign subjects, all while ensuring seamless tracking of student progress and performance.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <form method="POST" action="">
-                <div>
+                <div class="form-group">
                     <label for="assignment_title">Title:</label>
                     <input type="text" id="assignment_title" name="assignment_title" required>
                 </div>
-                <div>
+                <div class="form-group">
                     <label for="assignment_description">Description:</label>
                     <textarea id="assignment_description" name="assignment_description" required></textarea>
                 </div>
-                <div>
+                <div class="form-group">
                     <label for="due_date">Due Date:</label>
                     <input type="datetime-local" id="due_date" name="due_date" required>
                 </div>
-                <div>
+                <div class="form-group">
                     <label for="subject">Subject:</label>
                     <select id="subject" name="subject" required>
                         <option value="English">English</option>
@@ -119,7 +145,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <option value="Math">Math</option>
                     </select>
                 </div>
-                <button type="submit">Create Assignment</button>
+                <div class="button-wrapper">
+                    <button type="submit" id="submit-assignment-btn">Create Assignment</button>
+                </div>
             </form>
 
             <?php if (isset($_GET['status'])): ?>
@@ -128,6 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
             <?php endif; ?>
         </main>
+
     </div>
 
     <script src="./dist/js/dropdown.js"></script>

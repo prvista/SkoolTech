@@ -62,21 +62,6 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
     <link rel="stylesheet" href="./dist/scss/main.min.css">
     <link rel="icon" href="./dist/img/skooltech-icon.png">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-            border: 1px solid #ccc;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
 </head>
 <body>
     <div class="grid-container">
@@ -107,8 +92,20 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                                 <li><a href="./task_creator_exam.php">Exam</a></li>
                             </ul>
                         </li>
-                        <li><a href="./admin_assignments.php"><span class="material-icons-outlined">sort</span>Results</a></li>
+                        <li>
+                            <a href="#" class="dropdown-toggle">
+                            <span class="material-icons-outlined">sort</span> Results
+                                <div class="arrow-down">
+                                    <span class="material-icons-outlined chevron-icon">keyboard_arrow_down</span>
+                                </div>
+                            </a>
+                            <ul class="dropdown-content">
+                                <li><a href="./admin_analysis.php">Analysis</a></li>
+                                <li><a href="./admin_assignments.php">Ass Results</a></li>
+                            </ul>
+                        </li>
                         <li><a href=""><span class="material-icons-outlined">group</span>Students</a></li>
+                        <li><a href="./admin_reportcard.php"><span class="material-icons-outlined">credit_card</span>Report Card</a></li>
                         <li><a href="logout.php"><span class="material-icons-outlined">logout</span>Logout</a></li>
                     </ul>
                 </div>
@@ -116,16 +113,15 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
         </div>
 
         <main class="main-container">
-            
             <div class="notification <?php echo htmlspecialchars($status); ?> <?php echo $status ? 'show' : ''; ?>" id="notification">
                 <?php echo htmlspecialchars($message); ?>
             </div>
-
-
-            <h2>Number of Students <?php echo $result_students->num_rows; ?></h2>
-
             <h2>Class List</h2>
-            <table>
+            <h2>Number of Students <?php echo $result_students->num_rows; ?></h2>
+            <div class="search-bar">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search by Name or Username...">
+            </div>
+            <table id="studentTable">
                 <tr>
                     <th>Student Number</th>
                     <th>Username</th>
@@ -146,6 +142,7 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                 ?>
             </table>
         </main>
+
     </div>
 
     <script src="./dist/js/dropdown.js"></script>
@@ -162,6 +159,30 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
             }
         }
     </script>
+
+    <script>
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            const filter = this.value.toUpperCase();
+            const table = document.getElementById('studentTable');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) {
+                const username = rows[i].getElementsByTagName('td')[1];
+                const name = rows[i].getElementsByTagName('td')[2];
+
+                if (username || name) {
+                    const usernameText = username.textContent || username.innerText;
+                    const nameText = name.textContent || name.innerText;
+
+                    rows[i].style.display =
+                        usernameText.toUpperCase().includes(filter) || nameText.toUpperCase().includes(filter)
+                            ? ''
+                            : 'none';
+                }
+            }
+        });
+    </script>
+
 
 </body>
 </html>

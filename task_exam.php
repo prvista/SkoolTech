@@ -134,7 +134,7 @@ if (isset($nameParts[1])) {
                             <span class="material-icons-outlined chevron-icon">keyboard_arrow_down</span>
                         </a>
                         <ul class="dropdown-content">
-                            <li><a href="#">Assignment</a></li>
+                            <li><a href="./student_assignments.php">Assignment</a></li>
                             <li><a href="./task_quiz.php">Quiz</a></li>
                             <li><a href="#">Exam</a></li>
                         </ul>
@@ -157,8 +157,16 @@ if (isset($nameParts[1])) {
     </div>
 
     <main class="main-container">
-        <h2>Welcome, <?php echo htmlspecialchars($student['username']); ?>!</h2>
-        <p><strong>Student Number:</strong> <?php echo htmlspecialchars($student['student_number']); ?></p>
+        <div class="dashboard__banner">
+            <div class="container">
+                <div class="dashboard__banner__wrapper">
+                    <div class="dashboard__banner__text">
+                        <h2>Exam</h2>
+                        <p>Welcome to SkoolTech's Exam Portal! Prepare for your exams, take them under timed conditions, view your progress, and get detailed results to assess your performance with ease.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
         <br>
         <h2>Available Exams</h2>
         

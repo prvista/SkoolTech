@@ -83,19 +83,6 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
         .notification.hide {
             opacity: 0;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-            border: 1px solid #ccc;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
     </style>
 </head>
 <body>
@@ -127,8 +114,22 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                                 <li><a href="./task_creator_exam.php">Exam</a></li>
                             </ul>
                         </li>
-                        <li><a href="./admin_assignments.php"><span class="material-icons-outlined">sort</span>Results</a></li>
+                        
+                        <li>
+                            <a href="#" class="dropdown-toggle">
+                            <span class="material-icons-outlined">sort</span> Results
+                                <div class="arrow-down">
+                                    <span class="material-icons-outlined chevron-icon">keyboard_arrow_down</span>
+                                </div>
+                            </a>
+                            <ul class="dropdown-content">
+                                <li><a href="./admin_analysis.php">Analysis</a></li>
+                                <li><a href="./admin_assignments.php">Ass Results</a></li>
+                            </ul>
+                        </li>
+
                         <li><a href="./admin_students.php"><span class="material-icons-outlined">group</span>Students</a></li>
+                        <li><a href="./admin_reportcard.php"><span class="material-icons-outlined">credit_card</span>Report Card</a></li>
                         <li><a href="logout.php"><span class="material-icons-outlined">logout</span>Logout</a></li>
                     </ul>
                 </div>
@@ -139,6 +140,17 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
             <div class="notification <?php echo htmlspecialchars($status); ?> <?php echo $status ? 'show' : ''; ?>" id="notification">
                 <?php echo htmlspecialchars($message); ?>
             </div>
+
+            <!-- <div class="dashboard__banner">
+                <div class="container">
+                    <div class="dashboard__banner__wrapper">
+                        <div class="dashboard__banner__text">
+                            <h2>Welcome, <?php echo htmlspecialchars($professor['name']); ?>!</h2>
+                            <p>Welcome to SkoolTech, your all-in-one platform for learning and academic success. Manage your courses, track your progress, take quizzes and exams, and stay connected with instructors—all designed to help you achieve your educational goals.</p>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
 
             <div class="dashboard-card">
                 <div class="card">
@@ -166,7 +178,8 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                 </div>
             </div>
 
-            <h2>Welcome, <?php echo htmlspecialchars($professor['name']); ?>!</h2>
+            
+
 
             <h2>Quiz Results</h2>
             <table border="1">
@@ -216,19 +229,17 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
 
             <br>
             <br>
-            <br>
-            <br>
 
 
             <!-- chart -->
-            <canvas id="quizBarChart" width="200" height="200"></canvas>
+            <canvas id="quizBarChart" width="40" height="10"></canvas>
             <br>
             <br>
             <br>
             <br>
             <br>
             <br>
-            <canvas id="barChart" width="200" height="200"></canvas>
+            <!-- <canvas id="barChart" width="200" height="200"></canvas> -->
 
         </main>
     </div>

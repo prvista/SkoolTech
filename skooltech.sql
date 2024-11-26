@@ -28,7 +28,17 @@ INSERT INTO professors (username, password, name, professor_id) VALUES
 -- Insert sample data into students table
 INSERT INTO students (username, password, name, student_number) VALUES
 ('student1', MD5('s1'), 'Paul Vista', 'STU001'),
-('student2', MD5('s2'), 'Kim Canoza', 'STU002');
+('student2', MD5('s2'), 'Kim Canoza', 'STU002'),
+('student3', MD5('s3'), 'Louis Arcigal', 'STU003'),
+('student4', MD5('s4'), 'Stephen Bilog', 'STU004'),
+('student5', MD5('s5'), 'Charles Cabusas', 'STU005'),
+('student6', MD5('s6'), 'Mark Canizares', 'STU006'),
+('student7', MD5('s7'), 'Khyro Ellerma', 'STU007'),
+('student8', MD5('s8'), 'Ashton Esber', 'STU008'),
+('student9', MD5('s9'), 'Lorraine Latayan', 'STU009'),
+('student10', MD5('s10'), 'Paulo Tejada', 'STU0010'),
+('student11', MD5('s11'), 'Fonzy Urriquia', 'STU0011'),
+('student12', MD5('s12'), 'Ford Villanueva', 'STU0012');
 
 -- Table for storing quizzes
 CREATE TABLE quizzes (

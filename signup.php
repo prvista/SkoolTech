@@ -78,8 +78,7 @@ $conn->close();
 
 </head>
 <body>
-    <h2>Signup</h2>
-    <form method="post" action="">
+    <!-- <form method="post" action="">
         <label for="username">Username:</label><br>
         <input type="text" id="username" name="username" required><br><br>
         <label for="identifier">Student Number / Professor ID:</label><br>
@@ -94,6 +93,61 @@ $conn->close();
             <option value="professor">Professor</option>
         </select><br><br>
         <input type="submit" value="Signup">
-    </form>
+    </form> -->
+    <section class="signup">
+            <div class="signup__wrapper">
+                <div class="signup__left">
+                    <div class="signup__left__wrapper">
+                      <div class="signup__left--header">
+                        <div class="signup__left__img">
+                          <img src="./dist/img/skooltech-logo-black.png" alt="">
+                        </div>
+                        <div class="signup__left__title">
+                          <h2>Sign In</h2>
+                        </div>
+                      </div>
+                        <div class="signup__left__form">
+                          <div class="signup__left__details">
+                            <form method="post" action="">
+                                <label for="username">Username:</label><br>
+                                <input type="text" id="username" name="username" required><br><br>
+                                <label for="identifier">Student Number / Professor ID:</label><br>
+                                <input type="text" id="identifier" name="identifier" required><br><br>
+                                <label for="password">Password:</label><br>
+                                <input type="password" id="password" name="password" required><br><br>
+                                <label for="name">Name:</label><br>
+                                <input type="text" id="name" name="name" required><br><br>
+                                <label for="role">Role:</label><br>
+                                <select id="role" name="role" required>
+                                    <option value="student">Student</option>
+                                    <option value="professor">Professor</option>
+                                </select><br><br>
+                                <input type="submit" value="Signup" class="btn__signup">
+                            </form>
+                          <div class="signup__left__login">
+                              <h3>Already have an account? <a href="./login.php">Log In</a></h3>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="signup__desc">
+                    <div class="signup__desc__wrapper">
+                      <div class="signup__desc__info"> 
+                        <div class="signup__desc__title">
+                          <h2>Corem ipsum dolor sit amet, consectetur adipiscing elit. </h2>
+                        </div>
+                        <div class="signup__desc__text">
+                          <p>Dorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.</p>
+                        </div>
+                      </div>
+                      <div class="signup__desc__img">
+                      <img src="./dist/img/bg-icon.png" alt="">
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 </body>
 </html>

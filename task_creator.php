@@ -116,8 +116,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <li><a href="./task_creator_exam.php">Exam</a></li>
                         </ul>
                     </li>
-                    <li><a href="#"><span class="material-icons-outlined">sort</span>Results</a></li>
+                    <li>
+                            <a href="#" class="dropdown-toggle">
+                            <span class="material-icons-outlined">sort</span> Results
+                                <div class="arrow-down">
+                                    <span class="material-icons-outlined chevron-icon">keyboard_arrow_down</span>
+                                </div>
+                            </a>
+                            <ul class="dropdown-content">
+                                <li><a href="./admin_analysis.php">Analysis</a></li>
+                                <li><a href="./admin_assignments.php">Ass Results</a></li>
+                            </ul>
+                        </li>
                     <li><a href="#"><span class="material-icons-outlined">group</span>Students</a></li>
+                    <li><a href="./admin_reportcard.php"><span class="material-icons-outlined">credit_card</span>Report Card</a></li>
                     <li><a href="logout.php"><span class="material-icons-outlined">logout</span>Logout</a></li>
                 </ul>
             </div>

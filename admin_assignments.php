@@ -178,36 +178,7 @@ $result = $conn->query($sql);
             margin-bottom: 20px;
             border-radius: 5px;
         }
-        table {
-        width: 100%;
-        border-collapse: collapse;
-        font-family: 'Roboto', sans-serif;
-        font-size: 16px;
-        margin-bottom: 20px;
-    }
 
-    thead {
-        background-color: #f5f5f5;
-    }
-
-    th, td {
-        padding: 12px 15px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-    }
-
-    th {
-        font-weight: 700;
-        color: #333;
-    }
-
-    tr:hover {
-        background-color: #f1f1f1;
-    }
-
-    tr:nth-child(even) {
-        background-color: #fafafa;
-    }
 
     td a {
         color: #007bff;
@@ -217,6 +188,7 @@ $result = $conn->query($sql);
 
     td a:hover {
         text-decoration: underline;
+        /* color: #ffffff; */
     }
 
     .btn-edit, .btn-view {
@@ -240,6 +212,79 @@ $result = $conn->query($sql);
 
     .btn-view:hover {
         background-color: #218838;
+    }
+
+    tr:hover {
+    background-color: #f2f2f2; 
+    color: unset; 
+    transition: 0.1s ease;
+    }
+
+    tr:hover td {
+        background-color: unset; 
+        color: unset;
+        transition: 0.1s ease;
+    }
+
+    input {
+        font-size: 1rem;
+        margin-bottom: 15px;
+        width: 15%;
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #ced4da;
+        background-color: #f9f9f9;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+        &:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            outline: none;
+        }
+    }
+
+    select {
+        font-size: 1rem;
+        margin-bottom: 15px;
+        width: 11%;
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #ced4da;
+        background-color: #f9f9f9;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+        &:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            outline: none;
+        }
+    }
+
+    .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #d4edda;
+    color: #155724;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    transform: translateY(-10px);
+    }
+
+    .notification.hidden {
+        display: none;
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    .notification.visible {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
     }
     </style>
 </head>
@@ -272,8 +317,20 @@ $result = $conn->query($sql);
                                 <li><a href="./task_creator_exam.php">Exam</a></li>
                             </ul>
                         </li>
-                        <li><a href="#"><span class="material-icons-outlined">sort</span>Results</a></li>
+                        <li>
+                            <a href="#" class="dropdown-toggle">
+                            <span class="material-icons-outlined">sort</span> Results
+                                <div class="arrow-down">
+                                    <span class="material-icons-outlined chevron-icon">keyboard_arrow_down</span>
+                                </div>
+                            </a>
+                            <ul class="dropdown-content">
+                                <li><a href="./admin_analysis.php">Analysis</a></li>
+                                <li><a href="./admin_assignments.php">Ass Results</a></li>
+                            </ul>
+                        </li>
                         <li><a href="#"><span class="material-icons-outlined">group</span>Students</a></li>
+                        <li><a href="./admin_reportcard.php"><span class="material-icons-outlined">credit_card</span>Report Card</a></li>
                         <li><a href="logout.php"><span class="material-icons-outlined">logout</span>Logout</a></li>
                     </ul>
                 </div>
@@ -281,6 +338,7 @@ $result = $conn->query($sql);
         </div>
 
         <main class="main-container">
+        <div id="notification" class="notification hidden"></div>
             <h1>Assignment Submissions</h1>
             <?php if ($feedback_message): ?>
                 <div class="feedback-message">
@@ -306,7 +364,8 @@ $result = $conn->query($sql);
                             echo "<td>" . htmlspecialchars($row['title'] ?? 'N/A') . "</td>";
                             echo "<td>" . htmlspecialchars($row['submission_date'] ?? 'N/A') . "</td>";
                             echo "<td>" . htmlspecialchars($row['raw_score'] ?? 'N/A') . "</td>"; // Raw Score
-                            echo "<td>" . htmlspecialchars(number_format($row['grade'], 2)) . "%</td>"; // Correct Grade (Percentage)
+                            $grade = isset($row['grade']) ? number_format((float)$row['grade'], 2) : 'N/A';
+                            echo "<td>" . htmlspecialchars($grade) . "%</td>";
                             echo "<td>";
 
                             // Link to view the assignment that opens a modal
@@ -327,7 +386,7 @@ $result = $conn->query($sql);
                                         <option value='20'" . ($row['total_grade'] == 20 ? ' selected' : '') . ">20</option>
                                         <option value='30'" . ($row['total_grade'] == 30 ? ' selected' : '') . ">30</option>
                                     </select>
-                                    <button type='submit'>Update Score</button>
+                                    <button type='submit' class='ass-btn'>Update Score</button>
                                 </form>
                             </td>";
                             echo "</tr>";
@@ -351,6 +410,30 @@ $result = $conn->query($sql);
 
 
     <script src="./dist/js/dropdown.js"></script>
+    <script>
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.remove('hidden');
+            notification.classList.add('visible');
+
+            // Auto-hide after 10 seconds
+            setTimeout(() => {
+                notification.classList.remove('visible');
+                notification.classList.add('hidden');
+            }, 10000); // 10 seconds
+        }
+
+        // Example usage when score/grade updates are successful
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.querySelector('form'); // Adjust selector for your form
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                // Assume success after form submission
+                showNotification("Score and grade updated successfully!");
+            });
+        });
+    </script>
     <script>
         // Get the modal
         var modal = document.getElementById("fileModal");

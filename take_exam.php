@@ -116,31 +116,48 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Fetch the subject for this exam
     $subject = $exam['subject'];
 
-    // Save score to the exam_results table
-    $stmt_insert_result = $conn->prepare("INSERT INTO exam_results (student_id, exam_id, score, subject) VALUES (?, ?, ?, ?)");
-    $stmt_insert_result->bind_param("iiss", $student_id, $exam_id, $score, $subject);    
+   // Save score to the exam_results table
+$stmt_insert_result = $conn->prepare("INSERT INTO exam_results (student_id, exam_id, score, subject) VALUES (?, ?, ?, ?)");
+$stmt_insert_result->bind_param("iiss", $student_id, $exam_id, $score, $subject);
 
-    if ($stmt_insert_result->execute()) {
-        // Record that the student has completed the exam
-        $stmt_insert_student_exam = $conn->prepare("INSERT INTO student_exams (student_id, exam_id) VALUES (?, ?)");
-        $stmt_insert_student_exam->bind_param("ii", $student_id, $exam_id);
+if ($stmt_insert_result->execute()) {
+    // Record that the student has completed the exam
+    $stmt_insert_student_exam = $conn->prepare("INSERT INTO student_exams (student_id, exam_id) VALUES (?, ?)");
+    $stmt_insert_student_exam->bind_param("ii", $student_id, $exam_id);
 
-        if ($stmt_insert_student_exam->execute()) {
-            // Copy score and subject into the subject_scores table
+    if ($stmt_insert_student_exam->execute()) {
+        // Check if a subject score already exists for the student
+        $stmt_check_subject_score = $conn->prepare("SELECT * FROM subject_scores WHERE student_id = ? AND subject = ?");
+        $stmt_check_subject_score->bind_param("is", $student_id, $subject);
+        $stmt_check_subject_score->execute();
+        $result_subject_score = $stmt_check_subject_score->get_result();
+
+        if ($result_subject_score->num_rows > 0) {
+            // Update existing subject score
+            $stmt_update_subject_score = $conn->prepare("UPDATE subject_scores SET exam_score = ? WHERE student_id = ? AND subject = ?");
+            $stmt_update_subject_score->bind_param("iis", $score, $student_id, $subject);
+
+            if (!$stmt_update_subject_score->execute()) {
+                $_SESSION['notification_message'] = "Error updating subject score: " . $stmt_update_subject_score->error;
+            }
+        } else {
+            // Insert new subject score
             $stmt_insert_subject_score = $conn->prepare("INSERT INTO subject_scores (student_id, student_name, subject, exam_score) VALUES (?, ?, ?, ?)");
             $stmt_insert_subject_score->bind_param("issi", $student_id, $student_name, $subject, $score);
-            
+
             if ($stmt_insert_subject_score->execute()) {
                 $_SESSION['notification_message'] = "You scored $score%! Your result has been saved!";
             } else {
                 $_SESSION['notification_message'] = "Error storing subject score: " . $stmt_insert_subject_score->error;
             }
-        } else {
-            $_SESSION['notification_message'] = "Error marking the exam as completed: " . $stmt_insert_student_exam->error;
         }
     } else {
-        $_SESSION['notification_message'] = "Error storing exam result: " . $stmt_insert_result->error;
+        $_SESSION['notification_message'] = "Error marking the exam as completed: " . $stmt_insert_student_exam->error;
     }
+} else {
+    $_SESSION['notification_message'] = "Error storing exam result: " . $stmt_insert_result->error;
+}
+
 
     // Redirect to the exam page to display the notification
     header("Location: task_exam.php?exam_id=" . $exam_id);
