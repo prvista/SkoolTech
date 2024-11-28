@@ -113,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
 
         <main class="assignment-creator">
-            <div class="task__banner">
+            <!-- <div class="task__banner">
                 <div class="container">
                     <div class="task__banner__wrapper">
                         <div class="task__banner__text">
@@ -122,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <form method="POST" action="">
                 <div class="form-group">

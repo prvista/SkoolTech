@@ -147,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
 
         <main class="main-container">
-            <div class="task__banner">
+            <!-- <div class="task__banner">
                 <div class="container">
                     <div class="task__banner__wrapper">
                         <div class="task__banner__text">
@@ -156,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <form action="task_creator_exam.php" method="POST" id="exam-form">
                 <div class="exam_details">
                     <label for="title">Exam Title:</label>

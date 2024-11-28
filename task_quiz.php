@@ -150,16 +150,9 @@ if (isset($student)) {
                         </ul>
                     </li>
                     <li>
-                        <a href="#" class="dropdown-toggle">
-                            <span class="material-icons-outlined">library_books</span> Subjects
-                            <span class="material-icons-outlined chevron-icon">keyboard_arrow_down</span>
-                        </a>
-                        <ul class="dropdown-content">
-                            <li><a href="#">English</a></li>
-                            <li><a href="#">Science</a></li>
-                            <li><a href="#">Math</a></li>
-                        </ul>
+                        <a href="./user_subjects.php"><span class="material-icons-outlined">library_books</span> Subjects</a>
                     </li>
+                    <li><a href="user_virtualroom.php"><span class="material-icons-outlined">video_call</span>Virtual Room</a></li>
                     <li><a href="logout.php"><span class="material-icons-outlined">logout</span>Logout</a></li>
                 </ul>
             </div>

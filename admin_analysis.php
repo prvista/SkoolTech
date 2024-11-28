@@ -49,6 +49,8 @@ $professor = $result->num_rows > 0 ? $result->fetch_assoc() : null;
 // Fetch status and message from query parameters
 $status = isset($_GET['status']) ? $_GET['status'] : '';
 $message = isset($_GET['message']) ? $_GET['message'] : '';
+
+
 ?>
 
 <!DOCTYPE html>
@@ -280,40 +282,49 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
             <br>
            
             <canvas id="gradeDistributionChart" width="40" height="10"></canvas>
+            <script src="./dist/js/dropdown.js"></script>
 
+
+
+
+            
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                // Prepare data for the grade distribution chart
+                const gradeDistribution = <?php echo json_encode($gradeDistribution); ?>;
+
+                // Set up the chart data
+                const data = {
+                    labels: ['A', 'B', 'C', 'D', 'F'],
+                    datasets: [{
+                        label: 'Number of Students',
+                        data: [gradeDistribution['A'], gradeDistribution['B'], gradeDistribution['C'], gradeDistribution['D'], gradeDistribution['F']],
+                        backgroundColor: ['#4CAF50', '#FF9800', '#FFEB3B', '#FF5722', '#F44336'],
+                        borderColor: ['#388E3C', '#F57C00', '#FBC02D', '#D32F2F', '#D32F2F'],
+                        borderWidth: 1
+                    }]
+                };
+
+                // Configure the chart options
+                const config = {
+                    type: 'bar',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                };
+
+                // Render the chart
+                const ctx = document.getElementById('gradeDistributionChart').getContext('2d');
+                const gradeDistributionChart = new Chart(ctx, config);
+            </script>
 
         </main>
     </div>
-
-    <script src="./dist/js/dropdown.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="./dist/js/gradeDistributionLineChart.js"></script>
-
-
-
-    <script>
-        // Show notification if it exists
-        window.onload = function() {
-            const notification = document.getElementById('notification');
-            if (notification.classList.contains('show')) {
-                setTimeout(function() {
-                    notification.classList.remove('show');
-                    notification.classList.add('hide');
-                }, 3000);
-            }
-        }
-    </script>
-
-    <script>
-        var gradeDistribution = <?php echo json_encode($gradeDistribution); ?>;
-        createGradeDistributionLineChart(gradeDistribution);
-    </script>
-
-
-
-
 </body>
 </html>
-
-

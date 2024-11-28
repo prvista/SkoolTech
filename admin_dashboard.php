@@ -37,6 +37,23 @@ $sql_results = "SELECT s.student_number, s.username, s.name, q.title AS quiz_tit
 
 $result_results = $conn->query($sql_results);
 
+
+// Get all exam results
+$sql_exam_results = "SELECT s.student_number, s.username, s.name, e.title AS exam_title, e.subject, er.score 
+                     FROM exam_results er
+                     JOIN students s ON er.student_id = s.id
+                     JOIN exams e ON er.exam_id = e.id";
+$result_exam_results = $conn->query($sql_exam_results);
+
+// Get all assignment results
+$sql_assignment_results = "SELECT s.student_number, s.username, s.name, a.title AS assignment_title, a.subject, asub.grade AS score 
+                           FROM assignment_submissions asub
+                           JOIN students s ON asub.student_id = s.id
+                           JOIN assignments a ON asub.assignment_id = a.id";
+$result_assignment_results = $conn->query($sql_assignment_results);
+
+
+
 if (!$result_results) {
     die("Error fetching quiz results: " . $conn->error);
 }
@@ -130,6 +147,7 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
 
                         <li><a href="./admin_students.php"><span class="material-icons-outlined">group</span>Students</a></li>
                         <li><a href="./admin_reportcard.php"><span class="material-icons-outlined">credit_card</span>Report Card</a></li>
+                        <!-- <li><a href="./admin_virtualroom.php"><span class="material-icons-outlined">video_call</span>Virtual Room</a></li> -->
                         <li><a href="logout.php"><span class="material-icons-outlined">logout</span>Logout</a></li>
                     </ul>
                 </div>
@@ -228,18 +246,71 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
             </table>
 
             <br>
-            <br>
-
 
             <!-- chart -->
             <canvas id="quizBarChart" width="40" height="10"></canvas>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <!-- <canvas id="barChart" width="200" height="200"></canvas> -->
+            <canvas id="examBarChart" width="40" height="10"></canvas>
+
+        
+
+
+             <!-- Exam Results Table -->
+            <h2>Exam Results</h2>
+            <table border="1">
+                <tr>
+                    <th>Student Number</th>
+                    <th>Username</th>
+                    <th>Name</th>
+                    <th>Exam Title</th>
+                    <th>Subject</th>
+                    <th>Score</th>
+                </tr>
+                <?php
+                if ($result_exam_results->num_rows > 0) {
+                    while ($row = $result_exam_results->fetch_assoc()) {
+                        echo "<tr>
+                                <td>" . htmlspecialchars($row['student_number']) . "</td>
+                                <td>" . htmlspecialchars($row['username']) . "</td>
+                                <td>" . htmlspecialchars($row['name']) . "</td>
+                                <td>" . htmlspecialchars($row['exam_title']) . "</td>
+                                <td>" . htmlspecialchars($row['subject']) . "</td>
+                                <td>" . htmlspecialchars($row['score']) . "%</td>
+                              </tr>";
+                    }
+                } else {
+                    echo "<tr><td colspan='6'>No exam results found</td></tr>";
+                }
+                ?>
+            </table>
+
+            <!-- Assignment Results Table -->
+            <h2>Assignment Results</h2>
+            <table border="1">
+                <tr>
+                    <th>Student Number</th>
+                    <th>Username</th>
+                    <th>Name</th>
+                    <th>Assignment Title</th>
+                    <th>Subject</th>
+                    <th>Score</th>
+                </tr>
+                <?php
+                if ($result_assignment_results->num_rows > 0) {
+                    while ($row = $result_assignment_results->fetch_assoc()) {
+                        echo "<tr>
+                                <td>" . htmlspecialchars($row['student_number']) . "</td>
+                                <td>" . htmlspecialchars($row['username']) . "</td>
+                                <td>" . htmlspecialchars($row['name']) . "</td>
+                                <td>" . htmlspecialchars($row['assignment_title']) . "</td>
+                                <td>" . htmlspecialchars($row['subject']) . "</td>
+                                <td>" . htmlspecialchars($row['score']) . "%</td>
+                              </tr>";
+                    }
+                } else {
+                    echo "<tr><td colspan='6'>No assignment results found</td></tr>";
+                }
+                ?>
+            </table>
 
         </main>
     </div>
@@ -272,6 +343,8 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
         var subjects = <?php echo $subjectsJson; ?>;
         createQuizBarChart(studentNames, quizScores, quizTitles, subjects);
     </script>
+
+
 
 </body>
 </html>

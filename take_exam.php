@@ -178,16 +178,90 @@ if ($stmt_insert_result->execute()) {
     <link rel="stylesheet" href="./dist/scss/main.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     <style>
+         /* Timer */
+         .timer {
+            font-size: 1.2em;
+        }
+
+        .timer-container {
+            display: flex;
+            background-color: #ffcc00;
+            padding: 10px;
+            border-radius: 5px;
+            width: 160px;
+            margin-bottom: 20px;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 5px solid #f3f3f3; /* Light gray background */
+            border-top: 5px solid #28a745; /* Green spinner */
+            border-radius: 50%;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Form Styling */
+        form {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            position: relative;
+        }
         .question {
             margin-bottom: 20px;
         }
+        .question p {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: .5rem;
+        }
         .question label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            color: #555;
         }
-        .question input {
+        .question input[type="radio"],
+        .question input[type="text"] {
             margin-right: 10px;
         }
+        .question input[type="text"] {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            width: 100%;
+        }
+
+        button[type="submit"] {
+            background-color: #28a745;
+            color: white;
+            font-size: 1.1rem;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 10%;
+            align-self: flex-end; 
+            transition: background-color 0.3s ease;
+        }
+        button[type="submit"]:hover {
+            background-color: #218838;
+        }
+
+        /* Notification */
         .notification {
             display: none;
             position: fixed;
@@ -208,6 +282,8 @@ if ($stmt_insert_result->execute()) {
         .notification.hide {
             opacity: 0;
         }
+
+        /* Loading Spinner */
         .loading {
             display: none;
             position: fixed;
@@ -231,9 +307,29 @@ if ($stmt_insert_result->execute()) {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .timer {
-            font-size: 1.2em;
-            margin-bottom: 20px;
+
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            #sidenav {
+                width: 200px;
+            }
+            .main-container {
+                margin-left: 220px;
+            }
+        }
+
+        @media screen and (max-width: 576px) {
+            #sidenav {
+                width: 100%;
+                position: static;
+            }
+            .main-container {
+                margin-left: 0;
+            }
+            .header__wrapper {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
@@ -266,16 +362,9 @@ if ($stmt_insert_result->execute()) {
                         </ul>
                     </li>
                     <li>
-                        <a href="#" class="dropdown-toggle">
-                            <span class="material-icons-outlined">library_books</span> Subjects
-                            <span class="material-icons-outlined chevron-icon">keyboard_arrow_down</span>
-                        </a>
-                        <ul class="dropdown-content">
-                            <li><a href="#">English</a></li>
-                            <li><a href="#">Science</a></li>
-                            <li><a href="#">Math</a></li>
-                        </ul>
+                        <a href="./user_subjects.php"><span class="material-icons-outlined">library_books</span> Subjects</a>
                     </li>
+                    <li><a href="user_virtualroom.php"><span class="material-icons-outlined">video_call</span>Virtual Room</a></li>
                     <li><a href="logout.php"><span class="material-icons-outlined">logout</span>Logout</a></li>
                 </ul>
             </div>
@@ -285,7 +374,11 @@ if ($stmt_insert_result->execute()) {
     <main class="main-container">
         <h2>Exam</h2>
 
-        <div class="timer" id="timer"></div>
+
+        <div class="timer-container">
+            <div class="timer" id="timer"></div>
+            <div class="spinner"></div>
+        </div>
 
             <form id="examForm" action="take_exam.php?exam_id=<?php echo htmlspecialchars($exam_id); ?>" method="POST">
                 <?php while ($row = $result_questions->fetch_assoc()): ?>
