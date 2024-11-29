@@ -57,8 +57,8 @@ if ($scoreResult->num_rows > 0) {
     }
 }
 
-// Retrieve notifications
-$notificationSql = "SELECT * FROM notifications WHERE student_id = ? ORDER BY id DESC";
+// Retrieve only unread notifications
+$notificationSql = "SELECT * FROM notifications WHERE student_id = ? AND is_read = 0 ORDER BY id DESC";
 $notificationStmt = $conn->prepare($notificationSql);
 $notificationStmt->bind_param("i", $student['id']);
 $notificationStmt->execute();
@@ -69,12 +69,6 @@ if ($notificationResult->num_rows > 0) {
     while ($row = $notificationResult->fetch_assoc()) {
         $notifications[] = $row;
     }
-
-    // Mark notifications as read only after retrieving them
-    $markReadSql = "UPDATE notifications SET is_read = 1 WHERE student_id = ? AND is_read = 0";
-    $markReadStmt = $conn->prepare($markReadSql);
-    $markReadStmt->bind_param("i", $student['id']);
-    $markReadStmt->execute();
 }
 ?>
 
@@ -113,67 +107,6 @@ if ($notificationResult->num_rows > 0) {
             margin-top: 10px;
             font-size: 16px;
             font-weight: bold;
-        }
-
-        /* Notification Dropdown */
-        .notif-dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 250px;
-            max-height: 260px;
-            overflow-y: auto;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            z-index: 1;
-            color: black;
-        }
-
-        .notif-dropdown-content p {
-            padding: 20px;
-            margin: 0;
-            border-bottom: 1px solid #ddd;
-            color: black;
-        }
-
-        .notif-dropdown-content p:last-child {
-            border-bottom: none;
-        }
-
-        .notif-dropdown-content p:hover {
-            background-color: #f1f1f1;
-        }
-
-        .notif-dropdown.open .notif-dropdown-content {
-            display: block;
-            right: 8rem;
-        }
-
-        .notif-dropdown.open .notif-dropdown-content a {
-            color: black;
-        }
-
-        /* Notification Badge */
-        .notif-badge {
-            background-color: #007bff; /* Blue color */
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            transform: translate(50%, -50%);
-            z-index: 1;
-            font-size: 14px; /* Adjust font size for count */
-        }
-
-        .notif-toggle {
-            position: relative;
         }
 
         .video-call-section {
@@ -343,45 +276,51 @@ if ($notificationResult->num_rows > 0) {
         <div class="container">
             <div class="header__wrapper">
                 <div class="header__right">
-                    <!-- Notifications Dropdown -->
-                    <div class="notif-dropdown">
-                        <a href="#" class="notif-toggle">
-                            <span class="material-icons-outlined">notifications</span>
-                            <!-- Notification count badge -->
-                            <?php if (count($notifications) > 0): ?>
-                                <span class="notif-badge"><?php echo count($notifications); ?></span>
-                            <?php endif; ?>
-                        </a>
-                        <div class="notif-dropdown-content">
-                            <?php if (count($notifications) > 0): ?>
-                                <?php foreach ($notifications as $notification): ?>
-                                    <?php
-                                    $targetPage = '#';
-                                    if ($notification['activity_type'] === 'Assignment') {
-                                        $targetPage = 'student_assignments.php';
-                                    } elseif ($notification['activity_type'] === 'Quiz') {
-                                        $targetPage = 'task_quiz.php';
-                                    } elseif ($notification['activity_type'] === 'Exam') {
-                                        $targetPage = 'task_exam.php';
-                                    }
-                                    ?>
-                                    <p data-id="<?php echo $notification['id']; ?>">
-                                        <a class="notif_btn" 
-                                        href="<?php echo htmlspecialchars($targetPage); ?>" 
-                                        data-id="<?php echo $notification['id']; ?>">
-                                            <strong><?php echo htmlspecialchars($notification['activity_type']); ?>:</strong>
-                                            <?php echo htmlspecialchars($notification['activity_title']); ?>
-                                        </a>
-                                    </p>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <p>No new notifications</p>
-                            <?php endif; ?>
+                        <!-- Notifications Dropdown -->
+                        <div class="notif-dropdown">
+                            <a href="#" class="notif-toggle">
+                                <span class="material-icons-outlined">notifications</span>
+                                <!-- Notification count badge -->
+                                <?php if (count($notifications) > 0): ?>
+                                    <span class="notif-badge"><?php echo count($notifications); ?></span>
+                                <?php endif; ?>
+                            </a>
+                            <div class="notif-dropdown-content">
+                                <?php if (count($notifications) > 0): ?>
+                                    <?php foreach ($notifications as $notification): ?>
+                                        <?php
+                                        // Determine the target page based on notification activity type
+                                        $targetPage = '#';
+                                        if ($notification['activity_type'] === 'Assignment') {
+                                            $targetPage = 'student_assignments.php';
+                                        } elseif ($notification['activity_type'] === 'Quiz') {
+                                            $targetPage = 'task_quiz.php';
+                                        } elseif ($notification['activity_type'] === 'Exam') {
+                                            $targetPage = 'task_exam.php';
+                                        }
+                                        ?>
+                                        <p 
+                                            id="notif-<?php echo $notification['id']; ?>" 
+                                            class="<?php echo $notification['is_read'] ? 'read' : 'unread'; ?>"
+                                            data-id="<?php echo $notification['id']; ?>">
+                                            <a class="notif_btn" 
+                                                href="<?php echo htmlspecialchars($targetPage); ?>" 
+                                                data-id="<?php echo $notification['id']; ?>" 
+                                                onclick="markNotificationAsRead(event, <?php echo $notification['id']; ?>, '<?php echo $targetPage; ?>')">
+                                                <strong><?php echo htmlspecialchars($notification['activity_type']); ?>:</strong>
+                                                <?php echo htmlspecialchars($notification['activity_title']); ?>
+                                            </a>
+                                        </p>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <p>No new notifications</p>
+                                <?php endif; ?>
+                            </div>
+
                         </div>
-                    </div>
-                    <div class="initials-bg">
-                        <p><?php echo $initials; ?></p>
-                    </div>
+                        <div class="initials-bg">
+                            <p><?php echo $initials; ?></p>
+                        </div>
                 </div>
             </div>
         </div>
@@ -450,6 +389,8 @@ if ($notificationResult->num_rows > 0) {
 </div>
 
 <script src="./dist/js/dropdown.js"></script>
+<script src="./dist/js/notif-dropdown.js"></script>
+<script src="./dist/js/notif-click.js"></script>
 <!-- Jitsi Meet API -->
 <script src="https://meet.jit.si/external_api.js"></script>
 

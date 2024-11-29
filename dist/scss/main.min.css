@@ -540,9 +540,7 @@ tr:hover td {
 .exam_details select {
   font-family: "Poppins", "sans-serif";
   font-size: 1rem;
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
+  appearance: none;
   cursor: pointer;
 }
 .exam_details br {
@@ -625,7 +623,7 @@ tr:hover td {
 }
 
 .dashboard__banner {
-  background-image: url(../img/user-dash-bg.png);
+  background-image: url(../img/user-banner.png);
   background-position: center;
   background-repeat: no-repeat;
   background-size: 100%;
@@ -651,7 +649,7 @@ tr:hover td {
 }
 
 .task__banner {
-  background-image: url(../img/SkoolTech\ \(20\).png);
+  background-image: url(../img/user-banner.png);
   background-position: center;
   background-repeat: no-repeat;
   background-size: 100%;
@@ -748,6 +746,27 @@ tr:hover td {
   outline: none;
 }
 
+.upload_btn {
+  padding: 0.4rem 0.5rem;
+  background-color: #007bff;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 0.3rem;
+  border: 1px solid transparent;
+  font-family: "Poppins", "sans-serif";
+}
+.upload_btn:hover {
+  border: 1px solid #2171CC;
+  transition: 0.05s ease;
+  background-color: #d5e8ff;
+  color: #2171CC;
+}
+
+.input#file-upload-button {
+  background-color: red;
+}
+
 .login__wrapper {
   display: flex;
   height: 100vh;
@@ -788,7 +807,6 @@ tr:hover td {
   font-size: 0.75em;
   position: relative;
   top: -15px;
-  -webkit-transition: 0.2s ease-out;
   transition: 0.2s ease-out;
 }
 .login__left__title h2 {
@@ -974,6 +992,86 @@ tr:hover td {
   font-size: 2.5rem;
 }
 
+.notification {
+  display: none;
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  padding: 15px;
+  border-radius: 5px;
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  z-index: 1000;
+  transition: opacity 0.5s ease;
+}
+.notification .show {
+  display: block;
+  opacity: 1;
+}
+.notification .hide {
+  opacity: 0;
+}
+
+.notif-dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 250px;
+  max-height: 260px;
+  overflow-y: auto;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  color: black;
+  border-radius: 10px;
+}
+.notif-dropdown-content p {
+  padding: 20px;
+  margin: 0;
+  border-bottom: 1px solid #ddd;
+  color: black;
+}
+.notif-dropdown-content p:last-child {
+  border-bottom: none;
+}
+.notif-dropdown-content p:hover {
+  background-color: #f4f4f4;
+}
+.notif-dropdown-content p:hover .notif_btn:hover {
+  color: #2b2b2b;
+}
+
+.notif-dropdown.open .notif-dropdown-content {
+  display: block;
+  right: 8rem;
+}
+.notif-dropdown.open .notif-dropdown-content a {
+  color: #2b2b2b;
+}
+
+.notif-badge {
+  background-color: #007bff; /* Blue color */
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  transform: translate(50%, -50%);
+  z-index: 1;
+  font-size: 14px; /* Adjust font size for count */
+}
+
+.notif-toggle {
+  position: relative;
+}
+
 .grid-container {
   display: grid;
   grid-template-columns: 260px 1fr 1fr 1fr;
@@ -1017,6 +1115,7 @@ tr:hover td {
   height: 100%;
   background-color: #263043;
   overflow-y: auto;
+  -webkit-transition: all 0.5s;
   transition: all 0.5s;
 }
 

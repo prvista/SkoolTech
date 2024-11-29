@@ -71,6 +71,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
+    // Fetch all student IDs from the `students` table
+    $students_query = "SELECT id FROM students";
+    $students_result = $conn->query($students_query);
+
+    if ($students_result->num_rows > 0) {
+        // Insert notifications for all students
+        $notification_stmt = $conn->prepare("INSERT INTO notifications (student_id, is_read, activity_type, activity_title) VALUES (?, 0, 'Quiz', ?)");
+
+        while ($student = $students_result->fetch_assoc()) {
+            $student_id = $student['id'];
+            $notification_stmt->bind_param("is", $student_id, $title);
+            $notification_stmt->execute();
+        }
+
+        $notification_stmt->close();
+    }
+
     echo "<script>window.location.href = 'admin_dashboard.php?status=success&message=Quiz created successfully!';</script>";
     exit();
 }

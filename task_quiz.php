@@ -67,6 +67,19 @@ if (isset($student)) {
 } else {
     $initials = "AB"; // Fallback initials if student not found
 }
+// Retrieve only unread notifications
+$notificationSql = "SELECT * FROM notifications WHERE student_id = ? AND is_read = 0 ORDER BY id DESC";
+$notificationStmt = $conn->prepare($notificationSql);
+$notificationStmt->bind_param("i", $student['id']);
+$notificationStmt->execute();
+$notificationResult = $notificationStmt->get_result();
+
+$notifications = [];
+if ($notificationResult->num_rows > 0) {
+    while ($row = $notificationResult->fetch_assoc()) {
+        $notifications[] = $row;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -117,11 +130,47 @@ if (isset($student)) {
 <body>
 
 <div class="grid-container">
-    <div class="header">
+<div class="header">
         <div class="container">
             <div class="header__wrapper">
                 <div class="header__right">
-                    <a href="#"><span class="material-icons-outlined chevron-icon">notifications</span></a>
+                    <!-- Notifications Dropdown -->
+                    <div class="notif-dropdown">
+                        <a href="#" class="notif-toggle">
+                            <span class="material-icons-outlined">notifications</span>
+                            <!-- Notification count badge -->
+                            <?php if (count($notifications) > 0): ?>
+                                <span class="notif-badge"><?php echo count($notifications); ?></span>
+                            <?php endif; ?>
+                        </a>
+                        <div class="notif-dropdown-content">
+                            <?php if (count($notifications) > 0): ?>
+                                <?php foreach ($notifications as $notification): ?>
+                                    <?php
+                                    $targetPage = '#';
+                                    if ($notification['activity_type'] === 'Assignment') {
+                                        $targetPage = 'student_assignments.php';
+                                    } elseif ($notification['activity_type'] === 'Quiz') {
+                                        $targetPage = 'task_quiz.php';
+                                    } elseif ($notification['activity_type'] === 'Exam') {
+                                        $targetPage = 'task_exam.php';
+                                    }
+                                    ?>
+                                    <p data-id="<?php echo $notification['id']; ?>" class="<?php echo $notification['is_read'] ? 'read' : 'unread'; ?>">
+                                        <a class="notif_btn" 
+                                        href="<?php echo htmlspecialchars($targetPage); ?>" 
+                                        data-id="<?php echo $notification['id']; ?>" 
+                                        onclick="markNotificationAsRead(event, <?php echo $notification['id']; ?>, '<?php echo $targetPage; ?>')">
+                                            <strong><?php echo htmlspecialchars($notification['activity_type']); ?>:</strong>
+                                            <?php echo htmlspecialchars($notification['activity_title']); ?>
+                                        </a>
+                                    </p>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <p>No new notifications</p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                     <div class="initials-bg">
                         <p><?php echo $initials; ?></p>
                     </div>
@@ -207,7 +256,8 @@ if (isset($student)) {
         }
     };
 </script>
-
+<script src="./dist/js/notif-dropdown.js"></script>
+<script src="./dist/js/notif-click.js"></script>
 </body>
 </html>
 

@@ -37,8 +37,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Insert assignment into the database
     $stmt = $conn->prepare("INSERT INTO assignments (title, description, due_date, subject) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("ssss", $assignment_title, $assignment_description, $due_date, $subject);
-    
+        
     if ($stmt->execute()) {
+        // Get all student IDs from the students table
+        $students_query = "SELECT id FROM students";
+        $students_result = $conn->query($students_query);
+
+        if ($students_result->num_rows > 0) {
+            // Insert notifications for all students
+            $notification_stmt = $conn->prepare("INSERT INTO notifications (student_id, is_read, activity_type, activity_title) VALUES (?, 0, 'Assignment', ?)");
+
+            while ($student = $students_result->fetch_assoc()) {
+                $student_id = $student['id'];
+                $notification_stmt->bind_param("is", $student_id, $assignment_title);
+                
+                // Execute and debug
+                if ($notification_stmt->execute()) {
+                    echo "Notification inserted successfully for student ID: $student_id<br>";
+                } else {
+                    echo "Error inserting notification for student ID: $student_id. Error: " . $conn->error . "<br>";
+                }
+            }
+
+            $notification_stmt->close();
+        }
         // Redirect with success message
         header("Location: task_creator_assignment.php?status=success&message=Assignment created successfully.");
         exit();

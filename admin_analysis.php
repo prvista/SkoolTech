@@ -14,23 +14,51 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Get all students
-$sql_students = "SELECT * FROM students";
-$result_students = $conn->query($sql_students);
+// Query to get student results along with GWA for each subject and total GWA
+$sql_results = "
+SELECT 
+    s.student_number, 
+    s.name, 
 
+    -- Quiz, Exam, and Assignment Averages
+    ROUND(COALESCE(SUM(qr.score) / GREATEST(COUNT(qr.id), 1), 0), 2) AS quiz_average,
+    ROUND(COALESCE(SUM(er.score) / GREATEST(COUNT(er.id), 1), 0), 2) AS exam_average,
+    ROUND(COALESCE(SUM(ss.assignment_score) / GREATEST(COUNT(ss.id), 1), 0), 2) AS assignment_average,
 
-$sql_results = "SELECT s.student_number, s.name, s.username,
-                COALESCE(SUM(qr.score) / IFNULL(COUNT(qr.id), 1), 0) AS quiz_average,
-                COALESCE(SUM(er.score) / IFNULL(COUNT(er.id), 1), 0) AS exam_average,
-                COALESCE(SUM(ss.assignment_score) / IFNULL(COUNT(ss.id), 1), 0) AS assignment_average,  -- Get from subject_scores
-                (COALESCE(SUM(qr.score) / IFNULL(COUNT(qr.id), 1), 0) + 
-                COALESCE(SUM(ss.assignment_score) / IFNULL(COUNT(ss.id), 1), 0) + 
-                COALESCE(SUM(er.score) / IFNULL(COUNT(er.id), 1), 0)) / 3 AS gwa
-                FROM students s
-                LEFT JOIN quiz_results qr ON s.id = qr.student_id
-                LEFT JOIN exam_results er ON s.id = er.student_id
-                LEFT JOIN subject_scores ss ON s.id = ss.student_id
-                GROUP BY s.student_number, s.name, s.username";
+    -- General Weighted Average
+    ROUND(
+        (
+            COALESCE(SUM(qr.score) / GREATEST(COUNT(qr.id), 1), 0) + 
+            COALESCE(SUM(ss.assignment_score) / GREATEST(COUNT(ss.id), 1), 0) + 
+            COALESCE(SUM(er.score) / GREATEST(COUNT(er.id), 1), 0)
+        ) / 3, 2
+    ) AS gwa,
+
+    -- Subject-wise GWA
+    ROUND(AVG(CASE WHEN ss.subject = 'English' THEN (ss.assignment_score + ss.quiz_score + ss.exam_score) / 3 END), 2) AS english_gwa,
+    ROUND(AVG(CASE WHEN ss.subject = 'Math' THEN (ss.assignment_score + ss.quiz_score + ss.exam_score) / 3 END), 2) AS math_gwa,
+    ROUND(AVG(CASE WHEN ss.subject = 'Science' THEN (ss.assignment_score + ss.quiz_score + ss.exam_score) / 3 END), 2) AS science_gwa,
+
+    -- Total GWA
+    ROUND(
+        (
+            COALESCE(AVG(CASE WHEN ss.subject = 'English' THEN (ss.assignment_score + ss.quiz_score + ss.exam_score) / 3 END), 0) +
+            COALESCE(AVG(CASE WHEN ss.subject = 'Math' THEN (ss.assignment_score + ss.quiz_score + ss.exam_score) / 3 END), 0) +
+            COALESCE(AVG(CASE WHEN ss.subject = 'Science' THEN (ss.assignment_score + ss.quiz_score + ss.exam_score) / 3 END), 0)
+        ) / 3, 2
+    ) AS total_gwa
+
+FROM 
+    students s
+LEFT JOIN 
+    quiz_results qr ON s.id = qr.student_id
+LEFT JOIN 
+    exam_results er ON s.id = er.student_id
+LEFT JOIN 
+    subject_scores ss ON s.id = ss.student_id
+GROUP BY 
+    s.student_number, s.name;
+";
 
 $result_results = $conn->query($sql_results);
 
@@ -39,18 +67,62 @@ if (!$result_results) {
     die("Error fetching quiz and exam results: " . $conn->error);
 }
 
-// Fetch professor's details
-$stmt = $conn->prepare("SELECT name FROM professors WHERE username = ?");
-$stmt->bind_param("s", $_SESSION['username']);
-$stmt->execute();
-$result = $stmt->get_result();
-$professor = $result->num_rows > 0 ? $result->fetch_assoc() : null;
+// Initialize an array to store student results
+$student_results = [];
+$ranked_results = [];
 
-// Fetch status and message from query parameters
-$status = isset($_GET['status']) ? $_GET['status'] : '';
-$message = isset($_GET['message']) ? $_GET['message'] : '';
+// Fetch the student results and store them in the array
+if ($result_results->num_rows > 0) {
+    while ($row = $result_results->fetch_assoc()) {
+        $student_results[] = [
+            'student_number' => $row['student_number'],
+            'name' => $row['name'],
+            'quiz_average' => $row['quiz_average'],
+            'exam_average' => $row['exam_average'],
+            'assignment_average' => $row['assignment_average'],
+            'total_gwa' => $row['total_gwa'],
+            'english_gwa' => $row['english_gwa'],
+            'math_gwa' => $row['math_gwa'],
+            'science_gwa' => $row['science_gwa'],
+        ];
+        
+        // For ranking (GWA)
+        $ranked_results[] = [
+            'name' => $row['name'],
+            'gwa' => $row['total_gwa']
+        ];
+    }
+} else {
+    echo "<tr><td colspan='6'>No results found</td></tr>";
+}
 
+// Rank the results by GWA
+usort($ranked_results, fn($a, $b) => $b['gwa'] <=> $a['gwa']);
 
+// Initialize grade distribution counts
+$gradeDistribution = [
+    'A' => 0,
+    'B' => 0,
+    'C' => 0,
+    'D' => 0,
+    'F' => 0
+];
+
+foreach ($student_results as $row) {
+    $overall_percentage = ($row['quiz_average'] + $row['exam_average'] + $row['assignment_average']) / 3;
+
+    if ($overall_percentage >= 90) {
+        $gradeDistribution['A']++;
+    } elseif ($overall_percentage >= 80) {
+        $gradeDistribution['B']++;
+    } elseif ($overall_percentage >= 70) {
+        $gradeDistribution['C']++;
+    } elseif ($overall_percentage >= 60) {
+        $gradeDistribution['D']++;
+    } else {
+        $gradeDistribution['F']++;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -101,33 +173,13 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                 <div class="sidenav-list">
                     <ul>
                         <li><a href="./admin_dashboard.php"><span class="material-icons-outlined">dashboard</span>Dashboard</a></li>
-                        <li>
-                            <a href="#" class="dropdown-toggle">
-                                <span class="material-icons-outlined">app_registration</span> Task Creator
-                                <div class="arrow-down">
-                                    <span class="material-icons-outlined chevron-icon">keyboard_arrow_down</span>
-                                </div>
-                            </a>
-                            <ul class="dropdown-content">
-                                <li><a href="./task_creator_assignment.php">Assignment</a></li>
-                                <li><a href="./task_creator.php">Quiz</a></li>
-                                <li><a href="./task_creator_exam.php">Exam</a></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="#" class="dropdown-toggle">
-                            <span class="material-icons-outlined">sort</span> Results
-                                <div class="arrow-down">
-                                    <span class="material-icons-outlined chevron-icon">keyboard_arrow_down</span>
-                                </div>
-                            </a>
-                            <ul class="dropdown-content">
-                                <li><a href="./admin_analysis.php">Analysis</a></li>
-                                <li><a href="./admin_assignments.php">Ass Results</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="./admin_students.php"><span class="material-icons-outlined">group</span>Students</a></li>
-                        <li><a href="./admin_reportcard.php"><span class="material-icons-outlined">credit_card</span>Report Card</a></li>
+                        <li><a href="./task_creator_assignment.php">Assignment</a></li>
+                        <li><a href="./task_creator.php">Quiz</a></li>
+                        <li><a href="./task_creator_exam.php">Exam</a></li>
+                        <li><a href="./admin_analysis.php">Analysis</a></li>
+                        <li><a href="./admin_assignments.php">Ass Results</a></li>
+                        <li><a href="./admin_students.php">Students</a></li>
+                        <li><a href="./admin_reportcard.php">Report Card</a></li>
                         <li><a href="logout.php"><span class="material-icons-outlined">logout</span>Logout</a></li>
                     </ul>
                 </div>
@@ -140,36 +192,29 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                 <tr>
                     <th>Student Number</th>
                     <th>Name</th>
-                    <th>Assignment Average</th>
-                    <th>Quiz Average</th>
-                    <th>Exam Average</th>
-                    <th>Overall Average (GWA)</th>
+                    <th>English GWA</th>
+                    <th>Math GWA</th>
+                    <th>Science GWA</th>
+                    <th>Overall Average(GWA)</th>
                 </tr>
 
                 <?php
-                $student_results = [];
-                
                 if ($result_results->num_rows > 0) {
+                    $result_results->data_seek(0); // Reset the pointer to the beginning
                     while ($row = $result_results->fetch_assoc()) {
-                        $student_results[] = $row;
-
-                        // Output the data for each student
                         echo "<tr>";
                         echo "<td>" . htmlspecialchars($row['student_number']) . "</td>";
                         echo "<td>" . htmlspecialchars($row['name']) . "</td>";
-                        echo "<td>" . htmlspecialchars(number_format($row['assignment_average'], 2)) . "</td>";
-                        echo "<td>" . htmlspecialchars(number_format($row['quiz_average'], 2)) . "</td>";
-                        echo "<td>" . htmlspecialchars(number_format($row['exam_average'], 2)) . "</td>";
-                        echo "<td>" . htmlspecialchars(number_format($row['gwa'], 2)) . "</td>";
+                        echo "<td>" . (($row['english_gwa']) ? htmlspecialchars(number_format($row['english_gwa'], 2)) : "0.00") . "</td>";
+                        echo "<td>" . (($row['math_gwa']) ? htmlspecialchars(number_format($row['math_gwa'], 2)) : "0.00") . "</td>";
+                        echo "<td>" . (($row['science_gwa']) ? htmlspecialchars(number_format($row['science_gwa'], 2)) : "0.00") . "</td>";
+                        echo "<td>" . (($row['total_gwa']) ? htmlspecialchars(number_format($row['total_gwa'], 2)) : "0.00") . "</td>";
                         echo "</tr>";
                     }
-                } else {
-                    echo "<tr><td colspan='5'>No results found</td></tr>";
                 }
                 ?>
             </table>
 
-            <br>
             <h2>Gamification</h2>
             <table border="1">
                 <tr>
@@ -181,119 +226,48 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                 // Store the GWA and names in an array for ranking
                 $ranked_results = [];
                 if ($result_results->num_rows > 0) {
-                    // Reset the result pointer to fetch data again
                     $result_results->data_seek(0);
 
-                    // Store data into array for sorting
                     while ($row = $result_results->fetch_assoc()) {
-                        $ranked_results[] = $row;
+                        $ranked_results[] = [
+                            'name' => $row['name'],
+                            'gwa' => $row['total_gwa']
+                        ];
                     }
-
-                    // Sort the array based on GWA in descending order
-                    usort($ranked_results, function($a, $b) {
-                        return $b['gwa'] <=> $a['gwa']; // Sort by GWA in descending order
-                    });
-
-                    // Display the sorted students with their rankings
+                    usort($ranked_results, fn($a, $b) => $b['gwa'] <=> $a['gwa']);
+                    
                     $rank = 1;
-                    foreach ($ranked_results as $row) {
-                        echo "<tr>";
-                        echo "<td>" . $rank . "</td>"; // Display rank
-                        echo "<td>" . htmlspecialchars($row['name']) . "</td>"; // Display student name
-                        echo "<td>" . htmlspecialchars(number_format($row['gwa'], 2)) . "</td>"; // Display GWA
-                        echo "</tr>";
-                        $rank++;
+                    foreach ($ranked_results as $result) {
+                        echo "<tr><td>" . $rank++ . "</td><td>" . htmlspecialchars($result['name']) . "</td><td>" . number_format($result['gwa'], 2) . "</td></tr>";
                     }
-                } else {
-                    echo "<tr><td colspan='6'>No results found</td></tr>";
                 }
                 ?>
             </table>
 
-            <br>
             <h2>Grade Distribution Analysis</h2>
             <table border="1">
                 <tr>
-                    <th>90-100 (A)</th>
-                    <th>80-89 (B)</th>
-                    <th>70-79 (C)</th>
-                    <th>60-69 (D)</th>
-                    <th>0-59 (F)</th>
+                    <th>A</th>
+                    <th>B</th>
+                    <th>C</th>
+                    <th>D</th>
+                    <th>F</th>
                 </tr>
-
-                <?php
-                // Initialize the counts for each grade range
-                $gradeA = 0;
-                $gradeB = 0;
-                $gradeC = 0;
-                $gradeD = 0;
-                $gradeF = 0;
-
-                // Initialize the $gradeDistribution array
-                $gradeDistribution = [
-                    'A' => 0,
-                    'B' => 0,
-                    'C' => 0,
-                    'D' => 0,
-                    'F' => 0
-                ];
-
-                if (count($student_results) > 0) {
-                    foreach ($student_results as $row) {
-                        // Calculate the overall percentage as an average of quiz and exam scores
-                        $overall_percentage = ($row['quiz_average'] + $row['exam_average'] + $row['assignment_average']) / 3;
-
-                        // Categorize the overall percentage into grade ranges
-                        if ($overall_percentage >= 90) {
-                            $gradeA++;
-                            $gradeDistribution['A']++;
-                        } elseif ($overall_percentage >= 80) {
-                            $gradeB++;
-                            $gradeDistribution['B']++;
-                        } elseif ($overall_percentage >= 70) {
-                            $gradeC++;
-                            $gradeDistribution['C']++;
-                        } elseif ($overall_percentage >= 60) {
-                            $gradeD++;
-                            $gradeDistribution['D']++;
-                        } else {
-                            $gradeF++;
-                            $gradeDistribution['F']++;
-                        }
-                    }
-
-                    // Output the grade distribution
-                    echo "<tr>";
-                    echo "<td>" . htmlspecialchars($gradeA) . "</td>";
-                    echo "<td>" . htmlspecialchars($gradeB) . "</td>";
-                    echo "<td>" . htmlspecialchars($gradeC) . "</td>";
-                    echo "<td>" . htmlspecialchars($gradeD) . "</td>";
-                    echo "<td>" . htmlspecialchars($gradeF) . "</td>";
-                    echo "</tr>";
-                } else {
-                    echo "<tr><td colspan='5'>No results found</td></tr>";
-                }
-                ?>
+                <tr>
+                    <td><?php echo $gradeDistribution['A']; ?></td>
+                    <td><?php echo $gradeDistribution['B']; ?></td>
+                    <td><?php echo $gradeDistribution['C']; ?></td>
+                    <td><?php echo $gradeDistribution['D']; ?></td>
+                    <td><?php echo $gradeDistribution['F']; ?></td>
+                </tr>
             </table>
 
 
-
-            <br>
-            <br>
-           
-            <canvas id="gradeDistributionChart" width="40" height="10"></canvas>
-            <script src="./dist/js/dropdown.js"></script>
-
-
-
-
-            
+            <canvas id="gradeDistributionChart" width="400" height="200"></canvas>
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <script>
-                // Prepare data for the grade distribution chart
                 const gradeDistribution = <?php echo json_encode($gradeDistribution); ?>;
 
-                // Set up the chart data
                 const data = {
                     labels: ['A', 'B', 'C', 'D', 'F'],
                     datasets: [{
@@ -305,7 +279,6 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                     }]
                 };
 
-                // Configure the chart options
                 const config = {
                     type: 'bar',
                     data: data,
@@ -319,11 +292,9 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                     }
                 };
 
-                // Render the chart
                 const ctx = document.getElementById('gradeDistributionChart').getContext('2d');
-                const gradeDistributionChart = new Chart(ctx, config);
+                new Chart(ctx, config);
             </script>
-
         </main>
     </div>
 </body>

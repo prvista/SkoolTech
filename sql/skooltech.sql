@@ -190,8 +190,67 @@ SET @quiz_id = LAST_INSERT_ID();
 -- Insert sample quiz questions
 INSERT INTO quiz_questions (quiz_id, question_text, choice_a, choice_b, choice_c, choice_d, correct_answer, question_type)
 VALUES 
+--Math
 (@quiz_id, 'What is 2 + 2?', '3', '4', '5', '6', 'B', 'multiple_choice'),
 (@quiz_id, 'What is the square root of 16?', '2', '4', '8', '16', 'B', 'multiple_choice');
+(@quiz_id, 'What is 9/3?', '6', '5', '2', '7', 'A', 'multiple_choice'),
+(@quiz_id, 'How many years are there in a decade?', '5', '10', '15', '20', 'B', 'multiple_choice'),
+(@quiz_id, 'What is the square of 15?', '252', '225', '30', '15', 'C', 'multiple_choice'),
+(@quiz_id, 'If David’s age is 27 years old in 2011. What was his age in 2003?', '17', '37', '20', '19', 'D', 'multiple_choice'),
+(@quiz_id, 'What is the sum of 130+125+191?', '335', '456', '446', '426', 'C', 'multiple_choice'),
+(@quiz_id, '20+(90÷2) is equal to?', '50', '65', '55', '60', 'B', 'multiple_choice'),
+(@quiz_id, 'What is the next prime number after 5?', '6', '7', '9', '11', 'B', 'multiple_choice')
+
+
+
+-- Insert sample quiz
+INSERT INTO quizzes (title, time_limit, deadline, created_by, subject)
+VALUES ('Science Quiz 1', 15, '2024-12-25 17:00:00', 1, 'Science');
+
+-- Get the quiz ID
+SET @quiz_id = LAST_INSERT_ID();
+
+-- Insert sample quiz questions
+INSERT INTO quiz_questions (quiz_id, question_text, choice_a, choice_b, choice_c, choice_d, correct_answer, question_type)
+VALUES 
+--Science
+(@quiz_id, 'How many colors are in the rainbow?', '6', '7', '5', '8', 'B'),
+(@quiz_id, 'On what continent will you not find bees?', 'Africa', 'Antarctica', 'Australia', 'Asia', 'B'),
+(@quiz_id, 'How does fat leave your body when you lose weight?', 'Sweat only', 'Urine Only', 'Sweat, Urine and Breath', 'It converts into muscle', 'C'),
+(@quiz_id, 'Which blood type is the rarest in humans?', 'O negative', 'B negative', 'A negative', 'AB negative', 'D'),
+(@quiz_id, 'Which gas evolves when charcoal is burnt?', 'Ozone', 'Nitrogen', 'Carbon Dioxide', 'Oxygen', 'C'),
+(@quiz_id, 'How many planets are there in our solar system?', '8', '9', '10', '12', 'B'),
+(@quiz_id, 'What is the total number of bones in the human body?', '206', '32', '196', '512', 'A'),
+(@quiz_id, 'The Sun is a?', 'Huge Planet', 'Star', 'Comet', 'Satellite', 'B'),
+(@quiz_id, 'The three methods of science are observation, experimentation and _______.? ', 'hypothesis', 'deduction', 'inference', ',measurement', 'D')
+
+
+-- Insert sample quiz
+INSERT INTO quizzes (title, time_limit, deadline, created_by, subject)
+VALUES ('English Quiz 1', 15, '2024-12-25 17:00:00', 1, 'English');
+
+-- Get the quiz ID
+SET @quiz_id = LAST_INSERT_ID();
+
+-- Insert sample quiz questions
+INSERT INTO quiz_questions (quiz_id, question_text, choice_a, choice_b, choice_c, choice_d, correct_answer, question_type)
+VALUES 
+--English
+(@quiz_id, 'They ______________ her and trusted her for years', 'know', 'had known', 'knew', 'known', 'C'),
+(@quiz_id, 'Every morning she ______________ up early and gets ready for work.', 'is waking', 'had woken', 'had woken', 'wakes', 'D'),
+(@quiz_id, 'People ______________ walk on grass.', "couldn't", "needn't", "musn't", "may not", 'C'),
+(@quiz_id, '______________ you speak any foreign languages?', "can't", 'should', "couldn't", 'can', 'D'),
+(@quiz_id, 'World war I and World war II took place ______________ the 20th century?', 'on', 'in', 'at', 'into', 'B'),
+(@quiz_id, 'They built this temple 3,000 years ago. This must ______________ a great civilization?', 'not have been', 'was', 'has been', 'have been', 'D'),
+(@quiz_id, 'I wanted to go to the park, ______________ my mother refused?', 'but', 'or', 'so', 'and', 'A'),
+(@quiz_id, 'Change the active voice in to passive voice: I will clean the house every Saturday. The house ______________ by me every Saturday?', 'cleaned', 'will be cleaned', 'will cleaned', 'None of the above', 'B'),
+(@quiz_id, 'This must not happen again, ______________ you will be dismissed?', 'but', 'or', 'so', 'and', 'B'),
+(@quiz_id, 'If A is equal to B and B is equal to C, ______________ A is equal to C?', 'than', 'then', 'so', 'None of the above', 'B')
+
+
+
+
+
 
 -- Insert sample exam
 INSERT INTO exams (title, time_limit, deadline, created_by, subject)

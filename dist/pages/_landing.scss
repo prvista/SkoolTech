@@ -584,7 +584,7 @@ tr:hover td {
 
 
 .dashboard__banner{
-    background-image: url(../img/user-dash-bg.png);
+    background-image: url(../img/user-banner.png);
     background-position: center;
     background-repeat: no-repeat;
     background-size: 100%;
@@ -613,7 +613,7 @@ tr:hover td {
 
 
 .task__banner{
-    background-image: url(../img/SkoolTech\ \(20\).png);
+    background-image: url(../img/user-banner.png);
     background-position: center;
     background-repeat: no-repeat;
     background-size: 100%;
@@ -720,5 +720,22 @@ tr:hover td {
     }
 }
 
+.upload_btn{
+    padding: 0.4rem 0.5rem;
+    background-color: #007bff;
+    color: $clr-light;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 0.3rem;
+    border: 1px solid transparent;
+    font-family: $ff-primary;
+
+    &:hover{
+        border: 1px solid $clr-secondary;
+        transition: 0.05s ease;
+        background-color: #d5e8ff;
+        color: $clr-secondary;
+    }
+}
 
 

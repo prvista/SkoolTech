@@ -46,10 +46,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $row = $resultStud->fetch_assoc();
         $_SESSION['username'] = $row['username'];
         $_SESSION['role'] = 'student'; // Set role as student
+        $_SESSION['id'] = $row['id'];
 
-        // Redirect to user_dashboard.php
-        header("Location: user_dashboard.php");
-        exit();
+       // Debugging output
+       echo "Logged in as student. Redirecting to user_dashboard.php...";
+       header("Location: user_dashboard.php");
+       exit();
     }
 
     // If no match found, set error message

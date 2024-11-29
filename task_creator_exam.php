@@ -82,6 +82,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
+    // Create notifications for all students
+    $stmt_students = $conn->prepare("SELECT id FROM students");
+    $stmt_students->execute();
+    $result_students = $stmt_students->get_result();
+    
+    if ($result_students->num_rows > 0) {
+        $stmt_notification = $conn->prepare("
+            INSERT INTO notifications (student_id, is_read, activity_type, activity_title) 
+            VALUES (?, 0, 'Exam', ?)
+        ");
+        while ($student = $result_students->fetch_assoc()) {
+            $student_id = $student['id'];
+            $stmt_notification->bind_param("is", $student_id, $title);
+            $stmt_notification->execute();
+        }
+    }
+
     echo "<script>window.location.href = 'admin_dashboard.php?status=success&message=Exam created successfully!';</script>";
     exit();
 }

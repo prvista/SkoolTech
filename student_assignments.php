@@ -33,8 +33,22 @@ $stmt_student = $conn->prepare($sql_student_id);
 $stmt_student->bind_param("s", $student_username);
 $stmt_student->execute();
 $result_student = $stmt_student->get_result();
-$student_data = $result_student->fetch_assoc();
-$student_id = $student_data['id'];  // Get the student_id
+
+// Retrieve student details
+$sql_student = "SELECT * FROM students WHERE username=?";
+$stmt_student = $conn->prepare($sql_student);
+$stmt_student->bind_param("s", $student_username);
+$stmt_student->execute();
+$result_student = $stmt_student->get_result();
+
+if ($result_student->num_rows == 1) {
+    $student = $result_student->fetch_assoc();
+    $student_id = $student['id']; // Get student ID
+} else {
+    echo "Student details not found.";
+    exit();
+}
+
 
 // Get all available assignments that have not been submitted by the student
 $sql_assignments = "SELECT a.*, asub.id AS submission_id 
@@ -94,6 +108,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['assignment_file'])) {
         }
     }
 }
+// Extract initials
+$nameParts = explode(' ', $student['name']);
+$initials = strtoupper($nameParts[0][0]); // First letter of the first name
+if (isset($nameParts[1])) {
+    $initials .= strtoupper($nameParts[1][0]); // First letter of the second name
+}
+
+// Retrieve only unread notifications
+$notificationSql = "SELECT * FROM notifications WHERE student_id = ? AND is_read = 0 ORDER BY id DESC";
+$notificationStmt = $conn->prepare($notificationSql);
+$notificationStmt->bind_param("i", $student['id']);
+$notificationStmt->execute();
+$notificationResult = $notificationStmt->get_result();
+
+$notifications = [];
+if ($notificationResult->num_rows > 0) {
+    while ($row = $notificationResult->fetch_assoc()) {
+        $notifications[] = $row;
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -110,10 +145,52 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['assignment_file'])) {
         <div class="header">
             <div class="container">
                 <div class="header__wrapper">
-                    
+                    <div class="header__right">
+                        <!-- Notifications Dropdown -->
+                        <div class="notif-dropdown">
+                            <a href="#" class="notif-toggle">
+                                <span class="material-icons-outlined">notifications</span>
+                                <!-- Notification count badge -->
+                                <?php if (count($notifications) > 0): ?>
+                                    <span class="notif-badge"><?php echo count($notifications); ?></span>
+                                <?php endif; ?>
+                            </a>
+                            <div class="notif-dropdown-content">
+                                <?php if (count($notifications) > 0): ?>
+                                    <?php foreach ($notifications as $notification): ?>
+                                        <?php
+                                        $targetPage = '#';
+                                        if ($notification['activity_type'] === 'Assignment') {
+                                            $targetPage = 'student_assignments.php';
+                                        } elseif ($notification['activity_type'] === 'Quiz') {
+                                            $targetPage = 'task_quiz.php';
+                                        } elseif ($notification['activity_type'] === 'Exam') {
+                                            $targetPage = 'task_exam.php';
+                                        }
+                                        ?>
+                                        <p data-id="<?php echo $notification['id']; ?>" class="<?php echo $notification['is_read'] ? 'read' : 'unread'; ?>">
+                                            <a class="notif_btn" 
+                                            href="<?php echo htmlspecialchars($targetPage); ?>" 
+                                            data-id="<?php echo $notification['id']; ?>" 
+                                            onclick="markNotificationAsRead(event, <?php echo $notification['id']; ?>, '<?php echo $targetPage; ?>')">
+                                                <strong><?php echo htmlspecialchars($notification['activity_type']); ?>:</strong>
+                                                <?php echo htmlspecialchars($notification['activity_title']); ?>
+                                            </a>
+                                        </p>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <p>No new notifications</p>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <div class="initials-bg">
+                            <p><?php echo $initials; ?></p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+            
 
         <div id="sidenav">
             <div class="sidenav__wrapper">
@@ -175,8 +252,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['assignment_file'])) {
                             <form action='student_assignments.php' method='POST' enctype='multipart/form-data'>
                                 <input type='hidden' name='assignment_id' value='" . $row['id'] . "'>
                                 <input type='file' name='assignment_file' required>
-                                <button type='submit'>Upload</button>
+                                <button class= 'upload_btn' type='submit'>UPLOAD</button>
                             </form>
+                            
                         </td>";
                         echo "</tr>";
                     }
@@ -189,5 +267,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['assignment_file'])) {
     </div>
 
     <script src="./dist/js/dropdown.js"></script>
+    <script src="./dist/js/notif-dropdown.js"></script>
+    <script src="./dist/js/notif-click.js"></script>
 </body>
 </html>
