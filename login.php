@@ -78,11 +78,13 @@ $conn->close();
             left: 50%;
             transform: translateX(-50%);
             background-color: red;
+            border: 2px solid red;
             color: white;
             padding: 10px;
             border-radius: 5px;
             display: none;
             z-index: 1000;
+            text-align: center;
         }
     </style>
 </head>
@@ -113,7 +115,8 @@ $conn->close();
                     <input type="submit" value="Login" class="btn__login">
                 </form>
                   <div class="login__left__signup">
-                      <h3>Don't have an account? <a href="./signup.php">Sign Up</a></h3>
+                      <h3>Don't have an account?</h3>
+                      <a href="./signup.php">Sign Up</a>
                   </div>
                 </div>
             </div>
@@ -122,14 +125,14 @@ $conn->close();
             <div class="login__desc__wrapper">
               <div class="login__desc__info"> 
                 <div class="login__desc__title">
-                  <h2>Corem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
+                  <h2>Unlock your potential with SkoolTech.                  </h2>
                 </div>
                 <div class="login__desc__text">
-                  <p>Dorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.</p>
+                  <p>Join a community of learners and innovators. SkoolTech provides the tools, resources, and support you need to excel in your studies and beyond.</p>
                 </div>
               </div>
               <div class="login__desc__img">
-                <img src="./dist/img/20.png" alt="">
+                <img src="./dist/img/login-pic.png" alt="">
               </div>
             </div>
           </div>

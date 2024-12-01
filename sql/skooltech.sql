@@ -153,6 +153,9 @@ CREATE TABLE assignments (
     FOREIGN KEY (created_by) REFERENCES professors(id) ON DELETE CASCADE
 );
 
+ALTER TABLE assignments 
+ADD COLUMN submit_to_professor BOOLEAN DEFAULT FALSE;
+
 -- Table for storing assignment submissions
 CREATE TABLE assignment_submissions (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -180,81 +183,73 @@ CREATE TABLE subject_scores (
 );
 
 
--- Insert sample quiz
+-- Insert sample quiz: Math Quiz
 INSERT INTO quizzes (title, time_limit, deadline, created_by, subject)
 VALUES ('Math Quiz 1', 15, '2024-10-01 17:00:00', 1, 'Math');
 
--- Get the quiz ID
+-- Get the quiz ID for Math Quiz
 SET @quiz_id = LAST_INSERT_ID();
 
--- Insert sample quiz questions
+-- Insert sample quiz questions for Math Quiz
 INSERT INTO quiz_questions (quiz_id, question_text, choice_a, choice_b, choice_c, choice_d, correct_answer, question_type)
 VALUES 
---Math
 (@quiz_id, 'What is 2 + 2?', '3', '4', '5', '6', 'B', 'multiple_choice'),
-(@quiz_id, 'What is the square root of 16?', '2', '4', '8', '16', 'B', 'multiple_choice');
-(@quiz_id, 'What is 9/3?', '6', '5', '2', '7', 'A', 'multiple_choice'),
+(@quiz_id, 'What is the square root of 16?', '2', '4', '8', '16', 'B', 'multiple_choice'),
+(@quiz_id, 'What is 9/3?', '6', '5', '2', '7', 'C', 'multiple_choice'),
 (@quiz_id, 'How many years are there in a decade?', '5', '10', '15', '20', 'B', 'multiple_choice'),
-(@quiz_id, 'What is the square of 15?', '252', '225', '30', '15', 'C', 'multiple_choice'),
-(@quiz_id, 'If David’s age is 27 years old in 2011. What was his age in 2003?', '17', '37', '20', '19', 'D', 'multiple_choice'),
+(@quiz_id, 'What is the square of 15?', '252', '225', '30', '15', 'B', 'multiple_choice'),
+(@quiz_id, 'If David’s age is 27 years old in 2011, what was his age in 2003?', '17', '37', '20', '19', 'A', 'multiple_choice'),
 (@quiz_id, 'What is the sum of 130+125+191?', '335', '456', '446', '426', 'C', 'multiple_choice'),
-(@quiz_id, '20+(90÷2) is equal to?', '50', '65', '55', '60', 'B', 'multiple_choice'),
-(@quiz_id, 'What is the next prime number after 5?', '6', '7', '9', '11', 'B', 'multiple_choice')
+(@quiz_id, '20 + (90 ÷ 2) is equal to?', '50', '65', '55', '60', 'B', 'multiple_choice'),
+(@quiz_id, 'What is the next prime number after 5?', '6', '7', '9', '11', 'B', 'multiple_choice');
 
-
-
--- Insert sample quiz
+-- Insert sample quiz: Science Quiz
 INSERT INTO quizzes (title, time_limit, deadline, created_by, subject)
 VALUES ('Science Quiz 1', 15, '2024-12-25 17:00:00', 1, 'Science');
 
--- Get the quiz ID
+-- Get the quiz ID for Science Quiz
 SET @quiz_id = LAST_INSERT_ID();
 
--- Insert sample quiz questions
+-- Insert sample quiz questions for Science Quiz
 INSERT INTO quiz_questions (quiz_id, question_text, choice_a, choice_b, choice_c, choice_d, correct_answer, question_type)
 VALUES 
---Science
-(@quiz_id, 'How many colors are in the rainbow?', '6', '7', '5', '8', 'B'),
-(@quiz_id, 'On what continent will you not find bees?', 'Africa', 'Antarctica', 'Australia', 'Asia', 'B'),
-(@quiz_id, 'How does fat leave your body when you lose weight?', 'Sweat only', 'Urine Only', 'Sweat, Urine and Breath', 'It converts into muscle', 'C'),
-(@quiz_id, 'Which blood type is the rarest in humans?', 'O negative', 'B negative', 'A negative', 'AB negative', 'D'),
-(@quiz_id, 'Which gas evolves when charcoal is burnt?', 'Ozone', 'Nitrogen', 'Carbon Dioxide', 'Oxygen', 'C'),
-(@quiz_id, 'How many planets are there in our solar system?', '8', '9', '10', '12', 'B'),
-(@quiz_id, 'What is the total number of bones in the human body?', '206', '32', '196', '512', 'A'),
-(@quiz_id, 'The Sun is a?', 'Huge Planet', 'Star', 'Comet', 'Satellite', 'B'),
-(@quiz_id, 'The three methods of science are observation, experimentation and _______.? ', 'hypothesis', 'deduction', 'inference', ',measurement', 'D')
+(@quiz_id, 'How many colors are in the rainbow?', '6', '7', '5', '8', 'B', 'multiple_choice'),
+(@quiz_id, 'On what continent will you not find bees?', 'Africa', 'Antarctica', 'Australia', 'Asia', 'B', 'multiple_choice'),
+(@quiz_id, 'How does fat leave your body when you lose weight?', 'Sweat only', 'Urine Only', 'Sweat, Urine and Breath', 'It converts into muscle', 'C', 'multiple_choice'),
+(@quiz_id, 'Which blood type is the rarest in humans?', 'O negative', 'B negative', 'A negative', 'AB negative', 'D', 'multiple_choice'),
+(@quiz_id, 'Which gas evolves when charcoal is burnt?', 'Ozone', 'Nitrogen', 'Carbon Dioxide', 'Oxygen', 'C', 'multiple_choice'),
+(@quiz_id, 'How many planets are there in our solar system?', '8', '9', '10', '12', 'A', 'multiple_choice'),
+(@quiz_id, 'What is the total number of bones in the human body?', '206', '32', '196', '512', 'A', 'multiple_choice'),
+(@quiz_id, 'The Sun is a?', 'Huge Planet', 'Star', 'Comet', 'Satellite', 'B', 'multiple_choice'),
+(@quiz_id, 'The three methods of science are observation, experimentation, and _______?', 'hypothesis', 'deduction', 'inference', 'measurement', 'D', 'multiple_choice');
 
-
--- Insert sample quiz
+-- Insert sample quiz: English Quiz
 INSERT INTO quizzes (title, time_limit, deadline, created_by, subject)
 VALUES ('English Quiz 1', 15, '2024-12-25 17:00:00', 1, 'English');
 
--- Get the quiz ID
+-- Get the quiz ID for English Quiz
 SET @quiz_id = LAST_INSERT_ID();
 
--- Insert sample quiz questions
-INSERT INTO quiz_questions (quiz_id, question_text, choice_a, choice_b, choice_c, choice_d, correct_answer, question_type)
+INSERT INTO quiz_questions (quiz_id, question_text, choice_a, choice_b, choice_c, choice_d, correct_answer, question_type) 
 VALUES 
---English
-(@quiz_id, 'They ______________ her and trusted her for years', 'know', 'had known', 'knew', 'known', 'C'),
-(@quiz_id, 'Every morning she ______________ up early and gets ready for work.', 'is waking', 'had woken', 'had woken', 'wakes', 'D'),
-(@quiz_id, 'People ______________ walk on grass.', "couldn't", "needn't", "musn't", "may not", 'C'),
-(@quiz_id, '______________ you speak any foreign languages?', "can't", 'should', "couldn't", 'can', 'D'),
-(@quiz_id, 'World war I and World war II took place ______________ the 20th century?', 'on', 'in', 'at', 'into', 'B'),
-(@quiz_id, 'They built this temple 3,000 years ago. This must ______________ a great civilization?', 'not have been', 'was', 'has been', 'have been', 'D'),
-(@quiz_id, 'I wanted to go to the park, ______________ my mother refused?', 'but', 'or', 'so', 'and', 'A'),
-(@quiz_id, 'Change the active voice in to passive voice: I will clean the house every Saturday. The house ______________ by me every Saturday?', 'cleaned', 'will be cleaned', 'will cleaned', 'None of the above', 'B'),
-(@quiz_id, 'This must not happen again, ______________ you will be dismissed?', 'but', 'or', 'so', 'and', 'B'),
-(@quiz_id, 'If A is equal to B and B is equal to C, ______________ A is equal to C?', 'than', 'then', 'so', 'None of the above', 'B')
+(@quiz_id, "They ______________ her and trusted her for years.", "know", "had known", "knew", "known", "C", "multiple_choice"),
+(@quiz_id, "Every morning she ______________ up early and gets ready for work.", "is waking", "had woken", "has woken", "wakes", "D", "multiple_choice"),
+(@quiz_id, "People ______________ walk on grass.", "couldn't", "needn't", "mustn't", "may not", "C", "multiple_choice"),
+(@quiz_id, "______________ you speak any foreign languages?", "can't", "should", "couldn't", "can", "D", "multiple_choice"),
+(@quiz_id, "World War I and World War II took place ______________ the 20th century.", "on", "in", "at", "into", "B", "multiple_choice"),
+(@quiz_id, "They built this temple 3,000 years ago. This must ______________ a great civilization.", "not have been", "was", "has been", "have been", "D", "multiple_choice"),
+(@quiz_id, "I wanted to go to the park, ______________ my mother refused.", "but", "or", "so", "and", "A", "multiple_choice"),
+(@quiz_id, "Change the active voice into passive voice: The house ______________ by me every Saturday.", "cleaned", "will be cleaned", "will cleaned", "None of the above", "B", "multiple_choice"),
+(@quiz_id, "This must not happen again, ______________ you will be dismissed.", "but", "or", "so", "and", "B", "multiple_choice"),
+(@quiz_id, "If A is equal to B and B is equal to C, ______________ A is equal to C.", "than", "then", "so", "None of the above", "B", "multiple_choice");
 
 
 
 
 
-
--- Insert sample exam
+-- Insert sample exam (Science)
 INSERT INTO exams (title, time_limit, deadline, created_by, subject)
-VALUES ('Science Exam 1', 60, '2024-10-15 10:00:00', 1, 'Science');
+VALUES ('Science Exam 1', 60, '2024-12-16 10:00:00', 1, 'Science');
 
 -- Get the exam ID
 SET @exam_id = LAST_INSERT_ID();
@@ -262,15 +257,137 @@ SET @exam_id = LAST_INSERT_ID();
 -- Insert sample exam questions
 INSERT INTO exam_questions (exam_id, question_type, question_text, choice_a, choice_b, choice_c, choice_d, correct_answer)
 VALUES 
-(@exam_id, 'multiple_choice', 'What is H2O commonly known as?', 'Hydrogen', 'Oxygen', 'Water', 'Helium', 'C'),
-(@exam_id, 'multiple_choice', 'What planet is known as the Red Planet?', 'Earth', 'Mars', 'Jupiter', 'Venus', 'B');
 
--- Insert sample assignment
-INSERT INTO assignments (title, description, criteria, deadline, due_date, created_by, subject)
-VALUES ('English Essay 1', 'Write a 500-word essay on your favorite book.', 'Criteria: Clarity, Structure, and Argumentation.', '2024-10-10 23:59:59', '2024-10-10 23:59:59', 1, 'English');
+(@exam_id, 'multiple_choice', 'What is H2O commonly known as?', 'Hydrogen', 'Oxygen', 'Water', 'Helium', 'C'),
+(@exam_id, 'multiple_choice', 'What planet is known as the Red Planet?', 'Earth', 'Mars', 'Jupiter', 'Venus', 'B'),
+(@exam_id, 'multiple_choice', 'Which of these is not a type of electromagnetic radiation?', 'X-Rays', 'Gamma Rays', 'Sound Waves', 'Ultraviolet rays', 'C'),
+(@exam_id, 'multiple_choice', 'Which of these is not a fundamental force of nature?', 'Gravity', 'Electromagnetic force', 'Strong nuclear force', 'Centrifugal force', 'D'),
+(@exam_id, 'multiple_choice', 'What is the chemical symbol of gold?', 'Au', 'Ag', 'Fe', 'Cu', 'A');
+
+-- Insert sample exam questions
+INSERT INTO exam_questions (exam_id, question_type, question_text, correct_answer)
+VALUES 
+
+(@exam_id, 'identification', 'Which organ pumps blood through your body?', 'Heart'),
+(@exam_id, 'identification', "What is a plant's main food source?", 'Sunlight'),
+(@exam_id, 'identification', 'What do butterflies start as before they grow wings?', 'Caterpillars'),
+(@exam_id, 'identification', 'What is the hottest planet in our solar system?', 'Venus'),
+(@exam_id, 'identification', 'What is the study of earthquakes called?', 'Seismology');
+
+-- Insert sample exam questions
+INSERT INTO exam_questions (exam_id, question_type, question_text, correct_answer)
+VALUES 
+
+(@exam_id, 'true_false', 'Is HTML a programming language?', 'True'),
+(@exam_id, 'true_false', 'Does GPS stand for Graphical Placement System?', 'False'),
+(@exam_id, 'true_false', 'Is the study of weather Meteorology?', 'True'),
+(@exam_id, 'true_false', 'Is a ruler used to measure temperature?', 'False'),
+(@exam_id, 'true_false', 'Is Condensation the process by which a liquid changes into a gas at any temperature below its boiling point?', 'False');
+
+-- Insert sample exam (Math)
+INSERT INTO exams (title, time_limit, deadline, created_by, subject)
+VALUES ('Math Exam 1', 60, '2024-12-15 10:00:00', 1, 'Math');
+
+-- Get the exam ID
+SET @exam_id = LAST_INSERT_ID();
+
+-- Insert sample exam questions
+INSERT INTO exam_questions (exam_id, question_type, question_text, choice_a, choice_b, choice_c, choice_d, correct_answer)
+VALUES 
+(@exam_id, 'multiple_choice' , 'What is 2 x 5?', '5', '3', '29', '10', 'D'),
+(@exam_id, 'multiple_choice' , 'What is - 15 + 15?', '30', '18', '0', '169', 'C'),
+(@exam_id, 'multiple_choice' , 'What is 253 x 34?', '8602', '28690543', '93930', '01039', 'A'),
+(@exam_id, 'multiple_choice' , 'What is 250 x 4?', '750', '1000', '500', '100', 'B'),
+(@exam_id, 'multiple_choice' , 'What is 76 x 6 - 24?', '432', '463', '264', '89', 'A');
+
+-- Insert sample exam questions
+INSERT INTO exam_questions (exam_id, question_type, question_text, correct_answer)
+VALUES 
+
+(@exam_id, 'identification' , 'What is 7291 + 8830?', '16121'),
+(@exam_id, 'identification' , 'What is 3 + 23?', '26'),
+(@exam_id, 'identification' , 'What is 372910/5?', '74582'),
+(@exam_id, 'identification' , 'What is 761 x 28?', '21308'),
+(@exam_id, 'identification' , 'What is -45 + 55?', '10');
+
+-- Insert sample exam questions
+INSERT INTO exam_questions (exam_id, question_type, question_text, correct_answer)
+VALUES 
+
+(@exam_id, 'true_false' , '121 divided by 11 is 11?', 'True'),
+(@exam_id,  'true_false' , '60 Times of 8 Equals to 409?', 'False'),
+(@exam_id,  'true_false' , 'Is the next prime number after 7 13?', 'False'),
+(@exam_id,  'true_false' , 'Is product of 131 × 0 × 300 × 4 = 0?', 'True'),
+(@exam_id,  'true_false' , 'Is 131 × 0 × 300 × 4 = 24?', 'True');
+
+-- Insert sample exam (English)
+INSERT INTO exams (title, time_limit, deadline, created_by, subject)
+VALUES ('English Exam 1', 60, '2024-12-17 10:00:00', 1, 'English');
+
+-- Get the exam ID
+SET @exam_id = LAST_INSERT_ID();
+
+-- Insert sample exam questions
+INSERT INTO exam_questions (exam_id, question_type, question_text, choice_a, choice_b, choice_c, choice_d, correct_answer)
+VALUES 
+(@exam_id, 'multiple_choice' , "French people love cooking, ______________ the English don't seem very interested.", 'When', 'Whenever', 'Where', 'Whereas', 'D'),
+(@exam_id, 'multiple_choice' , '______________ is the one who starts the communication.?', 'sender', 'receiver', 'feedback', 'noise', 'A'),
+(@exam_id, 'multiple_choice' , '______________ is the manner in which the encoded message is transmitted.', 'Message', 'Voice', 'Media', 'Channel', 'C'),
+(@exam_id, 'multiple_choice' , 'The receiver confirms to the sender that he has received the message and understood it through ______________.', 'feedback', 'decoding', 'encoding', 'receiving', 'A'),
+(@exam_id, 'multiple_choice' , "There are ______________ C's in Communication principles.", 'eight', 'seven', 'nine', 'five', 'B');
+
+-- Insert sample exam questions
+INSERT INTO exam_questions (exam_id, question_type, question_text, correct_answer)
+VALUES 
+
+(@exam_id, 'identification', 'A brief literary writing that is explanatory in nature _________ ', 'Essay'),
+(@exam_id, 'identification', 'A type of story that a person can read in one sitting is ________ ', 'Short Story'),
+(@exam_id, 'identification', 'A long fictional story with a complex plot and has chapters is_________', 'Novel'),
+(@exam_id, 'identification', "A daily journal or account of the writer's personal experiences, thoughts, activities, or observations is _________ ", 'Diary'),
+(@exam_id, 'identification', 'A story of a certain individual written by someone who knows him well is _________', 'Biography');
+
+-- Insert sample exam questions
+INSERT INTO exam_questions (exam_id, question_type, question_text, correct_answer)
+VALUES 
+
+(@exam_id, 'true_false', '"Whom" is used as an object, while “Who” is used as a subject.', 'True'),
+(@exam_id, 'true_false', 'An adverb can modify a noun.', 'False'),
+(@exam_id, 'true_false', '"Its" and "It’s" have the same meaning.', 'False'),
+(@exam_id, 'true_false', 'The Oxford comma is a mandatory element in English grammar.', 'False'),
+(@exam_id, 'true_false', '“Affect” is a verb, and “effect” is a noun.', 'True');
+
+
+
+-- Insert sample assignments with topic-appropriate randomized criteria
+INSERT INTO assignments (title, description, criteria, deadline, due_date, created_by, subject, submit_to_professor)
+VALUES 
+('English Essay 1', 'Write a 500-word essay on your favorite book.', 'Criteria: Creativity, Argumentation, and Vocabulary.', '2024-12-02 22:30:00', '2024-12-02 22:30:00', 1, 'English', FALSE),
+('English Essay 2', 'Write a 200-word research about pollution.', 'Criteria: Research Accuracy, Use of Data, and Punctuation.', '2024-12-15 19:45:00', '2024-12-15 19:45:00', 1, 'English', FALSE),
+('English Essay 3', 'Write a 200-word reaction paper about the video on how to stay healthy.', 'Criteria: Clarity, Relevance to Video Content, and Structure.', '2024-12-21 21:15:00', '2024-12-21 21:15:00', 1, 'English', FALSE),
+('English Essay 4', 'Write a 300-word story about your life in high school.', 'Criteria: Emotional Depth, Structure, and Grammar.', '2024-12-05 20:30:00', '2024-12-05 20:30:00', 1, 'English', FALSE),
+('English Essay 5', 'Write a 250-word research about the advantages of speaking English.', 'Criteria: Argument Strength, Use of Examples, and Grammar.', '2024-12-29 22:45:00', '2024-12-29 22:45:00', 1, 'English', FALSE);
+
+-- Math assignments
+INSERT INTO assignments (title, description, criteria, deadline, due_date, created_by, subject, submit_to_professor)
+VALUES 
+('Math Essay 1', 'Write a 100-word essay about algebra.', 'Criteria: Clarity, Mathematical Terminology, and Accuracy.', '2024-12-03 18:15:00', '2024-12-03 18:15:00', 1, 'Math', FALSE),
+('Math Essay 2', 'Write a 150-word explanation of the step-by-step process to apply the FOIL method.', 'Criteria: Step-by-Step Accuracy, Mathematical Clarity, and Examples.', '2024-12-10 22:00:00', '2024-12-10 22:00:00', 1, 'Math', FALSE),
+('Math Essay 3', 'Write a 150-word explanation of how to use PEMDAS.', 'Criteria: Sequential Clarity, Accuracy, and Application Examples.', '2024-12-18 23:15:00', '2024-12-18 23:15:00', 1, 'Math', FALSE),
+('Math Essay 4', 'Write a 150-word history of geometry.', 'Criteria: Historical Relevance, Structure, and Reference Accuracy.', '2024-12-25 21:45:00', '2024-12-25 21:45:00', 1, 'Math', FALSE),
+('Math Essay 5', 'Write a 150-word research paper about statistics.', 'Criteria: Research Accuracy, Use of Statistical Terms, and Data Examples.', '2024-12-30 20:00:00', '2024-12-30 20:00:00', 1, 'Math', FALSE);
+
+-- Science assignments
+INSERT INTO assignments (title, description, criteria, deadline, due_date, created_by, subject, submit_to_professor)
+VALUES 
+('Science Essay 1', 'Write a 600-word essay about biology.', 'Criteria: Biological Terminology, Structure, and Argumentation.', '2024-12-07 19:45:00', '2024-12-07 19:45:00', 1, 'Science', FALSE),
+('Science Essay 2', 'Write a 700-word research on how volcanoes form.', 'Criteria: Clarity, Use of Geographical Examples, and Punctuation.', '2024-12-14 18:30:00', '2024-12-14 18:30:00', 1, 'Science', FALSE),
+('Science Essay 3', 'Write a 500-word reaction paper on how gravity works.', 'Criteria: Relevance, Argumentation, and Structure.', '2024-12-20 21:15:00', '2024-12-20 21:15:00', 1, 'Science', FALSE),
+('Science Essay 4', 'Write a 500-word hypothesis on how photosynthesis works.', 'Criteria: Scientific Accuracy, Structure, and Use of Examples.', '2024-12-26 20:45:00', '2024-12-26 20:45:00', 1, 'Science', FALSE),
+('Science Essay 5', 'Write a 600-word research about the purpose of the heart.', 'Criteria: Clarity, Biological Understanding, and Structure.', '2024-12-30 23:00:00', '2024-12-30 23:00:00', 1, 'Science', FALSE);
 
 -- Get the assignment ID
 SET @assignment_id = LAST_INSERT_ID();
+
 
 -- Ensure the subject_scores table is updated with scores from quiz_results
 INSERT INTO subject_scores (student_id, student_name, subject, quiz_score)

@@ -139,6 +139,43 @@ if ($notificationResult->num_rows > 0) {
     <title>Assignments</title>
     <link rel="stylesheet" href="./dist/scss/main.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link rel="icon" href="./dist/img/skooltech-icon.png">
+
+
+    <style>
+        
+        .file-upload-wrapper {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            cursor: pointer;
+        }
+
+        tr:hover td {
+            background-color: #f2f2f2;
+            color: black; 
+        }
+        tr:hover {
+            background-color: #f2f2f2;
+            color: black; 
+        }
+
+        td{
+            width: 115rem;
+        }
+        
+
+    </style>
 </head>
 <body>
     <div class="grid-container">
@@ -223,12 +260,10 @@ if ($notificationResult->num_rows > 0) {
 
         <main class="main-container">
             <div class="dashboard__banner">
-                <div class="container">
-                    <div class="dashboard__banner__wrapper">
-                        <div class="dashboard__banner__text">
-                            <h2>Assignments</h2>
-                            <p>Welcome to SkoolTech's Assignment Portal! Easily access, complete, and submit your assignments, track your progress, and receive instant feedback—all in one place to enhance your learning experience.</p>
-                        </div>
+                <div class="dashboard__banner__wrapper">
+                    <div class="dashboard__banner__text">
+                        <h2>Assignments</h2>
+                        <p>Welcome to SkoolTech's Assignment Portal! Easily access, complete, and submit your assignments, track your progress, and receive instant feedback—all in one place to enhance your learning experience.</p>
                     </div>
                 </div>
             </div>
@@ -251,9 +286,13 @@ if ($notificationResult->num_rows > 0) {
                         echo "<td>
                             <form action='student_assignments.php' method='POST' enctype='multipart/form-data'>
                                 <input type='hidden' name='assignment_id' value='" . $row['id'] . "'>
-                                <input type='file' name='assignment_file' required>
-                                <button class= 'upload_btn' type='submit'>UPLOAD</button>
+                                <div class='file-upload-wrapper'>
+                                    <input type='file' name='assignment_file' id='assignment_file' required>
+                                    <label for='assignment_file' class='upload_btn'>CHOOSE FILE</label>
+                                </div>
+                                <button class='upload_btn' type='submit'>UPLOAD</button>
                             </form>
+
                             
                         </td>";
                         echo "</tr>";

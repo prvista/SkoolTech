@@ -37,7 +37,6 @@ $sql_results = "SELECT s.student_number, s.username, s.name, q.title AS quiz_tit
 
 $result_results = $conn->query($sql_results);
 
-
 // Get all exam results
 $sql_exam_results = "SELECT s.student_number, s.username, s.name, e.title AS exam_title, e.subject, er.score 
                      FROM exam_results er
@@ -51,8 +50,6 @@ $sql_assignment_results = "SELECT s.student_number, s.username, s.name, a.title 
                            JOIN students s ON asub.student_id = s.id
                            JOIN assignments a ON asub.assignment_id = a.id";
 $result_assignment_results = $conn->query($sql_assignment_results);
-
-
 
 if (!$result_results) {
     die("Error fetching quiz results: " . $conn->error);
@@ -147,7 +144,6 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
 
                         <li><a href="./admin_students.php"><span class="material-icons-outlined">group</span>Students</a></li>
                         <li><a href="./admin_reportcard.php"><span class="material-icons-outlined">credit_card</span>Report Card</a></li>
-                        <!-- <li><a href="./admin_virtualroom.php"><span class="material-icons-outlined">video_call</span>Virtual Room</a></li> -->
                         <li><a href="logout.php"><span class="material-icons-outlined">logout</span>Logout</a></li>
                     </ul>
                 </div>
@@ -158,17 +154,6 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
             <div class="notification <?php echo htmlspecialchars($status); ?> <?php echo $status ? 'show' : ''; ?>" id="notification">
                 <?php echo htmlspecialchars($message); ?>
             </div>
-
-            <!-- <div class="dashboard__banner">
-                <div class="container">
-                    <div class="dashboard__banner__wrapper">
-                        <div class="dashboard__banner__text">
-                            <h2>Welcome, <?php echo htmlspecialchars($professor['name']); ?>!</h2>
-                            <p>Welcome to SkoolTech, your all-in-one platform for learning and academic success. Manage your courses, track your progress, take quizzes and exams, and stay connected with instructors—all designed to help you achieve your educational goals.</p>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
 
             <div class="dashboard-card">
                 <div class="card">
@@ -196,9 +181,7 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                 </div>
             </div>
 
-            
-
-
+            <!-- Quiz Results Table -->
             <h2>Quiz Results</h2>
             <table border="1">
                 <tr>
@@ -210,12 +193,8 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                     <th>Score</th>
                 </tr>
                 <?php
-                // Initialize arrays for names, scores, quiz titles, and subjects
-                $studentNames = [];
+                $studentNamesQuiz = [];
                 $quizScores = [];
-                $quizTitles = [];
-                $subjects = []; // New array for subjects
-
                 if ($result_results->num_rows > 0) {
                     while ($row = $result_results->fetch_assoc()) {
                         echo "<tr>";
@@ -223,38 +202,56 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                         echo "<td>" . htmlspecialchars($row['username']) . "</td>";
                         echo "<td>" . htmlspecialchars($row['name']) . "</td>";
                         echo "<td>" . htmlspecialchars($row['quiz_title']) . "</td>";
-                        echo "<td>" . htmlspecialchars($row['subject']) . "</td>"; // Displaying subject
+                        echo "<td>" . htmlspecialchars($row['subject']) . "</td>";
                         echo "<td>" . htmlspecialchars($row['score']) . "%</td>";
                         echo "</tr>";
 
-                        // Push names, scores, quiz titles, and subjects to arrays
-                        $studentNames[] = htmlspecialchars($row['name']);
+                        $studentNamesQuiz[] = htmlspecialchars($row['name']);
                         $quizScores[] = htmlspecialchars($row['score']);
-                        $quizTitles[] = htmlspecialchars($row['quiz_title']);
-                        $subjects[] = htmlspecialchars($row['subject']); // Add subject to the array
                     }
                 } else {
                     echo "<tr><td colspan='6'>No quiz results found</td></tr>";
                 }
-
-                // Convert arrays to JSON for use in JavaScript
-                $studentNamesJson = json_encode($studentNames);
+                $studentNamesQuizJson = json_encode($studentNamesQuiz);
                 $quizScoresJson = json_encode($quizScores);
-                $quizTitlesJson = json_encode($quizTitles);
-                $subjectsJson = json_encode($subjects); // Convert subjects array to JSON
                 ?>
+
             </table>
 
             <br>
+            <!-- Create a chart for Quiz -->
+            <h3>Performance Chart (Quiz Scores)</h3>
+            <canvas id="quizChart" width="40" height="10"></canvas>
 
-            <!-- chart -->
-            <canvas id="quizBarChart" width="40" height="10"></canvas>
-            <canvas id="examBarChart" width="40" height="10"></canvas>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                var studentNamesQuiz = <?php echo $studentNamesQuizJson; ?>;
+                var quizScores = <?php echo $quizScoresJson; ?>;
 
-        
+                var ctx = document.getElementById('quizChart').getContext('2d');
+                var chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: studentNamesQuiz,
+                        datasets: [{
+                            label: 'Quiz Scores',
+                            data: quizScores,
+                            backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                            borderColor: 'rgba(0, 123, 255, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            </script>
 
-
-             <!-- Exam Results Table -->
+            <!-- Exam Results Table -->
             <h2>Exam Results</h2>
             <table border="1">
                 <tr>
@@ -266,22 +263,61 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                     <th>Score</th>
                 </tr>
                 <?php
+                $studentNamesExam = [];
+                $examScores = [];
                 if ($result_exam_results->num_rows > 0) {
                     while ($row = $result_exam_results->fetch_assoc()) {
-                        echo "<tr>
-                                <td>" . htmlspecialchars($row['student_number']) . "</td>
-                                <td>" . htmlspecialchars($row['username']) . "</td>
-                                <td>" . htmlspecialchars($row['name']) . "</td>
-                                <td>" . htmlspecialchars($row['exam_title']) . "</td>
-                                <td>" . htmlspecialchars($row['subject']) . "</td>
-                                <td>" . htmlspecialchars($row['score']) . "%</td>
-                              </tr>";
+                        echo "<tr>";
+                        echo "<td>" . htmlspecialchars($row['student_number']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['username']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['name']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['exam_title']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['subject']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['score']) . "%</td>";
+                        echo "</tr>";
+
+                        $studentNamesExam[] = htmlspecialchars($row['name']);
+                        $examScores[] = htmlspecialchars($row['score']);
                     }
                 } else {
                     echo "<tr><td colspan='6'>No exam results found</td></tr>";
                 }
+                $studentNamesExamJson = json_encode($studentNamesExam);
+                $examScoresJson = json_encode($examScores);
                 ?>
+
             </table>
+            <br>
+            <!-- Create a chart for Exam -->
+            <h3>Performance Chart (Exam Scores)</h3>
+            <canvas id="examChart" width="40" height="10"></canvas>
+
+            <script>
+                var studentNamesExam = <?php echo $studentNamesExamJson; ?>;
+                var examScores = <?php echo $examScoresJson; ?>;
+
+                var ctx = document.getElementById('examChart').getContext('2d');
+                var chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: studentNamesExam,
+                        datasets: [{
+                            label: 'Exam Scores',
+                            data: examScores,
+                            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            </script>
 
             <!-- Assignment Results Table -->
             <h2>Assignment Results</h2>
@@ -295,57 +331,67 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                     <th>Score</th>
                 </tr>
                 <?php
+                $studentNamesAssignment = [];
+                $assignmentScores = [];
                 if ($result_assignment_results->num_rows > 0) {
                     while ($row = $result_assignment_results->fetch_assoc()) {
-                        echo "<tr>
-                                <td>" . htmlspecialchars($row['student_number']) . "</td>
-                                <td>" . htmlspecialchars($row['username']) . "</td>
-                                <td>" . htmlspecialchars($row['name']) . "</td>
-                                <td>" . htmlspecialchars($row['assignment_title']) . "</td>
-                                <td>" . htmlspecialchars($row['subject']) . "</td>
-                                <td>" . htmlspecialchars($row['score']) . "%</td>
-                              </tr>";
+                        echo "<tr>";
+                        echo "<td>" . htmlspecialchars($row['student_number']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['username']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['name']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['assignment_title']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['subject']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['score']) . "%</td>";
+                        echo "</tr>";
+
+                        $studentNamesAssignment[] = htmlspecialchars($row['name']);
+                        $assignmentScores[] = htmlspecialchars($row['score']);
                     }
                 } else {
                     echo "<tr><td colspan='6'>No assignment results found</td></tr>";
                 }
+                $studentNamesAssignmentJson = json_encode($studentNamesAssignment);
+                $assignmentScoresJson = json_encode($assignmentScores);
                 ?>
+
             </table>
+
+            <!-- Create a chart for Assignment -->
+            <br>
+            <h3>Performance Chart (Assignment Scores)</h3>
+            <canvas id="assignmentChart" width="40" height="10"></canvas>
+
+            <script src="./dist/js/dropdown.js"></script>   
+
+            <script>
+                var studentNamesAssignment = <?php echo $studentNamesAssignmentJson; ?>;
+                var assignmentScores = <?php echo $assignmentScoresJson; ?>;
+
+                var ctx = document.getElementById('assignmentChart').getContext('2d');
+                var chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: studentNamesAssignment,
+                        datasets: [{
+                            label: 'Assignment Scores',
+                            data: assignmentScores,
+                            backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            </script>
 
         </main>
     </div>
-
-    <!-- charts -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="./dist/js/PieChart.js"></script>
-    <script src="./dist/js/quizBarChart.js"></script>
-
-    <script src="./dist/js/dropdown.js"></script>
-
-    <script>
-        // Show notification if it exists
-        window.onload = function() {
-            const notification = document.getElementById('notification');
-            if (notification.classList.contains('show')) {
-                setTimeout(function() {
-                    notification.classList.remove('show');
-                    notification.classList.add('hide');
-                }, 3000);
-            }
-        }
-    </script>
-
-    <!-- quiz bar chart -->
-    <script>
-        var studentNames = <?php echo $studentNamesJson; ?>;
-        var quizScores = <?php echo $quizScoresJson; ?>;
-        var quizTitles = <?php echo $quizTitlesJson; ?>;
-        var subjects = <?php echo $subjectsJson; ?>;
-        createQuizBarChart(studentNames, quizScores, quizTitles, subjects);
-    </script>
-
-
-
 </body>
 </html>
 

@@ -102,19 +102,7 @@ if ($notificationResult->num_rows > 0) {
         .notification.hide {
             opacity: 0;
         }
-        .exam-item {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
-        .exam-title {
-            font-weight: bold;
-        }
-        .exam-deadline {
-            color: #888;
-        }
+
     </style>
 </head>
 <body>
@@ -199,37 +187,46 @@ if ($notificationResult->num_rows > 0) {
     </div>
 
     <main class="main-container">
+        <!-- Dashboard Banner -->
         <div class="dashboard__banner">
-            <div class="container">
-                <div class="dashboard__banner__wrapper">
-                    <div class="dashboard__banner__text">
-                        <h2>Exam</h2>
-                        <p>Welcome to SkoolTech's Exam Portal! Prepare for your exams, take them under timed conditions, view your progress, and get detailed results to assess your performance with ease.</p>
-                    </div>
+            <div class="dashboard__banner__wrapper">
+                <div class="dashboard__banner__text">
+                    <h2>Exam</h2>
+                    <p>Welcome to SkoolTech's Exam Portal! Prepare for your exams, take them under timed conditions, view your progress, and get detailed results to assess your performance with ease.</p>
                 </div>
             </div>
         </div>
         <br>
+        <!-- Available Exams Section -->
         <h2>Available Exams</h2>
-        
+
+        <!-- Notification (if any) -->
         <?php
         if (!empty($alert_message)) {
             echo "<div id='notification' class='notification show'>$alert_message</div>";
         }
-
-        if ($result_exams->num_rows > 0) {
-            while ($row = $result_exams->fetch_assoc()) {
-                echo "<div class='exam-item'>";
-                echo "<p class='exam-title'>{$row['title']}</p>";
-                echo "<p class='exam-deadline'>Deadline: {$row['formatted_deadline']}</p>";
-                echo "<a href='take_exam.php?exam_id={$row['id']}'>Start Exam</a>";
-                echo "</div>";
-            }
-        } else {
-            echo "<p>No exams available</p>";
-        }
         ?>
+
+        <!-- Exam List -->
+        <div class="exam-list">
+            <?php
+            if ($result_exams->num_rows > 0) {
+                while ($row = $result_exams->fetch_assoc()) {
+                    echo "<div class='exam-item'>";
+                    echo "  <div class='exam-details'>";
+                    echo "      <p class='exam-title'>{$row['title']}</p>";
+                    echo "      <p class='exam-deadline'>Deadline: {$row['formatted_deadline']}</p>";
+                    echo "  </div>";
+                    echo "  <a href='take_exam.php?exam_id={$row['id']}' class='exam-start-btn'>Start Exam</a>";
+                    echo "</div>";
+                }
+            } else {
+                echo "<p class='no-exams'>No exams available</p>";
+            }
+            ?>
+        </div>
     </main>
+
 </div>
 
 <script src="./dist/js/dropdown.js"></script>

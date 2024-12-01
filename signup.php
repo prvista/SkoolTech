@@ -137,10 +137,10 @@ $conn->close();
                     <div class="signup__desc__wrapper">
                       <div class="signup__desc__info"> 
                         <div class="signup__desc__title">
-                          <h2>Corem ipsum dolor sit amet, consectetur adipiscing elit. </h2>
+                          <h2>Create your SkoolTech account and start learning </h2>
                         </div>
                         <div class="signup__desc__text">
-                          <p>Dorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.</p>
+                            <p>Sign up now and embark on your educational journey with SkoolTech, where innovation and learning come together.</p>
                         </div>
                       </div>
                       <div class="signup__desc__img">

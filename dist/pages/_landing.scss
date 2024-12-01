@@ -202,25 +202,30 @@
         margin-bottom: 5px;
     }
 
-    input,select{
+    input,
+    select {
+        font-size: 1rem;
         margin-bottom: 10px;
         width: 100%;
         padding: 8px;
         border-radius: 4px;
         border: 1px solid #ced4da;
-        
-        &:focus{
+        background-color: #f9f9f9;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        font-family: $ff-primary;
+
+        &:focus {
             border-color: #80bdff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
             outline: none;
         }
-    }
 
     select{
         font-family: $ff-primary;
         font-size: 1rem;
     }
 }
-
+}
 
 
 .question-form {
@@ -237,20 +242,24 @@
         margin-bottom: 5px;
     }
 
-    input,select{
+    input,
+    select {
+        font-size: 1rem;
         margin-bottom: 10px;
         width: 100%;
         padding: 8px;
         border-radius: 4px;
         border: 1px solid #ced4da;
+        background-color: #f9f9f9;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        font-family: $ff-primary;
 
-        &:focus{
+        &:focus {
             border-color: #80bdff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
             outline: none;
         }
     }
-
-
 }
 
 .main-container h2,
@@ -380,6 +389,7 @@ tr:hover td {
                 border: 1px solid #ced4da;
                 background-color: #f9f9f9;
                 transition: border-color 0.3s ease, box-shadow 0.3s ease;
+                font-family: $ff-primary;
 
                 &:focus {
                     border-color: #80bdff;
@@ -408,6 +418,7 @@ tr:hover td {
                 transition: 0.05s ease;
                 font-family: $ff-primary;
                 font-size: .9rem;
+                transition: 0.3s ease;
 
                 &:hover {
                     background-color: #0056b3;
@@ -417,6 +428,7 @@ tr:hover td {
                 &:active {
                     background-color: #004085;
                     transform: translateY(0);
+                    transition: 0.05s ease;
                 }
             }
         }
@@ -589,6 +601,7 @@ tr:hover td {
     background-repeat: no-repeat;
     background-size: 100%;
     border-radius: 1rem;
+    padding: 0 2rem;
     
     &__wrapper{
         margin-bottom: 1rem;
@@ -618,6 +631,7 @@ tr:hover td {
     background-repeat: no-repeat;
     background-size: 100%;
     border-radius: 1rem;
+    padding: 0 2rem;
     
     &__wrapper{
         margin-bottom: 1rem;
@@ -729,13 +743,123 @@ tr:hover td {
     border-radius: 0.3rem;
     border: 1px solid transparent;
     font-family: $ff-primary;
+    cursor: pointer;
+    transition: 0.3s ease;
 
     &:hover{
         border: 1px solid $clr-secondary;
-        transition: 0.05s ease;
         background-color: #d5e8ff;
         color: $clr-secondary;
+        transition: 0.3s ease;
     }
 }
 
 
+
+ // Quiz List
+ .quiz-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    .quiz-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        transition: box-shadow 0.3s ease;
+
+        &:hover {
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .quiz-details {
+            max-width: 70%;
+
+            .quiz-title {
+                font-size: 1.05rem;
+                margin: 0;
+                color: #333;
+                font-weight: 700;
+            }
+
+            .quiz-deadline {
+                font-size: 0.9rem;
+                color: #666;
+            }
+        }
+
+        .quiz-start-btn {
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+
+            &:hover {
+                background-color: #0271e8;
+            }
+        }
+    }
+}
+
+
+
+ // Exam List
+ .exam-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    .exam-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        transition: box-shadow 0.3s ease;
+
+        &:hover {
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .exam-details {
+            max-width: 70%;
+
+            .exam-title {
+                font-size: 1.05rem;
+                margin: 0;
+                color: #333;
+                font-weight: 700;
+            }
+
+            .exam-deadline {
+                font-size: 0.9rem;
+                color: #666;
+            }
+        }
+
+        // Start Exam Button
+        .exam-start-btn {
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+
+            &:hover {
+                background-color: #0271e8;
+
+            }
+        }
+    }
+}

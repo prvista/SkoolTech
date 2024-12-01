@@ -351,13 +351,11 @@ if ($notificationResult->num_rows > 0) {
     <!-- main container -->
     <main class="main-container">
         <div class="dashboard__banner">
-            <div class="container">
-                <div class="dashboard__banner__wrapper">
-                    <div class="dashboard__banner__text">
-                        <!-- <h2>Welcome, <?php echo htmlspecialchars($student['username']); ?>!</h2> -->
-                        <h2>Subject Results</h2>
-                        <p>Welcome to SkoolTech, your all-in-one platform for tracking academic performance. View and manage your subject results, monitor progress across assignments, quizzes, and exams, and stay connected with your instructors to achieve your educational goals.</p>
-                    </div>
+            <div class="dashboard__banner__wrapper">
+                <div class="dashboard__banner__text">
+                    <!-- <h2>Welcome, <?php echo htmlspecialchars($student['username']); ?>!</h2> -->
+                    <h2>Subject Results</h2>
+                    <p>Welcome to SkoolTech, your all-in-one platform for tracking academic performance. View and manage your subject results, monitor progress across assignments, quizzes, and exams, and stay connected with your instructors to achieve your educational goals.</p>
                 </div>
             </div>
         </div>

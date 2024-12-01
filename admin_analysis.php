@@ -134,6 +134,7 @@ foreach ($student_results as $row) {
     <link rel="stylesheet" href="./dist/scss/main.min.css">
     <link rel="icon" href="./dist/img/skooltech-icon.png">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .notification {
             display: none;
@@ -173,13 +174,35 @@ foreach ($student_results as $row) {
                 <div class="sidenav-list">
                     <ul>
                         <li><a href="./admin_dashboard.php"><span class="material-icons-outlined">dashboard</span>Dashboard</a></li>
-                        <li><a href="./task_creator_assignment.php">Assignment</a></li>
-                        <li><a href="./task_creator.php">Quiz</a></li>
-                        <li><a href="./task_creator_exam.php">Exam</a></li>
-                        <li><a href="./admin_analysis.php">Analysis</a></li>
-                        <li><a href="./admin_assignments.php">Ass Results</a></li>
-                        <li><a href="./admin_students.php">Students</a></li>
-                        <li><a href="./admin_reportcard.php">Report Card</a></li>
+                        <li>
+                            <a href="#" class="dropdown-toggle">
+                                <span class="material-icons-outlined">app_registration</span> Task Creator
+                                <div class="arrow-down">
+                                    <span class="material-icons-outlined chevron-icon">keyboard_arrow_down</span>
+                                </div>
+                            </a>
+                            <ul class="dropdown-content">
+                                <li><a href="./task_creator_assignment.php">Assignment</a></li>
+                                <li><a href="./task_creator.php">Quiz</a></li>
+                                <li><a href="./task_creator_exam.php">Exam</a></li>
+                            </ul>
+                        </li>
+                        
+                        <li>
+                            <a href="#" class="dropdown-toggle">
+                            <span class="material-icons-outlined">sort</span> Results
+                                <div class="arrow-down">
+                                    <span class="material-icons-outlined chevron-icon">keyboard_arrow_down</span>
+                                </div>
+                            </a>
+                            <ul class="dropdown-content">
+                                <li><a href="./admin_analysis.php">Analysis</a></li>
+                                <li><a href="./admin_assignments.php">Ass Results</a></li>
+                            </ul>
+                        </li>
+
+                        <li><a href="./admin_students.php"><span class="material-icons-outlined">group</span>Students</a></li>
+                        <li><a href="./admin_reportcard.php"><span class="material-icons-outlined">credit_card</span>Report Card</a></li>
                         <li><a href="logout.php"><span class="material-icons-outlined">logout</span>Logout</a></li>
                     </ul>
                 </div>
@@ -191,60 +214,58 @@ foreach ($student_results as $row) {
             <table border="1">
                 <tr>
                     <th>Student Number</th>
-                    <th>Name</th>
+                    <th>Student Name</th>
                     <th>English GWA</th>
                     <th>Math GWA</th>
                     <th>Science GWA</th>
-                    <th>Overall Average(GWA)</th>
+                    <th>Total GWA</th>
                 </tr>
-
                 <?php
-                if ($result_results->num_rows > 0) {
-                    $result_results->data_seek(0); // Reset the pointer to the beginning
-                    while ($row = $result_results->fetch_assoc()) {
-                        echo "<tr>";
-                        echo "<td>" . htmlspecialchars($row['student_number']) . "</td>";
-                        echo "<td>" . htmlspecialchars($row['name']) . "</td>";
-                        echo "<td>" . (($row['english_gwa']) ? htmlspecialchars(number_format($row['english_gwa'], 2)) : "0.00") . "</td>";
-                        echo "<td>" . (($row['math_gwa']) ? htmlspecialchars(number_format($row['math_gwa'], 2)) : "0.00") . "</td>";
-                        echo "<td>" . (($row['science_gwa']) ? htmlspecialchars(number_format($row['science_gwa'], 2)) : "0.00") . "</td>";
-                        echo "<td>" . (($row['total_gwa']) ? htmlspecialchars(number_format($row['total_gwa'], 2)) : "0.00") . "</td>";
-                        echo "</tr>";
+                if (count($student_results) > 0) {
+                    foreach ($student_results as $row) {
+                        echo "<tr>
+                            <td>{$row['student_number']}</td>
+                            <td>{$row['name']}</td>
+                            <td>{$row['english_gwa']}</td>
+                            <td>{$row['math_gwa']}</td>
+                            <td>{$row['science_gwa']}</td>
+                            <td>{$row['total_gwa']}</td>
+                        </tr>";
                     }
                 }
                 ?>
             </table>
 
-            <h2>Gamification</h2>
-            <table border="1">
-                <tr>
-                    <th>Ranking</th>
-                    <th>Name</th>
-                    <th>GWA</th>
-                </tr>
-                <?php
-                // Store the GWA and names in an array for ranking
-                $ranked_results = [];
-                if ($result_results->num_rows > 0) {
-                    $result_results->data_seek(0);
-
-                    while ($row = $result_results->fetch_assoc()) {
-                        $ranked_results[] = [
-                            'name' => $row['name'],
-                            'gwa' => $row['total_gwa']
-                        ];
+            <!-- Graph for Average Grade Analysis -->
+            <canvas id="averageGradeChart" width="40" height="10"></canvas>
+            <script>
+                const ctxAvg = document.getElementById('averageGradeChart').getContext('2d');
+                const averageGradeChart = new Chart(ctxAvg, {
+                    type: 'bar',
+                    data: {
+                        labels: <?php echo json_encode(array_column($student_results, 'name')); ?>,
+                        datasets: [{
+                            label: 'Total GWA',
+                            data: <?php echo json_encode(array_column($student_results, 'total_gwa')); ?>,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
                     }
-                    usort($ranked_results, fn($a, $b) => $b['gwa'] <=> $a['gwa']);
-                    
-                    $rank = 1;
-                    foreach ($ranked_results as $result) {
-                        echo "<tr><td>" . $rank++ . "</td><td>" . htmlspecialchars($result['name']) . "</td><td>" . number_format($result['gwa'], 2) . "</td></tr>";
-                    }
-                }
-                ?>
-            </table>
+                });
+            </script>
 
-            <h2>Grade Distribution Analysis</h2>
+            <br>
+            <h2>Grade Distribution</h2>
             <table border="1">
                 <tr>
                     <th>A</th>
@@ -262,26 +283,22 @@ foreach ($student_results as $row) {
                 </tr>
             </table>
 
-
-            <canvas id="gradeDistributionChart" width="400" height="200"></canvas>
-            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <!-- Graph for Grade Distribution -->
+            <canvas id="gradeDistributionChart" width="40" height="10"></canvas>
             <script>
-                const gradeDistribution = <?php echo json_encode($gradeDistribution); ?>;
-
-                const data = {
-                    labels: ['A', 'B', 'C', 'D', 'F'],
-                    datasets: [{
-                        label: 'Number of Students',
-                        data: [gradeDistribution['A'], gradeDistribution['B'], gradeDistribution['C'], gradeDistribution['D'], gradeDistribution['F']],
-                        backgroundColor: ['#4CAF50', '#FF9800', '#FFEB3B', '#FF5722', '#F44336'],
-                        borderColor: ['#388E3C', '#F57C00', '#FBC02D', '#D32F2F', '#D32F2F'],
-                        borderWidth: 1
-                    }]
-                };
-
-                const config = {
+                const ctxGradeDist = document.getElementById('gradeDistributionChart').getContext('2d');
+                const gradeDistributionChart = new Chart(ctxGradeDist, {
                     type: 'bar',
-                    data: data,
+                    data: {
+                        labels: ['A', 'B', 'C', 'D', 'F'],
+                        datasets: [{
+                            label: 'Number of Students',
+                            data: <?php echo json_encode(array_values($gradeDistribution)); ?>,
+                            backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 99, 132, 0.2)'],
+                            borderColor: ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'],
+                            borderWidth: 1
+                        }]
+                    },
                     options: {
                         responsive: true,
                         scales: {
@@ -290,12 +307,60 @@ foreach ($student_results as $row) {
                             }
                         }
                     }
-                };
+                });
+            </script>
 
-                const ctx = document.getElementById('gradeDistributionChart').getContext('2d');
-                new Chart(ctx, config);
+    <br>
+    <h2>Gamification</h2>
+            <table border="1">
+                <tr>
+                    <th>Rank</th>
+                    <th>Student Name</th>
+                    <th>Total GWA</th>
+                </tr>
+
+                <?php
+                $rank = 1;
+                foreach ($ranked_results as $result) {
+                    echo "<tr>
+                        <td>{$rank}</td>
+                        <td>{$result['name']}</td>
+                        <td>{$result['gwa']}</td>
+                    </tr>";
+                    $rank++;
+                }
+                ?>
+            </table>
+
+            <!-- Graph for Ranking -->
+            <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
+                <canvas id="rankingChart" width="400" height="200" style="display: block; margin: 0 auto;"></canvas>
+            </div>
+            
+            <script src="./dist/js/dropdown.js"></script>
+            <script>
+                const ctxRank = document.getElementById('rankingChart').getContext('2d');
+                const rankingChart = new Chart(ctxRank, {
+                    type: 'pie',
+                    data: {
+                        labels: <?php echo json_encode(array_column($ranked_results, 'name')); ?>,
+                        datasets: [{
+                            data: <?php echo json_encode(array_column($ranked_results, 'gwa')); ?>,
+                            backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)'],
+                            borderColor: ['rgba(255, 99, 132, 1)', 'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true
+                    }
+                });
             </script>
         </main>
     </div>
 </body>
 </html>
+
+<?php
+$conn->close();
+?>

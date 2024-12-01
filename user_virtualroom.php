@@ -84,65 +84,74 @@ if ($notificationResult->num_rows > 0) {
 
     <style>
         /* Add styling for the video call section */
+        /* .hidden {
+            display: none;
+        } */
+
         .video-call-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 20px;
-        }
-
-        .video-call-buttons {
-            margin-bottom: 20px;
-        }
-
-        #local-video, #remote-video {
-            width: 300px;
-            height: 200px;
-            margin: 10px;
+            /* margin: 20px 0; */
+            padding: 15px;
             border: 1px solid #ddd;
-            background: #000;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            /* display: none; Initially hidden */
         }
 
-        #callStatus {
-            margin-top: 10px;
-            font-size: 16px;
-            font-weight: bold;
+        #jitsi-container {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background-color: #e9ecef;
         }
 
-        .video-call-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 30px;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        .video-call-buttons {
-            margin-bottom: 20px;
+        .video-call-buttons{
+            margin-top: 1rem;
         }
 
         .video-call-buttons button {
             list-style: none;
-            margin: 0 20px;
+            margin: 0 10px;
             padding: 10px 20px;
             cursor: pointer;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 500;
             color: #fff;
             border: 2px solid transparent;
             transition: background-color 0.3s, border-color 0.3s;
             background-color: #0866ff;
             border-radius: 5px;
             font-family:"Poppins","sans-serif";
-
-
         }
 
         .video-call-buttons button:hover {
             color: #0866ff;
             border-color: #0866ff;
             background-color: rgba(8, 102, 255, 0.1);
-
         }
+
+        #toggleCallSection {
+            /* margin: 10px 0; */
+            margin-bottom: 1rem;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            font-family:"Poppins","sans-serif";
+            font-weight:500;
+        }
+
+        #toggleCallSection:hover {
+            background-color: #218838;
+        }
+
 
         #local-video, #remote-video {
             width: 300px;
@@ -156,8 +165,8 @@ if ($notificationResult->num_rows > 0) {
             margin-top: 10px;
             font-size: 16px;
             font-weight: bold;
-            color: #28a745;
         }
+
 
         /* Style for the 'Enter Room Name' label and input */
         .video-call-section label {
@@ -179,31 +188,35 @@ if ($notificationResult->num_rows > 0) {
             transition: border 0.3s ease, box-shadow 0.3s ease;
         }
 
-        /* Focus effect for input field */
-        .video-call-section input[type="text"]:focus {
-            border: 1px solid #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-            outline: none;
+        #loadingIndicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);  /* Moves the spinner back by 50% of its width/height */
+            display: none;  /* Hidden by default */
+            z-index: 9999;  /* Ensure it appears on top */
+            background-color: rgba(0, 0, 0, 0.5);  /* Semi-transparent background */
+            width: 100%;  /* Full width */
+            height: 100%;  /* Full height */
+            display: flex;  /* Flexbox to center the spinner */
+            justify-content: center;  /* Align horizontally */
+            align-items: center;  /* Align vertically */
         }
 
-        /* Style for the buttons under the input */
-        .video-call-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
+        #loadingIndicator .spinner {
+            border: 8px solid #f3f3f3;  /* Light grey background */
+            border-top: 8px solid #3498db;  /* Blue top border */
+            border-radius: 50%;
+            width: 100px;  /* Larger spinner */
+            height: 100px;  /* Larger spinner */
+            animation: spin 2s linear infinite;
         }
 
-        /* Style for the video call section for better alignment */
-        .video-call-section {
-            margin-top: 30px;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        /* Style for the input area inside the video call section */
         .video-call-section input[type="text"] {
             padding: 12px;
             font-size: 16px;
@@ -220,50 +233,6 @@ if ($notificationResult->num_rows > 0) {
             border-color: #007bff;
             box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
         }
-
-        #jitsi-container {
-            /* display: none; Initially hidden */
-            width: 100%;
-            height: 500px; /* Set a fixed height for the video container */
-            margin-top: 20px;
-        }
-
-        #jitsi-meet .watermark {
-            display: none !important;
-        }
-
-        
-        #loadingIndicator {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);  /* Moves the spinner back by 50% of its width/height */
-    display: none;  /* Hidden by default */
-    z-index: 9999;  /* Ensure it appears on top */
-    background-color: rgba(0, 0, 0, 0.5);  /* Semi-transparent background */
-    width: 100%;  /* Full width */
-    height: 100%;  /* Full height */
-    display: flex;  /* Flexbox to center the spinner */
-    justify-content: center;  /* Align horizontally */
-    align-items: center;  /* Align vertically */
-}
-
-#loadingIndicator .spinner {
-    border: 8px solid #f3f3f3;  /* Light grey background */
-    border-top: 8px solid #3498db;  /* Blue top border */
-    border-radius: 50%;
-    width: 100px;  /* Larger spinner */
-    height: 100px;  /* Larger spinner */
-    animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-
-
 
     </style>
 </head>
@@ -357,32 +326,23 @@ if ($notificationResult->num_rows > 0) {
     </div>
 
     <main class="main-container">
+    <!-- <button id="toggleCallSection">Join Virtual Room</button> -->
 
-
-
-        <div class="video-call-section">
-
-
-            <div id="jitsi-container" style="width: 100%; height: 510px;">
-
+        <div class="video-call-section" id="videoCallSection">
+            <div id="jitsi-container" style="width: 100%; height: 595px;">
                 <div id="loadingIndicator" style="display: none;">
-                    <div class="spinner"></div> 
+                    <div class="spinner"></div>
                 </div>
-
             </div>
-            
-            
+
             <div id="callStatus">Not in a call</div>
-            <div>
+            <div class="virtual_input">
                 <label for="roomName">Enter Room Name:</label>
                 <input type="text" id="roomName" name="roomName" placeholder="Enter room name">
             </div>
             <div class="video-call-buttons">
                 <button id="startCallBtn">Start Call</button>
                 <button id="joinCallBtn">Join Call</button>
-
-
-                <!-- <button id="endCallBtn">End Call</button> -->
             </div>
         </div>
     </main>
@@ -394,135 +354,144 @@ if ($notificationResult->num_rows > 0) {
 <!-- Jitsi Meet API -->
 <script src="https://meet.jit.si/external_api.js"></script>
 
-<script>
-    const startCallBtn = document.getElementById('startCallBtn');
-    const joinCallBtn = document.getElementById('joinCallBtn');
-    const endCallBtn = document.getElementById('endCallBtn');
-    const callStatus = document.getElementById('callStatus');
-    const roomNameInput = document.getElementById('roomName');
-    const loadingIndicator = document.getElementById("loadingIndicator"); // Loading spinner element
-    let api = null;  // The Jitsi Meet API instance
+    <!-- <script>
+        // Toggle the visibility of the video call section when the button is clicked
+        document.getElementById('toggleCallSection').addEventListener('click', function() {
+            const videoCallSection = document.getElementById('videoCallSection');
+            // Show the video call section if it's hidden, hide it if it's visible
+            if (videoCallSection.style.display === "none" || videoCallSection.style.display === "") {
+                videoCallSection.style.display = "block";  // Show section
+            } else {
+                videoCallSection.style.display = "none";  // Hide section
+            }
+        });
+    </script> -->
 
-    // Function to start the call
-    function startCall(roomName) {
-        if (!roomName) {
-            alert('Please enter a room name.');
-            return;
+    <script>
+        const startCallBtn = document.getElementById('startCallBtn');
+        const joinCallBtn = document.getElementById('joinCallBtn');
+        const endCallBtn = document.getElementById('endCallBtn');
+        const callStatus = document.getElementById('callStatus');
+        const roomNameInput = document.getElementById('roomName');
+        const loadingIndicator = document.getElementById("loadingIndicator"); // Loading spinner element
+        let api = null;  // The Jitsi Meet API instance
+
+        // Function to start the call
+        function startCall(roomName) {
+            if (!roomName) {
+                alert('Please enter a room name.');
+                return;
+            }
+
+            // Show the loading spinner
+            loadingIndicator.style.display = "flex";  // Use flexbox to center
+
+            const domain = "meet.jit.si"; // Jitsi Meet server
+            const options = {
+                roomName: roomName,
+                width: '100%',
+                height: 593,
+                parentNode: document.getElementById('jitsi-container')
+            };
+
+            // Check if there's already an active call
+            if (api) {
+                api.dispose();  // Dispose of the existing call instance before starting a new one
+            }
+
+            // Initialize the Jitsi Meet API
+            api = new JitsiMeetExternalAPI(domain, options);
+
+            // Update status once the call is joined
+            api.addEventListener('videoConferenceJoined', function() {
+                callStatus.innerHTML = 'You are in a call';
+            });
+
+            // Keep the spinner visible for 6 seconds
+            setTimeout(function() {
+                loadingIndicator.style.display = "none"; // Hide spinner after 6 seconds
+            }, 3500);
         }
 
-        // Show the loading spinner
-        loadingIndicator.style.display = "flex";  // Use flexbox to center
-
-        const domain = "meet.jit.si"; // Jitsi Meet server
-        const options = {
-            roomName: roomName,
-            width: '100%',
-            height: 500,
-            parentNode: document.getElementById('jitsi-container')
+        // Event listener for the start call button
+        startCallBtn.onclick = function() {
+            const roomName = roomNameInput.value.trim();
+            startCall(roomName);
         };
 
-        // Check if there's already an active call
-        if (api) {
-            api.dispose();  // Dispose of the existing call instance before starting a new one
-        }
+        // Event listener for the join call button
+        joinCallBtn.onclick = function() {
+            const roomName = roomNameInput.value.trim();
 
-        // Initialize the Jitsi Meet API
-        api = new JitsiMeetExternalAPI(domain, options);
+            // Prevent starting a new call if already in one
+            if (api) {
+                callStatus.innerHTML = 'You are already in a call';
+                return;
+            }
 
-        // Update status once the call is joined
-        api.addEventListener('videoConferenceJoined', function() {
-            callStatus.innerHTML = 'You are in a call';
+            // Show loading spinner while processing the join action
+            loadingIndicator.style.display = "flex";  // Use flexbox to center
+
+            // Execute the startCall function after disabling the button
+            setTimeout(function() {
+                startCall(roomName);
+            }, 500);  // Small delay to simulate joining process
+
+            // Keep the spinner visible for 6 seconds after the "Join Call" button is clicked
+            setTimeout(function() {
+                loadingIndicator.style.display = "none"; // Hide spinner after 6 seconds
+            }, 6000);
+        };
+
+        // Event listener for the end call button
+        endCallBtn.onclick = function() {
+            if (api) {
+                api.executeCommand('hangup');
+                callStatus.innerHTML = 'Not in a call';
+                loadingIndicator.style.display = "none";  // Hide spinner when ending the call
+            }
+        };
+
+        // Loading spinner logic: hide when no call is active
+        window.addEventListener('beforeunload', function () {
+            if (api) {
+                api.dispose();  // Ensure the Jitsi API is disposed of when the page is unloaded
+            }
+        });
+    </script>
+
+
+
+    <script>
+        // Assume the button has an id of "joinButton"
+        const joinButton = document.getElementById("joinCallBtn");
+
+        joinButton.addEventListener("click", function() {
+            // Disable the button to prevent further clicks
+            joinButton.disabled = true;
+            
+            // Perform your join action (e.g., AJAX request or function call)
+            joinRoom().then(() => {
+                // Re-enable the button once the join action is completed
+                joinButton.disabled = false;
+            }).catch((error) => {
+                // If there's an error, also re-enable the button
+                console.error("Error during join:", error);
+                joinButton.disabled = false;
+            });
         });
 
-        // Keep the spinner visible for 6 seconds
-        setTimeout(function() {
-            loadingIndicator.style.display = "none"; // Hide spinner after 6 seconds
-        }, 3500);
-    }
-
-    // Event listener for the start call button
-    startCallBtn.onclick = function() {
-        const roomName = roomNameInput.value.trim();
-        startCall(roomName);
-    };
-
-    // Event listener for the join call button
-    joinCallBtn.onclick = function() {
-        const roomName = roomNameInput.value.trim();
-
-        // Prevent starting a new call if already in one
-        if (api) {
-            callStatus.innerHTML = 'You are already in a call';
-            return;
+        async function joinRoom() {
+            // Simulate your join room function (e.g., AJAX request)
+            // Replace with your actual code for joining the room
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    // Simulating success after 2 seconds (you can replace with your logic)
+                    resolve("Room joined successfully!");
+                }, 2000);
+            });
         }
-
-        // Show loading spinner while processing the join action
-        loadingIndicator.style.display = "flex";  // Use flexbox to center
-
-        // Execute the startCall function after disabling the button
-        setTimeout(function() {
-            startCall(roomName);
-        }, 500);  // Small delay to simulate joining process
-
-        // Keep the spinner visible for 6 seconds after the "Join Call" button is clicked
-        setTimeout(function() {
-            loadingIndicator.style.display = "none"; // Hide spinner after 6 seconds
-        }, 6000);
-    };
-
-    // Event listener for the end call button
-    endCallBtn.onclick = function() {
-        if (api) {
-            api.executeCommand('hangup');
-            callStatus.innerHTML = 'Not in a call';
-            loadingIndicator.style.display = "none";  // Hide spinner when ending the call
-        }
-    };
-
-    // Loading spinner logic: hide when no call is active
-    window.addEventListener('beforeunload', function () {
-        if (api) {
-            api.dispose();  // Ensure the Jitsi API is disposed of when the page is unloaded
-        }
-    });
-</script>
-
-
-
-
-
-
-<script>
-    // Assume the button has an id of "joinButton"
-const joinButton = document.getElementById("joinCallBtn");
-
-joinButton.addEventListener("click", function() {
-    // Disable the button to prevent further clicks
-    joinButton.disabled = true;
-    
-    // Perform your join action (e.g., AJAX request or function call)
-    joinRoom().then(() => {
-        // Re-enable the button once the join action is completed
-        joinButton.disabled = false;
-    }).catch((error) => {
-        // If there's an error, also re-enable the button
-        console.error("Error during join:", error);
-        joinButton.disabled = false;
-    });
-});
-
-async function joinRoom() {
-    // Simulate your join room function (e.g., AJAX request)
-    // Replace with your actual code for joining the room
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            // Simulating success after 2 seconds (you can replace with your logic)
-            resolve("Room joined successfully!");
-        }, 2000);
-    });
-}
-
-</script>
+    </script>
 
 </body>
 </html>

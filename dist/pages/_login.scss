@@ -9,6 +9,7 @@
         justify-content: center;
         align-items: center;
         padding: 13.7rem 15rem;
+        width: 75rem;
         
         &__img{
             img{
@@ -59,12 +60,15 @@
             margin-top: 2rem;
             h3{
                 color: $clr-light;
-                font-size: 0.8rem;
+                font-size: 1rem;
+                font-weight: 500;
             }
             a{
                 color: $clr-green;
                 text-decoration: none;
-                font-size: 0.8rem;
+                font-size: 1rem;
+                font-weight: 500;
+                margin-left: 0.2rem;
             }
         }
         &__form{
@@ -76,6 +80,14 @@
                     padding: 0.4rem;
                     border-color: transparent;
                     width: 20rem;
+                    transition: border-color 0.3s ease;
+                    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+                    &:focus {
+                        border-color: #80bdff;
+                        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+                        outline: none;
+                    }
                 }
                 .btn__login{
                     background-color: $clr-green;
@@ -83,6 +95,13 @@
                     padding: 0.4rem;
                     font-size: 1.1rem;
                     font-weight: 600;
+                    cursor: pointer;
+                    transition: 0.3s ease;
+
+                    &:hover{
+                        background-color: #1eab77;
+                        transition: 0.3s ease;
+                    }
                 }
                 label{
                     color: $clr-light;
@@ -118,7 +137,7 @@
         }
         &__img{
             img{
-                width: 45rem;
+                width: 55rem;
             }
         }
         &__title{
@@ -128,6 +147,13 @@
         &__info{
             display: flex;
             flex-direction: column;
+            width: 50rem;
         }
     }
+}
+
+.login__left__signup{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

@@ -112,19 +112,6 @@ if ($notificationResult->num_rows > 0) {
         .notification.hide {
             opacity: 0;
         }
-        .quiz-item {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
-        .quiz-title {
-            font-weight: bold;
-        }
-        .quiz-deadline {
-            color: #888;
-        }
     </style>
 </head>
 <body>
@@ -209,37 +196,48 @@ if ($notificationResult->num_rows > 0) {
     </div>
 
     <main class="main-container">
+        <!-- Banner Section -->
         <div class="dashboard__banner">
-            <div class="container">
-                <div class="dashboard__banner__wrapper">
-                    <div class="dashboard__banner__text">
-                        <h2>Quiz</h2>
-                        <p>Welcome to SkoolTech's Quiz Portal! Dive into your quizzes, test your knowledge, track your performance, and receive instant results to help you stay on top of your learning journey.</p>
-                    </div>
+            <div class="dashboard__banner__wrapper">
+                <div class="dashboard__banner__text">
+                    <h2>Quiz</h2>
+                    <p>Welcome to SkoolTech's Quiz Portal! Dive into your quizzes, test your knowledge, track your performance, and receive instant results to help you stay on top of your learning journey.</p>
                 </div>
             </div>
         </div>
-        <br>
-        <h2>Available Quizzes</h2>
         
+        <br>
+
+        <!-- Section Title -->
+        <h2>Available Quizzes</h2>
+
+        <!-- Notification -->
         <?php
         if (!empty($alert_message)) {
             echo "<div id='notification' class='notification show'>$alert_message</div>";
         }
-
-        if ($result_quizzes->num_rows > 0) {
-            while ($row = $result_quizzes->fetch_assoc()) {
-                echo "<div class='quiz-item'>";
-                echo "<p class='quiz-title'>{$row['title']}</p>";
-                echo "<p class='quiz-deadline'>Deadline: {$row['formatted_deadline']}</p>";
-                echo "<a href='take_quiz.php?quiz_id={$row['id']}'>Start Quiz</a>";
-                echo "</div>";
-            }
-        } else {
-            echo "<p>No quizzes available</p>";
-        }
         ?>
+
+        <!-- Quizzes List -->
+        <div class="quiz-list">
+            <?php
+            if ($result_quizzes->num_rows > 0) {
+                while ($row = $result_quizzes->fetch_assoc()) {
+                    echo "<div class='quiz-item'>";
+                    echo "<div class='quiz-details'>";
+                    echo "<p class='quiz-title'>{$row['title']}</p>";
+                    echo "<p class='quiz-deadline'>Deadline: {$row['formatted_deadline']}</p>";
+                    echo "</div>";
+                    echo "<a href='take_quiz.php?quiz_id={$row['id']}' class='quiz-start-btn'>Start Quiz</a>";
+                    echo "</div>";
+                }
+            } else {
+                echo "<p class='no-quizzes'>No quizzes available</p>";
+            }
+            ?>
+        </div>
     </main>
+
 </div>
 
 <script src="./dist/js/dropdown.js"></script>

@@ -178,12 +178,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['student_id'])) {
         <main class="main-container">
             <!-- Student selection form and report card display -->
             <div class="task__banner">
-                <div class="container">
-                    <div class="task__banner__wrapper">
-                        <div class="task__banner__text">
-                            <h2>Report Card</h2>
-                            <p>Welcome to the Admin Report Card Dashboard! Efficiently manage and view student report cards, track academic performance, and generate detailed reports for each student to ensure smooth academic monitoring and evaluation.</p>
-                        </div>
+                <div class="task__banner__wrapper">
+                    <div class="task__banner__text">
+                        <h2>Report Card</h2>
+                        <p>Welcome to the Admin Report Card Dashboard! Efficiently manage and view student report cards, track academic performance, and generate detailed reports for each student to ensure smooth academic monitoring and evaluation.</p>
                     </div>
                 </div>
             </div>

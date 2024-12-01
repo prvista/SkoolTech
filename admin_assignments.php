@@ -127,6 +127,7 @@ $result = $conn->query($sql);
     <title>Admin Assignments</title>
     <link rel="stylesheet" href="./dist/scss/main.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link rel="icon" href="./dist/img/skooltech-icon.png">
     <style>
         /* Add necessary CSS styles here */
         .modal {
@@ -329,7 +330,7 @@ $result = $conn->query($sql);
                                 <li><a href="./admin_assignments.php">Ass Results</a></li>
                             </ul>
                         </li>
-                        <li><a href="#"><span class="material-icons-outlined">group</span>Students</a></li>
+                        <li><a href="./admin_students.php"><span class="material-icons-outlined">group</span>Students</a></li>
                         <li><a href="./admin_reportcard.php"><span class="material-icons-outlined">credit_card</span>Report Card</a></li>
                         <li><a href="logout.php"><span class="material-icons-outlined">logout</span>Logout</a></li>
                     </ul>

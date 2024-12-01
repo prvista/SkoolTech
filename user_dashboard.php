@@ -181,13 +181,11 @@ if ($notificationResult->num_rows > 0) {
         <p><strong>Student Number:</strong> <?php echo htmlspecialchars($student['student_number']); ?></p> -->
 
         <div class="dashboard__banner">
-            <div class="container">
-                <div class="dashboard__banner__wrapper">
-                    <div class="dashboard__banner__text">
-                        <!-- <h2>Welcome, <?php echo htmlspecialchars($student['username']); ?>!</h2> -->
-                        <h2>Welcome, <?php echo htmlspecialchars($student['name']); ?>!</h2>
-                        <p>Welcome to SkoolTech, your all-in-one platform for learning and academic success. Manage your courses, track your progress, take quizzes and exams, and stay connected with instructors—all designed to help you achieve your educational goals.</p>
-                    </div>
+            <div class="dashboard__banner__wrapper">
+                <div class="dashboard__banner__text">
+                    <!-- <h2>Welcome, <?php echo htmlspecialchars($student['username']); ?>!</h2> -->
+                    <h2>Welcome, <?php echo htmlspecialchars($student['name']); ?>!</h2>
+                    <p>Welcome to SkoolTech, your all-in-one platform for learning and academic success. Manage your courses, track your progress, take quizzes and exams, and stay connected with instructors—all designed to help you achieve your educational goals.</p>
                 </div>
             </div>
         </div>

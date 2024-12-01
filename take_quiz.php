@@ -381,7 +381,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </label>
                 </div>
             <?php endwhile; ?>
-            <button type="submit">Submit Quiz</button>
+            <button type="submit">Submit</button>
         </form>
 
         <?php if (isset($_SESSION['notification_message'])): ?>
