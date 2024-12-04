@@ -45,41 +45,52 @@ function updateScore($conn, $submission_id, $raw_score, $total_score) {
     }
 }
 
-// Function to update the subject_scores table with student name
 function updateSubjectScore($conn, $submission_id) {
-    // Get the student ID, subject, grade, and student name based on submission ID
+    // Fetch necessary data from assignment_submissions and students
     $sql = "SELECT asub.student_id, asub.assignment_id, asub.grade, s.name AS student_name
             FROM assignment_submissions asub
             JOIN students s ON asub.student_id = s.id
             WHERE asub.id = ?";
     $stmt = $conn->prepare($sql);
+
+    if (!$stmt) {
+        error_log("Error preparing statement: " . $conn->error);
+        return;
+    }
+
     $stmt->bind_param("i", $submission_id);
     $stmt->execute();
     $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
 
-    if ($row) {
+    if ($row = $result->fetch_assoc()) {
         $student_id = $row['student_id'];
         $student_name = $row['student_name'];
         $grade = $row['grade'];
         $subject = getSubjectFromAssignment($conn, $row['assignment_id']);
 
-        // Update or insert into subject_scores
-        $sql = "INSERT INTO subject_scores (student_id, student_name, subject, assignment_score) 
-                VALUES (?, ?, ?, ?) 
-                ON DUPLICATE KEY UPDATE assignment_score = ?, student_name = ?";
+        // Insert or update the subject_scores table
+        $sql = "INSERT INTO subject_scores (student_id, student_name, subject, assignment_score)
+                VALUES (?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE assignment_score = VALUES(assignment_score), student_name = VALUES(student_name)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("issdds", $student_id, $student_name, $subject, $grade, $grade, $student_name);
+
+        if (!$stmt) {
+            error_log("Error preparing statement for subject_scores: " . $conn->error);
+            return;
+        }
+
+        $stmt->bind_param("issd", $student_id, $student_name, $subject, $grade);
 
         if (!$stmt->execute()) {
             error_log("Error updating subject_scores: " . $stmt->error);
         }
+    } else {
+        error_log("No matching submission found for ID: $submission_id");
     }
 }
 
 
-
-// Function to get the subject from the assignment
+// Function to get the subject from the assignments table
 function getSubjectFromAssignment($conn, $assignment_id) {
     $sql = "SELECT subject FROM assignments WHERE id = ?";
     $stmt = $conn->prepare($sql);
@@ -89,6 +100,7 @@ function getSubjectFromAssignment($conn, $assignment_id) {
     $row = $result->fetch_assoc();
     return $row ? $row['subject'] : null;
 }
+
 
 // Check if the form was submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -106,15 +118,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Fetch all assignment submissions along with the file path and total score
 $sql = "SELECT a.id AS assignment_id, a.title, asub.id AS submission_id, asub.submission_date, 
-               asub.score AS raw_score, asub.grade, asub.submitted_file, a.grade AS total_grade
+               asub.score AS raw_score, asub.grade, asub.submitted_file, a.grade AS total_grade, s.name AS student_name
         FROM assignments a 
         LEFT JOIN assignment_submissions asub ON a.id = asub.assignment_id
+        LEFT JOIN students s ON asub.student_id = s.id
         GROUP BY a.id, asub.id";
-
-
-
-$result = $conn->query($sql);
-
 
 $result = $conn->query($sql);
 ?>
@@ -172,121 +180,122 @@ $result = $conn->query($sql);
         }
 
         .feedback-message {
-            background-color: #e7f3fe;
-            color: #31708f;
-            border: 1px solid #bce8f1;
-            padding: 10px;
-            margin-bottom: 20px;
+            position: fixed;
+            top: 20px; 
+            right: 20px; 
+            z-index: 1000;
+            padding: 15px 20px;
             border-radius: 5px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #ffffff; 
+            background-color: #007bff; 
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+            border: 1px solid #0056b3; 
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeIn 0.5s ease-in-out;
+            opacity: 1;
+            transition: opacity 0.5s ease-out; 
         }
 
 
-    td a {
-        color: #007bff;
-        text-decoration: none;
-        font-weight: 500;
-    }
-
-    td a:hover {
-        text-decoration: underline;
-        /* color: #ffffff; */
-    }
-
-    .btn-edit, .btn-view {
-        padding: 8px 12px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        transition: background-color 0.3s ease;
-    }
-
-    .btn-edit:hover, .btn-view:hover {
-        background-color: #0056b3;
-    }
-
-    .btn-view {
-        background-color: #28a745;
-    }
-
-    .btn-view:hover {
-        background-color: #218838;
-    }
-
-    tr:hover {
-    background-color: #f2f2f2; 
-    color: unset; 
-    transition: 0.1s ease;
-    }
-
-    tr:hover td {
-        background-color: unset; 
-        color: unset;
-        transition: 0.1s ease;
-    }
-
-    input {
-        font-size: 1rem;
-        margin-bottom: 15px;
-        width: 15%;
-        padding: 8px;
-        border-radius: 4px;
-        border: 1px solid #ced4da;
-        background-color: #f9f9f9;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
-
-        &:focus {
-            border-color: #80bdff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-            outline: none;
+        .feedback-message::before {
+            content: 'ℹ️'; /* Info icon */
+            font-size: 18px;
         }
-    }
 
-    select {
-        font-size: 1rem;
-        margin-bottom: 15px;
-        width: 11%;
-        padding: 8px;
-        border-radius: 4px;
-        border: 1px solid #ced4da;
-        background-color: #f9f9f9;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
-
-        &:focus {
-            border-color: #80bdff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-            outline: none;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-    }
 
-    .notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background-color: #d4edda;
-    color: #155724;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    opacity: 0;
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    transform: translateY(-10px);
-    }
+            td a {
+                color: #007bff;
+                text-decoration: none;
+                font-weight: 500;
+            }
 
-    .notification.hidden {
-        display: none;
-        opacity: 0;
-        transform: translateY(-20px);
-    }
+            td a:hover {
+                text-decoration: underline;
+                /* color: #ffffff; */
+            }
 
-    .notification.visible {
-        display: block;
-        opacity: 1;
-        transform: translateY(0);
-    }
+            .btn-edit, .btn-view {
+                padding: 8px 12px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: background-color 0.3s ease;
+            }
+
+            .btn-edit:hover, .btn-view:hover {
+                background-color: #0056b3;
+            }
+
+            .btn-view {
+                background-color: #28a745;
+            }
+
+            .btn-view:hover {
+                background-color: #218838;
+            }
+
+            tr:hover {
+            background-color: #f2f2f2; 
+            color: unset; 
+            transition: 0.1s ease;
+            }
+
+            tr:hover td {
+                background-color: unset; 
+                color: unset;
+                transition: 0.1s ease;
+            }
+
+            input {
+                font-size: 1rem;
+                margin-bottom: 15px;
+                width: 15%;
+                padding: 8px;
+                border-radius: 4px;
+                border: 1px solid #ced4da;
+                background-color: #f9f9f9;
+                transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+                &:focus {
+                    border-color: #80bdff;
+                    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+                    outline: none;
+                }
+            }
+
+            select {
+                font-size: 1rem;
+                margin-bottom: 15px;
+                width: 11%;
+                padding: 8px;
+                border-radius: 4px;
+                border: 1px solid #ced4da;
+                background-color: #f9f9f9;
+                transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+                &:focus {
+                    border-color: #80bdff;
+                    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+                    outline: none;
+                }
+            }
     </style>
 </head>
 <body>
@@ -330,7 +339,7 @@ $result = $conn->query($sql);
                                 <li><a href="./admin_assignments.php">Ass Results</a></li>
                             </ul>
                         </li>
-                        <li><a href="./admin_students.php"><span class="material-icons-outlined">group</span>Students</a></li>
+                        <li><a href="#"><span class="material-icons-outlined">group</span>Students</a></li>
                         <li><a href="./admin_reportcard.php"><span class="material-icons-outlined">credit_card</span>Report Card</a></li>
                         <li><a href="logout.php"><span class="material-icons-outlined">logout</span>Logout</a></li>
                     </ul>
@@ -339,7 +348,6 @@ $result = $conn->query($sql);
         </div>
 
         <main class="main-container">
-        <div id="notification" class="notification hidden"></div>
             <h1>Assignment Submissions</h1>
             <?php if ($feedback_message): ?>
                 <div class="feedback-message">
@@ -349,6 +357,7 @@ $result = $conn->query($sql);
             <table>
                 <thead>
                     <tr>
+                        <th>Student Name </th>
                         <th>Assignment Title</th>
                         <th>Submission Date</th>
                         <th>Score</th>
@@ -358,44 +367,47 @@ $result = $conn->query($sql);
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
-                    if ($result && $result->num_rows > 0) {
-                        while ($row = $result->fetch_assoc()) {
-                            echo "<tr>";
-                            echo "<td>" . htmlspecialchars($row['title'] ?? 'N/A') . "</td>";
-                            echo "<td>" . htmlspecialchars($row['submission_date'] ?? 'N/A') . "</td>";
-                            echo "<td>" . htmlspecialchars($row['raw_score'] ?? 'N/A') . "</td>"; // Raw Score
-                            $grade = isset($row['grade']) ? number_format((float)$row['grade'], 2) : 'N/A';
-                            echo "<td>" . htmlspecialchars($grade) . "%</td>";
-                            echo "<td>";
+                <?php
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        echo "<tr>";
+        // Displaying student name
+        echo "<td>" . htmlspecialchars($row['student_name'] ?? 'N/A') . "</td>"; // Student Name
+        echo "<td>" . htmlspecialchars($row['title'] ?? 'N/A') . "</td>";
+        echo "<td>" . htmlspecialchars($row['submission_date'] ?? 'N/A') . "</td>";
+        echo "<td>" . htmlspecialchars($row['raw_score'] ?? 'N/A') . "</td>"; // Raw Score
+        $grade = isset($row['grade']) ? number_format((float)$row['grade'], 2) : 'N/A';
+        echo "<td>" . htmlspecialchars($grade) . "%</td>";
+        echo "<td>";
 
-                            // Link to view the assignment that opens a modal
-                            if (!empty($row['submitted_file'])) {
-                                $filePath = 'uploads/' . htmlspecialchars($row['submitted_file']);
-                                echo "<a href='#' class='view-file' data-file='" . $filePath . "'>View Assignment</a>";
-                            } else {
-                                echo "File not available";
-                            }
+        // Link to view the assignment that opens a modal
+        if (!empty($row['submitted_file'])) {
+            $filePath = 'uploads/' . htmlspecialchars($row['submitted_file']);
+            echo "<a href='#' class='view-file' data-file='" . $filePath . "'>View Assignment</a>";
+        } else {
+            echo "File not available";
+        }
 
-                            echo "</td>";
-                            echo "<td>
-                                <form action='admin_assignments.php' method='POST'>
-                                    <input type='hidden' name='submission_id' value='" . htmlspecialchars($row['submission_id'] ?? '') . "'>
-                                    <input type='number' name='score' value='" . htmlspecialchars($row['raw_score'] ?? '0') . "' min='0' required>
-                                    <select name='highest_score' required>
-                                        <option value='10'" . ($row['total_grade'] == 10 ? ' selected' : '') . ">10</option>
-                                        <option value='20'" . ($row['total_grade'] == 20 ? ' selected' : '') . ">20</option>
-                                        <option value='30'" . ($row['total_grade'] == 30 ? ' selected' : '') . ">30</option>
-                                    </select>
-                                    <button type='submit' class='ass-btn'>Update Score</button>
-                                </form>
-                            </td>";
-                            echo "</tr>";
-                        }
-                    } else {
-                        echo "<tr><td colspan='6'>No submissions found.</td></tr>";
-                    }
-                    ?>
+        echo "</td>";
+        echo "<td>
+            <form action='admin_assignments.php' method='POST'>
+                <input type='hidden' name='submission_id' value='" . htmlspecialchars($row['submission_id'] ?? '') . "'>
+                <input type='number' name='score' value='" . htmlspecialchars($row['raw_score'] ?? '0') . "' min='0' required>
+                <select name='highest_score' required>
+                    <option value='10'" . ($row['total_grade'] == 10 ? ' selected' : '') . ">10</option>
+                    <option value='20'" . ($row['total_grade'] == 20 ? ' selected' : '') . ">20</option>
+                    <option value='30'" . ($row['total_grade'] == 30 ? ' selected' : '') . ">30</option>
+                </select>
+                <button type='submit' class='ass-btn'>Update Score</button>
+            </form>
+        </td>";
+        echo "</tr>";
+    }
+} else {
+    echo "<tr><td colspan='6'>No submissions found.</td></tr>";
+}
+?>
+
                 </tbody>
             </table>
         </main>
@@ -465,6 +477,22 @@ $result = $conn->query($sql);
                 modal.style.display = "none";
             }
         }
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+    const feedbackMessage = document.querySelector(".feedback-message");
+
+    if (feedbackMessage) {
+        setTimeout(() => {
+            feedbackMessage.style.opacity = "0"; // Start dissolve
+            setTimeout(() => {
+                feedbackMessage.remove(); // Remove element after dissolve
+            }, 500); // Match the CSS transition duration (0.5s)
+        }, 5000); // 5-second delay
+    }
+});
+
     </script>
 </body>
 </html>

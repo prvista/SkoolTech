@@ -875,6 +875,59 @@ tr:hover td {
   background-color: #0271e8;
 }
 
+.feedback-wrapper {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+.feedback-wrapper .message-icon {
+  font-size: 24px;
+  background: #0866ff;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  padding: 10px 15px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+.feedback-wrapper .message-icon:hover {
+  background: #064fca;
+  transform: scale(1.1);
+}
+.feedback-wrapper .feedback-section {
+  position: absolute;
+  bottom: 60px;
+  right: 0;
+  width: 22rem;
+  height: 30rem;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-family: "Poppins", "sans-serif";
+  color: #333;
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+.feedback-wrapper .feedback-section p {
+  font-size: 14px;
+  line-height: 1.4;
+  color: #555;
+  white-space: pre-line;
+}
+.feedback-wrapper .feedback-section strong {
+  color: #0866ff;
+  font-weight: bold;
+}
+.feedback-wrapper .feedback-section.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
 .login__wrapper {
   display: flex;
   height: 100vh;
@@ -954,9 +1007,9 @@ tr:hover td {
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 .login__left__form form input:focus {
-  border-color: #80bdff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-  outline: none;
+  border: 2px solid #4A9DEC;
+  box-shadow: 0px 0px 0px 7px rgba(74, 157, 236, 0.2);
+  background-color: white;
 }
 .login__left__form form .btn__login {
   background-color: #20BA81;
@@ -1019,6 +1072,12 @@ tr:hover td {
   align-items: center;
 }
 
+.animated-text {
+  font-size: 3rem;
+  text-align: center;
+  color: #333;
+}
+
 .signup {
   overflow-y: hidden;
 }
@@ -1079,14 +1138,15 @@ tr:hover td {
   width: 30rem;
   font-size: 16px;
   transition: border-color 0.3s ease;
-  border: 1px solid transparent;
+  border: 2px solid transparent;
   background-color: #f9f9f9;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  font-family: "Poppins", "sans-serif";
 }
 .signup__left__details form input:focus {
-  border-color: #80bdff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-  outline: none;
+  border: 2px solid #4A9DEC;
+  box-shadow: 0px 0px 0px 7px rgba(74, 157, 236, 0.2);
+  background-color: white;
 }
 .signup__left__details form select {
   border-radius: 0.7rem;
@@ -1096,12 +1156,17 @@ tr:hover td {
   background-color: #F9F9F9;
   font-family: "Poppins", "sans-serif";
   transition: 0.3s ease;
+  border: 2px solid transparent;
+  font-size: 16px;
 }
 .signup__left__details form select:focus {
   border-color: #80bdff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
   outline: none;
   transition: 0.3s ease;
+  border: 2px solid #4A9DEC;
+  box-shadow: 0px 0px 0px 7px rgba(74, 157, 236, 0.2);
+  background-color: white;
+  font-size: 16px;
 }
 .signup__left__details form .btn__signup {
   background-color: #20BA81;

@@ -195,7 +195,7 @@ INSERT INTO quiz_questions (quiz_id, question_text, choice_a, choice_b, choice_c
 VALUES 
 (@quiz_id, 'What is 2 + 2?', '3', '4', '5', '6', 'B', 'multiple_choice'),
 (@quiz_id, 'What is the square root of 16?', '2', '4', '8', '16', 'B', 'multiple_choice'),
-(@quiz_id, 'What is 9/3?', '6', '5', '2', '7', 'C', 'multiple_choice'),
+(@quiz_id, 'What is 9/3?', '6', '5', '3', '7', 'C', 'multiple_choice'),
 (@quiz_id, 'How many years are there in a decade?', '5', '10', '15', '20', 'B', 'multiple_choice'),
 (@quiz_id, 'What is the square of 15?', '252', '225', '30', '15', 'B', 'multiple_choice'),
 (@quiz_id, 'If David’s age is 27 years old in 2011, what was his age in 2003?', '17', '37', '20', '19', 'A', 'multiple_choice'),
@@ -314,8 +314,8 @@ VALUES
 INSERT INTO exam_questions (exam_id, question_type, question_text, correct_answer)
 VALUES 
 
-(@exam_id, 'true_false' , '121 divided by 11 is 11?', 'True'),
-(@exam_id,  'true_false' , '60 Times of 8 Equals to 409?', 'False'),
+(@exam_id, 'true_false' , '121/11 is 11?', 'True'),
+(@exam_id,  'true_false' , '60 x 8 = 409?', 'False'),
 (@exam_id,  'true_false' , 'Is the next prime number after 7 13?', 'False'),
 (@exam_id,  'true_false' , 'Is product of 131 × 0 × 300 × 4 = 0?', 'True'),
 (@exam_id,  'true_false' , 'Is 131 × 0 × 300 × 4 = 24?', 'True');
@@ -358,34 +358,8 @@ VALUES
 
 
 
--- Insert sample assignments with topic-appropriate randomized criteria
-INSERT INTO assignments (title, description, criteria, deadline, due_date, created_by, subject, submit_to_professor)
-VALUES 
-('English Essay 1', 'Write a 500-word essay on your favorite book.', 'Criteria: Creativity, Argumentation, and Vocabulary.', '2024-12-02 22:30:00', '2024-12-02 22:30:00', 1, 'English', FALSE),
-('English Essay 2', 'Write a 200-word research about pollution.', 'Criteria: Research Accuracy, Use of Data, and Punctuation.', '2024-12-15 19:45:00', '2024-12-15 19:45:00', 1, 'English', FALSE),
-('English Essay 3', 'Write a 200-word reaction paper about the video on how to stay healthy.', 'Criteria: Clarity, Relevance to Video Content, and Structure.', '2024-12-21 21:15:00', '2024-12-21 21:15:00', 1, 'English', FALSE),
-('English Essay 4', 'Write a 300-word story about your life in high school.', 'Criteria: Emotional Depth, Structure, and Grammar.', '2024-12-05 20:30:00', '2024-12-05 20:30:00', 1, 'English', FALSE),
-('English Essay 5', 'Write a 250-word research about the advantages of speaking English.', 'Criteria: Argument Strength, Use of Examples, and Grammar.', '2024-12-29 22:45:00', '2024-12-29 22:45:00', 1, 'English', FALSE);
 
--- Math assignments
-INSERT INTO assignments (title, description, criteria, deadline, due_date, created_by, subject, submit_to_professor)
-VALUES 
-('Math Essay 1', 'Write a 100-word essay about algebra.', 'Criteria: Clarity, Mathematical Terminology, and Accuracy.', '2024-12-03 18:15:00', '2024-12-03 18:15:00', 1, 'Math', FALSE),
-('Math Essay 2', 'Write a 150-word explanation of the step-by-step process to apply the FOIL method.', 'Criteria: Step-by-Step Accuracy, Mathematical Clarity, and Examples.', '2024-12-10 22:00:00', '2024-12-10 22:00:00', 1, 'Math', FALSE),
-('Math Essay 3', 'Write a 150-word explanation of how to use PEMDAS.', 'Criteria: Sequential Clarity, Accuracy, and Application Examples.', '2024-12-18 23:15:00', '2024-12-18 23:15:00', 1, 'Math', FALSE),
-('Math Essay 4', 'Write a 150-word history of geometry.', 'Criteria: Historical Relevance, Structure, and Reference Accuracy.', '2024-12-25 21:45:00', '2024-12-25 21:45:00', 1, 'Math', FALSE),
-('Math Essay 5', 'Write a 150-word research paper about statistics.', 'Criteria: Research Accuracy, Use of Statistical Terms, and Data Examples.', '2024-12-30 20:00:00', '2024-12-30 20:00:00', 1, 'Math', FALSE);
-
--- Science assignments
-INSERT INTO assignments (title, description, criteria, deadline, due_date, created_by, subject, submit_to_professor)
-VALUES 
-('Science Essay 1', 'Write a 600-word essay about biology.', 'Criteria: Biological Terminology, Structure, and Argumentation.', '2024-12-07 19:45:00', '2024-12-07 19:45:00', 1, 'Science', FALSE),
-('Science Essay 2', 'Write a 700-word research on how volcanoes form.', 'Criteria: Clarity, Use of Geographical Examples, and Punctuation.', '2024-12-14 18:30:00', '2024-12-14 18:30:00', 1, 'Science', FALSE),
-('Science Essay 3', 'Write a 500-word reaction paper on how gravity works.', 'Criteria: Relevance, Argumentation, and Structure.', '2024-12-20 21:15:00', '2024-12-20 21:15:00', 1, 'Science', FALSE),
-('Science Essay 4', 'Write a 500-word hypothesis on how photosynthesis works.', 'Criteria: Scientific Accuracy, Structure, and Use of Examples.', '2024-12-26 20:45:00', '2024-12-26 20:45:00', 1, 'Science', FALSE),
-('Science Essay 5', 'Write a 600-word research about the purpose of the heart.', 'Criteria: Clarity, Biological Understanding, and Structure.', '2024-12-30 23:00:00', '2024-12-30 23:00:00', 1, 'Science', FALSE);
-
--- Get the assignment ID
+-- Get the assignment ID after the insert (to use if needed)
 SET @assignment_id = LAST_INSERT_ID();
 
 

@@ -123,14 +123,14 @@ if ($notificationResult->num_rows > 0) {
             color: #fff;
             border: 2px solid transparent;
             transition: background-color 0.3s, border-color 0.3s;
-            background-color: #0866ff;
+            background-color: #007bff;
             border-radius: 5px;
             font-family:"Poppins","sans-serif";
         }
 
         .video-call-buttons button:hover {
-            color: #0866ff;
-            border-color: #0866ff;
+            color: #007bff;
+            border-color: #007bff;
             background-color: rgba(8, 102, 255, 0.1);
         }
 
@@ -233,6 +233,11 @@ if ($notificationResult->num_rows > 0) {
             border-color: #007bff;
             box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
         }
+
+        #jitsi-meet-watermark {
+            display: none;
+        }
+
 
     </style>
 </head>
@@ -337,13 +342,14 @@ if ($notificationResult->num_rows > 0) {
 
             <div id="callStatus">Not in a call</div>
             <div class="virtual_input">
-                <label for="roomName">Enter Room Name:</label>
-                <input type="text" id="roomName" name="roomName" placeholder="Enter room name">
-            </div>
-            <div class="video-call-buttons">
-                <button id="startCallBtn">Start Call</button>
-                <button id="joinCallBtn">Join Call</button>
-            </div>
+    <label for="roomName">Enter Room Name:</label>
+    <input type="text" id="roomName" name="roomName" placeholder="Enter room name">
+</div>
+<div class="video-call-buttons">
+    <button id="startCallBtn">Start Call</button>
+    <button id="joinCallBtn">Join Call</button>
+</div>
+
         </div>
     </main>
 </div>
@@ -368,130 +374,126 @@ if ($notificationResult->num_rows > 0) {
     </script> -->
 
     <script>
-        const startCallBtn = document.getElementById('startCallBtn');
-        const joinCallBtn = document.getElementById('joinCallBtn');
-        const endCallBtn = document.getElementById('endCallBtn');
-        const callStatus = document.getElementById('callStatus');
-        const roomNameInput = document.getElementById('roomName');
-        const loadingIndicator = document.getElementById("loadingIndicator"); // Loading spinner element
-        let api = null;  // The Jitsi Meet API instance
+    const startCallBtn = document.getElementById('startCallBtn');
+    const joinCallBtn = document.getElementById('joinCallBtn');
+    const endCallBtn = document.getElementById('endCallBtn');
+    const callStatusElement = document.getElementById("callStatus");
+    const roomNameInput = document.getElementById('roomName');
+    const loadingIndicator = document.getElementById("loadingIndicator"); // Loading spinner element
+    let api = null;  // The Jitsi Meet API instance
+    let isInCall = false;  // Track the call status
 
-        // Function to start the call
-        function startCall(roomName) {
-            if (!roomName) {
-                alert('Please enter a room name.');
-                return;
-            }
+    // Function to update call status
+    function updateCallStatus(status) {
+        switch(status) {
+            case 'starting':
+                callStatusElement.innerHTML = "Starting the call...";  // Set the status when call is starting
+                callStatusElement.style.color = "#ffa500"; // Optional: Set color for "starting" status
+                break;
+            case 'inCall':
+                callStatusElement.innerHTML = "You are in a call";  // Set the status when the user is in a call
+                callStatusElement.style.color = "#28a745"; // Optional: Green for "in call"
+                break;
+            case 'notInCall':
+                callStatusElement.innerHTML = "You are not in a call";  // Set the status when the user is not in a call
+                callStatusElement.style.color = "#dc3545"; // Optional: Red for "not in a call"
+                break;
+            default:
+                callStatusElement.innerHTML = "Status unknown";
+                callStatusElement.style.color = "#6c757d"; // Default color
+                break;
+        }
+    }
 
-            // Show the loading spinner
-            loadingIndicator.style.display = "flex";  // Use flexbox to center
-
-            const domain = "meet.jit.si"; // Jitsi Meet server
-            const options = {
-                roomName: roomName,
-                width: '100%',
-                height: 593,
-                parentNode: document.getElementById('jitsi-container')
-            };
-
-            // Check if there's already an active call
-            if (api) {
-                api.dispose();  // Dispose of the existing call instance before starting a new one
-            }
-
-            // Initialize the Jitsi Meet API
-            api = new JitsiMeetExternalAPI(domain, options);
-
-            // Update status once the call is joined
-            api.addEventListener('videoConferenceJoined', function() {
-                callStatus.innerHTML = 'You are in a call';
-            });
-
-            // Keep the spinner visible for 6 seconds
-            setTimeout(function() {
-                loadingIndicator.style.display = "none"; // Hide spinner after 6 seconds
-            }, 3500);
+    // Function to start the call
+    function startCall(roomName) {
+        if (!roomName) {
+            alert('Please enter a room name.');
+            return;
         }
 
-        // Event listener for the start call button
-        startCallBtn.onclick = function() {
-            const roomName = roomNameInput.value.trim();
+        // Show the loading spinner
+        loadingIndicator.style.display = "flex";  // Use flexbox to center
+        updateCallStatus('starting');  // Show "starting" status
+
+        const domain = "meet.jit.si"; // Jitsi Meet server
+        const options = {
+            roomName: roomName,
+            width: '100%',
+            height: 593,
+            parentNode: document.getElementById('jitsi-container')
+        };
+
+        // Check if there's already an active call
+        if (api) {
+            api.dispose();  // Dispose of the existing call instance before starting a new one
+        }
+
+        // Initialize the Jitsi Meet API
+        api = new JitsiMeetExternalAPI(domain, options);
+
+        // Update status once the call is joined
+        api.addEventListener('videoConferenceJoined', function() {
+            if (!isInCall) {
+                isInCall = true;
+                updateCallStatus('inCall');  // Update to "in call"
+            }
+        });
+
+        // Keep the spinner visible for 6 seconds
+        setTimeout(function() {
+            loadingIndicator.style.display = "none"; // Hide spinner after 6 seconds
+        }, 3500);
+    }
+
+    // Event listener for the start call button
+    startCallBtn.onclick = function() {
+        const roomName = roomNameInput.value.trim();
+        startCall(roomName);
+    };
+
+    // Event listener for the join call button
+    joinCallBtn.onclick = function() {
+        const roomName = roomNameInput.value.trim();
+
+        // Prevent starting a new call if already in one
+        if (isInCall) {
+            updateCallStatus('inCall');
+            return;
+        }
+
+        // Show loading spinner while processing the join action
+        loadingIndicator.style.display = "flex";  // Use flexbox to center
+
+        // Execute the startCall function after disabling the button
+        setTimeout(function() {
             startCall(roomName);
-        };
+        }, 500);  // Small delay to simulate joining process
 
-        // Event listener for the join call button
-        joinCallBtn.onclick = function() {
-            const roomName = roomNameInput.value.trim();
+        // Keep the spinner visible for 6 seconds after the "Join Call" button is clicked
+        setTimeout(function() {
+            loadingIndicator.style.display = "none"; // Hide spinner after 6 seconds
+        }, 6000);
+    };
 
-            // Prevent starting a new call if already in one
-            if (api) {
-                callStatus.innerHTML = 'You are already in a call';
-                return;
-            }
-
-            // Show loading spinner while processing the join action
-            loadingIndicator.style.display = "flex";  // Use flexbox to center
-
-            // Execute the startCall function after disabling the button
-            setTimeout(function() {
-                startCall(roomName);
-            }, 500);  // Small delay to simulate joining process
-
-            // Keep the spinner visible for 6 seconds after the "Join Call" button is clicked
-            setTimeout(function() {
-                loadingIndicator.style.display = "none"; // Hide spinner after 6 seconds
-            }, 6000);
-        };
-
-        // Event listener for the end call button
-        endCallBtn.onclick = function() {
-            if (api) {
-                api.executeCommand('hangup');
-                callStatus.innerHTML = 'Not in a call';
-                loadingIndicator.style.display = "none";  // Hide spinner when ending the call
-            }
-        };
-
-        // Loading spinner logic: hide when no call is active
-        window.addEventListener('beforeunload', function () {
-            if (api) {
-                api.dispose();  // Ensure the Jitsi API is disposed of when the page is unloaded
-            }
-        });
-    </script>
-
-
-
-    <script>
-        // Assume the button has an id of "joinButton"
-        const joinButton = document.getElementById("joinCallBtn");
-
-        joinButton.addEventListener("click", function() {
-            // Disable the button to prevent further clicks
-            joinButton.disabled = true;
-            
-            // Perform your join action (e.g., AJAX request or function call)
-            joinRoom().then(() => {
-                // Re-enable the button once the join action is completed
-                joinButton.disabled = false;
-            }).catch((error) => {
-                // If there's an error, also re-enable the button
-                console.error("Error during join:", error);
-                joinButton.disabled = false;
-            });
-        });
-
-        async function joinRoom() {
-            // Simulate your join room function (e.g., AJAX request)
-            // Replace with your actual code for joining the room
-            return new Promise((resolve, reject) => {
-                setTimeout(() => {
-                    // Simulating success after 2 seconds (you can replace with your logic)
-                    resolve("Room joined successfully!");
-                }, 2000);
-            });
+    // Event listener for the end call button
+    endCallBtn.onclick = function() {
+        if (api) {
+            api.executeCommand('hangup');
+            isInCall = false;
+            updateCallStatus('notInCall');  // Update to "not in call"
+            loadingIndicator.style.display = "none";  // Hide spinner when ending the call
         }
-    </script>
+    };
+
+    // Loading spinner logic: hide when no call is active
+    window.addEventListener('beforeunload', function () {
+        if (api) {
+            api.dispose();  // Ensure the Jitsi API is disposed of when the page is unloaded
+        }
+    });
+</script>
+
 
 </body>
 </html>

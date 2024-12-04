@@ -132,13 +132,13 @@ function generatePersonalizedFeedback($studentData, $scores) {
     $averageScore = ($assignmentScore + $quizScore + $examScore) / 3;
 
     // Personalized message with actual data
-    $feedback = "Hello, $name!\n\n";
+    $feedback = "Hello, $name!\n";
     $feedback .= "Here are your scores for the semester so far:\n";
     $feedback .= "- Assignment score: " . round($assignmentScore, 2) . "\n";
     $feedback .= "- Quiz score: " . round($quizScore, 2) . "\n";
     $feedback .= "- Exam score: " . round($examScore, 2) . "\n";
     $feedback .= "- Total score: " . round($totalScore, 2) . "\n";
-    $feedback .= "- Average score: " . round($averageScore, 2) . "\n\n";
+    $feedback .= "- Average score: " . round($averageScore, 2) . "\n";
 
     // Feedback based on the average score
     if ($averageScore >= 85) {
@@ -151,21 +151,21 @@ function generatePersonalizedFeedback($studentData, $scores) {
 
     // Suggestions for improvement based on the scores
     if ($assignmentScore < 70) {
-        $feedback .= "\n\nSuggestions for improving your assignments:\n";
+        $feedback .= "\nSuggestions for improving your assignments:\n";
         $feedback .= "- Focus on improving your assignment work, especially in the areas where you scored lower.\n";
     }
 
     if ($quizScore < 70) {
-        $feedback .= "\n\nSuggestions for improving your quiz scores:\n";
+        $feedback .= "Suggestions for improving your quiz scores:\n";
         $feedback .= "- Spend more time reviewing the quiz topics, especially those you struggled with.\n";
     }
 
     if ($examScore < 70) {
-        $feedback .= "\n\nSuggestions for improving your exam scores:\n";
+        $feedback .= "Suggestions for improving your exam scores:\n";
         $feedback .= "- Consider reviewing previous exam papers and focusing on topics that you found challenging.\n";
     }
 
-    $feedback .= "\n\nYou’ve got this! Keep up the hard work and don’t hesitate to ask for help if you need it!";
+    $feedback .= "You’ve got this! Keep up the hard work and don’t hesitate to ask for help if you need it!";
 
     return $feedback;
 }
@@ -436,11 +436,18 @@ if ($notificationResult->num_rows > 0) {
     </div>
 </div>
 
-<br>
-<div class="feedback-section">
-    <!-- Display feedback message inside a paragraph tag -->
+
+<div class="feedback-wrapper">
+  <button class="message-icon" onclick="toggleFeedback()">
+  <span class="material-icons-outlined">
+chat
+</span>
+  </button>
+  <div class="feedback-section" id="feedbackSection">
     <p><?php echo nl2br($personalizedFeedback); ?></p>
+  </div>
 </div>
+
 
 
     </main>
@@ -494,6 +501,13 @@ if ($notificationResult->num_rows > 0) {
 
         var api = new JitsiMeetExternalAPI(domain, options);
 
+    </script>
+
+    <script>
+       function toggleFeedback() {
+        var feedbackSection = document.getElementById('feedbackSection');
+        feedbackSection.classList.toggle('visible'); // Toggle the visibility class
+    }
     </script>
 
 

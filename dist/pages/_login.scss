@@ -84,9 +84,9 @@
                     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 
                     &:focus {
-                        border-color: #80bdff;
-                        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-                        outline: none;
+                        border: 2px solid #4A9DEC;
+                        box-shadow: 0px 0px 0px 7px rgb(74, 157, 236, 20%);
+                        background-color: white;
                     }
                 }
                 .btn__login{
@@ -157,3 +157,17 @@
     justify-content: center;
     align-items: center;
 }
+
+
+
+
+
+
+.animated-text {
+    font-size: 3rem;
+    text-align: center;
+    color: #333;
+}
+
+
+

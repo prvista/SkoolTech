@@ -85,6 +85,7 @@ if ($notificationResult->num_rows > 0) {
     <link rel="icon" href="./dist/img/skooltech-icon.png">
     <link rel="stylesheet" href="./dist/scss/main.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 <body>
 
@@ -180,7 +181,7 @@ if ($notificationResult->num_rows > 0) {
         <!-- <h2>User Dashboard</h2>
         <p><strong>Student Number:</strong> <?php echo htmlspecialchars($student['student_number']); ?></p> -->
 
-        <div class="dashboard__banner">
+        <div class="dashboard__banner" data-aos="fade-down">
             <div class="dashboard__banner__wrapper">
                 <div class="dashboard__banner__text">
                     <!-- <h2>Welcome, <?php echo htmlspecialchars($student['username']); ?>!</h2> -->
@@ -252,6 +253,13 @@ if ($notificationResult->num_rows > 0) {
 <script src="./dist/js/dropdown.js"></script>
 <script src="./dist/js/notif-dropdown.js"></script>
 <script src="./dist/js/notif-click.js"></script>
+
+
+<script src="./dist/js/dropdown.js"></script>   
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+AOS.init();
+</script>
 
 
 </body>

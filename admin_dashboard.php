@@ -76,6 +76,7 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
     <link rel="stylesheet" href="./dist/scss/main.min.css">
     <link rel="icon" href="./dist/img/skooltech-icon.png">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>
         .notification {
             display: none;
@@ -156,7 +157,7 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
             </div>
 
             <div class="dashboard-card">
-                <div class="card">
+                <div class="card" data-aos="fade-down">
                     <div class="dashboard-card__wrapper">
                         <h2>STUDENTS</h2>
                         <span class="material-icons-outlined">groups</span>
@@ -164,7 +165,7 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                     <h3><?php echo $result_students->num_rows; ?></h3>
                 </div>
 
-                <div class="card">
+                <div class="card" data-aos="fade-down">
                     <div class="dashboard-card__wrapper">
                         <h2>TASKS</h2>
                         <span class="material-icons-outlined">category</span>
@@ -172,7 +173,7 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                     <h3><?php echo $total_quizzes; ?></h3>
                 </div>
 
-                <div class="card">
+                <div class="card" data-aos="fade-down">
                     <div class="dashboard-card__wrapper">
                         <h2>RESULTS</h2>
                         <span class="material-icons-outlined">picture_in_picture</span>
@@ -360,8 +361,9 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
             <br>
             <h3>Performance Chart (Assignment Scores)</h3>
             <canvas id="assignmentChart" width="40" height="10"></canvas>
-
+            
             <script src="./dist/js/dropdown.js"></script>   
+            <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
             <script>
                 var studentNamesAssignment = <?php echo $studentNamesAssignmentJson; ?>;
@@ -389,6 +391,10 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                     }
                 });
             </script>
+
+    <script>
+    AOS.init();
+    </script>
 
         </main>
     </div>
