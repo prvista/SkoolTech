@@ -329,6 +329,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 </label>
                             </div>
 
+                            <div id="errorMessage" style="color: red; font-size: 14px; margin-top: 10px; display: none;"></div>
+
                             <br>
                             <br>
                             <input type="submit" value="Login" class="btn__login">
@@ -394,63 +396,53 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </section>
 
     <script>
-    $(document).ready(function() {
-        // Handle form submission using AJAX
-        $('#loginForm').on('submit', function(event) {
-            event.preventDefault(); // Prevent normal form submission
+    $(document).ready(function () {
+    // Handle form submission using AJAX
+    $('#loginForm').on('submit', function (event) {
+        event.preventDefault(); // Prevent normal form submission
 
-            // Clear previous error styles
-            $('#username, #password').css('border', '');
-            $('#username, #password').removeClass('shake');
+        // Clear previous error styles and message
+        $('#username, #password').css('border', '');
+        $('#username, #password').removeClass('shake');
+        $('#errorMessage').hide().text('');
 
-            // Send the login data to the server
-            $.ajax({
-                type: 'POST',
-                url: '', // Current file
-                data: $(this).serialize(),
-                dataType: 'json',
-                success: function(response) {
-                    if (response.status === 'success') {
-                        // Show the loading screen only after successful login
-                        $('#loadingScreen').show();
+        // Send the login data to the server
+        $.ajax({
+            type: 'POST',
+            url: '', // Current file
+            data: $(this).serialize(),
+            dataType: 'json',
+            success: function (response) {
+                if (response.status === 'success') {
+                    // Show the loading screen only after successful login
+                    $('#loadingScreen').show();
 
-                        // Delay redirection
-                        setTimeout(function() {
-                            if (response.role === 'professor') {
-                                window.location.href = 'admin_dashboard.php'; // Redirect to admin dashboard
-                            } else {
-                                window.location.href = 'user_dashboard.php'; // Redirect to user dashboard
-                            }
-                        }, 3000); // 3-second delay
-                    } else {
-                        // If login failed, apply error styles to inputs
-                        if (response.message.includes("username") || response.message.includes("password")) {
-                            $('#username, #password').css('border', '2px solid red'); // Red border
-                            $('#username, #password').addClass('shake'); // Shake effect
+                    // Delay redirection
+                    setTimeout(function () {
+                        if (response.role === 'professor') {
+                            window.location.href = 'admin_dashboard.php'; // Redirect to admin dashboard
+                        } else {
+                            window.location.href = 'user_dashboard.php'; // Redirect to user dashboard
                         }
-                        
-                        // Hide the loading screen without alerting if login failed
-                        $('#loadingScreen').hide();
+                    }, 3000); // 3-second delay
+                } else {
+                    // If login failed, apply error styles to inputs
+                    if (response.message.includes("username") || response.message.includes("password")) {
+                        $('#username, #password').css('border', '2px solid red'); // Red border
+                        $('#username, #password').addClass('shake'); // Shake effect
+                        $('#errorMessage').text('Incorrect username or password.').fadeIn(); // Show error message
                     }
-                },
-                error: function() {
-                    // Handle errors
-                    $('#loadingScreen').hide();
-                    alert('An error occurred. Please try again.');
                 }
-            });
+            },
+            error: function () {
+                // Handle errors
+                $('#loadingScreen').hide();
+                alert('An error occurred. Please try again.');
+            }
         });
-
-        // CSS for the shake effect
-        $.fn.shake = function() {
-            return this.each(function() {
-                $(this).css('animation', 'shake 0.5s');
-                setTimeout(() => {
-                    $(this).css('animation', '');
-                }, 500); // Remove the shake animation after it completes
-            });
-        };
     });
+});
+
 </script>
 
 <style>

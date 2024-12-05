@@ -272,35 +272,39 @@ if ($notificationResult->num_rows > 0) {
                     <th>Title</th>
                     <th>Description</th>
                     <th>Deadline</th>
-                    <th>Criteria</th>
+                    <!-- <th>Criteria</th> -->
                     <th>Submit</th>
                 </tr>
                 <?php
-                if ($result_assignments->num_rows > 0) {
-                    while ($row = $result_assignments->fetch_assoc()) {
-                        echo "<tr>";
-                        echo "<td>" . htmlspecialchars($row['title']) . "</td>";
-                        echo "<td>" . htmlspecialchars($row['description']) . "</td>";
-                        echo "<td>" . htmlspecialchars(date('F j, Y, g:i a', strtotime($row['deadline']))) . "</td>";
-                        echo "<td>" . htmlspecialchars($row['criteria']) . "</td>";
-                        echo "<td>
-                            <form action='student_assignments.php' method='POST' enctype='multipart/form-data'>
-                                <input type='hidden' name='assignment_id' value='" . $row['id'] . "'>
-                                <div class='file-upload-wrapper'>
-                                    <input type='file' name='assignment_file' id='assignment_file' required>
-                                    <label for='assignment_file' class='upload_btn'>CHOOSE FILE</label>
-                                </div>
-                                <button class='upload_btn' type='submit'>UPLOAD</button>
-                            </form>
+// Fetch assignments and handle the due_date formatting
+if ($result_assignments->num_rows > 0) {
+    while ($row = $result_assignments->fetch_assoc()) {
+        echo "<tr>";
+        echo "<td>" . htmlspecialchars($row['title']) . "</td>";
+        echo "<td>" . htmlspecialchars($row['description']) . "</td>";
+        
+        // Format the due_date to a readable format
+        $due_date = $row['due_date'];  // Assuming 'due_date' is a valid DATETIME or TIMESTAMP field
+        echo "<td>" . htmlspecialchars(date('F j, Y, g:i a', strtotime($due_date))) . "</td>"; // Format the due_date
+        
+        // echo "<td>" . htmlspecialchars($row['criteria']) . "</td>";
+        echo "<td>
+            <form action='student_assignments.php' method='POST' enctype='multipart/form-data'>
+                <input type='hidden' name='assignment_id' value='" . $row['id'] . "'>
+                <div class='file-upload-wrapper'>
+                    <input type='file' name='assignment_file' id='assignment_file' required>
+                    <label for='assignment_file' class='upload_btn'>CHOOSE FILE</label>
+                </div>
+                <button class='upload_btn' type='submit'>UPLOAD</button>
+            </form>
+        </td>";
+        echo "</tr>";
+    }
+} else {
+    echo "<tr><td colspan='5'>No assignments available</td></tr>";
+}
+?>
 
-                            
-                        </td>";
-                        echo "</tr>";
-                    }
-                } else {
-                    echo "<tr><td colspan='5'>No assignments available</td></tr>";
-                }
-                ?>
             </table>
         </main>
     </div>

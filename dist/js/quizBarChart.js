@@ -39,8 +39,15 @@ function createQuizBarChart(studentNames, quizScores, quizTitles, subjects) {
                 },
                 tooltip: {
                     callbacks: {
+                        title: function(tooltipItem) {
+                            var studentName = studentNames[tooltipItem[0].dataIndex];
+                            var quizTitle = quizTitles[tooltipItem[0].dataIndex];
+                            var subject = subjects[tooltipItem[0].dataIndex];
+                            return studentName + ' - ' + quizTitle + ' (' + subject + ')'; // Show student name, quiz title, and subject
+                        },
                         label: function(tooltipItem) {
-                            return chartLabels[tooltipItem.dataIndex] + ": " + quizScores[tooltipItem.dataIndex] + "%";
+                            var score = quizScores[tooltipItem.dataIndex];
+                            return 'Score: ' + score + '%'; // Display score
                         }
                     }
                 }

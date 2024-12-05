@@ -1,6 +1,9 @@
 <?php
 session_start();
 
+// Set the default timezone
+date_default_timezone_set('Asia/Manila'); // Set to your preferred timezone
+
 // Check if the user is logged in and is a professor
 if (!isset($_SESSION['username']) || $_SESSION['role'] != 'professor') {
     header("Location: login.php");
@@ -31,7 +34,7 @@ $professor = $result->num_rows > 0 ? $result->fetch_assoc() : null;
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $assignment_title = $_POST['assignment_title'];
     $assignment_description = $_POST['assignment_description'];
-    $due_date = $_POST['due_date'];
+    $due_date = $_POST['due_date']; // Ensure this matches the input format
     $subject = $_POST['subject']; // New subject selection
     
     // Insert assignment into the database
@@ -81,10 +84,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="./dist/scss/main.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     <link rel="icon" href="./dist/img/skooltech-icon.png">
-
-    <style>
-        
-    </style>
 </head>
 <body>
     <div class="grid-container">
@@ -110,11 +109,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 </div>
                             </a>
                             <ul class="dropdown-content">
-                                <li><a href="#">Assignment</a></li>
+                                <li><a href="./task_creator_assignment.php">Assignment</a></li>
                                 <li><a href="./task_creator.php">Quiz</a></li>
                                 <li><a href="./task_creator_exam.php">Exam</a></li>
                             </ul>
                         </li>
+                        
                         <li>
                             <a href="#" class="dropdown-toggle">
                             <span class="material-icons-outlined">sort</span> Results
@@ -127,6 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <li><a href="./admin_assignments.php">Ass Results</a></li>
                             </ul>
                         </li>
+
                         <li><a href="./admin_students.php"><span class="material-icons-outlined">group</span>Students</a></li>
                         <li><a href="./admin_reportcard.php"><span class="material-icons-outlined">credit_card</span>Report Card</a></li>
                         <li><a href="logout.php"><span class="material-icons-outlined">logout</span>Logout</a></li>
@@ -136,17 +137,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
 
         <main class="assignment-creator">
-            <!-- <div class="task__banner">
-                <div class="container">
-                    <div class="task__banner__wrapper">
-                        <div class="task__banner__text">
-                            <h2>Task Creator - Assignment</h2>
-                            <p>Welcome to the Task Creator for Assignments! Create, manage, and customize assignments with ease. Set due dates, grading criteria, and assign subjects, all while ensuring seamless tracking of student progress and performance.</p>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
-
             <form method="POST" action="">
                 <div class="form-group">
                     <label for="assignment_title">Title:</label>
@@ -179,7 +169,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
             <?php endif; ?>
         </main>
-
     </div>
 
     <script src="./dist/js/dropdown.js"></script>

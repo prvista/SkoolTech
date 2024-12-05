@@ -54,24 +54,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $name = $_POST['name'];
         $password = $_POST['password'];  // Password for editing
 
-        // If a new password is provided, hash and update it
+        // Prepare query to update student details
         if (!empty($password)) {
+            // Hash the new password before updating
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
             $sql_edit = "UPDATE students SET student_number = ?, username = ?, name = ?, password = ? WHERE id = ?";
             $stmt = $conn->prepare($sql_edit);
             $stmt->bind_param("ssssi", $student_number, $username, $name, $hashed_password, $student_id);
         } else {
+            // If no password is provided, don't update the password
             $sql_edit = "UPDATE students SET student_number = ?, username = ?, name = ? WHERE id = ?";
             $stmt = $conn->prepare($sql_edit);
             $stmt->bind_param("sssi", $student_number, $username, $name, $student_id);
         }
-        $stmt->execute();
 
-        // Show success notification on the same page
-        $status = "success";
-        $message = "Student updated successfully.";
+        if ($stmt->execute()) {
+            // Show success notification
+            $status = "success";
+            $message = "Student updated successfully.";
+        } else {
+            $status = "error";
+            $message = "Error updating student.";
+        }
     }
 }
+
 
 // Delete student (triggered via GET request)
 if (isset($_GET['delete_id'])) {
@@ -189,6 +196,12 @@ $message = isset($message) ? $message : '';
             background-color: #c50303;
             transition: 0.3s ease;
         }
+
+        .search-bar{
+            display: flex;
+            justify-content:space-between;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
@@ -251,8 +264,8 @@ $message = isset($message) ? $message : '';
             <h2>Number of Students <?php echo $result_students->num_rows; ?></h2>
             <div class="search-bar">
                 <input type="text" class="search-input" id="searchInput" placeholder="Search by Name or Username...">
+                <button onclick="document.getElementById('addStudentModal').style.display='block'">Add New Student</button>
             </div>
-            <button onclick="document.getElementById('addStudentModal').style.display='block'">Add New Student</button>
 
             <!-- Add Student Modal (Floating) -->
             <div id="addStudentModal" style="display:none;">

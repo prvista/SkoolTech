@@ -38,7 +38,9 @@ INSERT INTO students (username, password, name, student_number) VALUES
 ('student9', MD5('s9'), 'Lorraine Latayan', 'STU009'),
 ('student10', MD5('s10'), 'Paulo Tejada', 'STU0010'),
 ('student11', MD5('s11'), 'Fonzy Urriquia', 'STU0011'),
-('student12', MD5('s12'), 'Ford Villanueva', 'STU0012');
+('student12', MD5('s12'), 'Ford Villanueva', 'STU0012'),
+('student13', MD5('s13'), 'Sample Student13', 'STU0013'),
+('student14', MD5('s14'), 'Sample Student14', 'STU0014');
 
 -- Table for storing quizzes
 CREATE TABLE quizzes (
