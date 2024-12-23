@@ -210,31 +210,41 @@ foreach ($student_results as $row) {
         </div>
 
         <main class="main-container">
-            <h2>Average Grade Analysis</h2>
-            <table border="1">
-                <tr>
-                    <th>Student Number</th>
-                    <th>Student Name</th>
-                    <th>English GWA</th>
-                    <th>Math GWA</th>
-                    <th>Science GWA</th>
-                    <th>Total GWA</th>
-                </tr>
-                <?php
-                if (count($student_results) > 0) {
-                    foreach ($student_results as $row) {
-                        echo "<tr>
-                            <td>{$row['student_number']}</td>
-                            <td>{$row['name']}</td>
-                            <td>{$row['english_gwa']}</td>
-                            <td>{$row['math_gwa']}</td>
-                            <td>{$row['science_gwa']}</td>
-                            <td>{$row['total_gwa']}</td>
-                        </tr>";
-                    }
-                }
-                ?>
-            </table>
+        <h2>Average Grade Analysis</h2>
+<table border="1">
+    <tr>
+        <th>Student Number</th>
+        <th>Student Name</th>
+        <th>English GWA</th>
+        <th>Math GWA</th>
+        <th>Science GWA</th>
+        <th>Total GWA</th>
+    </tr>
+    <?php
+    // Sort by numeric part of student number
+    usort($student_results, function ($a, $b) {
+        // Extract numeric part from 'STU001', 'STU002', etc.
+        $numA = (int) preg_replace('/[^0-9]/', '', $a['student_number']);
+        $numB = (int) preg_replace('/[^0-9]/', '', $b['student_number']);
+        return $numA - $numB;
+    });
+
+    // Display the sorted results
+    if (count($student_results) > 0) {
+        foreach ($student_results as $row) {
+            echo "<tr>
+                <td>{$row['student_number']}</td>
+                <td>{$row['name']}</td>
+                <td>{$row['english_gwa']}</td>
+                <td>{$row['math_gwa']}</td>
+                <td>{$row['science_gwa']}</td>
+                <td>{$row['total_gwa']}</td>
+            </tr>";
+        }
+    }
+    ?>
+</table>
+
 
             <!-- Graph for Average Grade Analysis -->
             <canvas id="averageGradeChart" width="40" height="10"></canvas>

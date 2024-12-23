@@ -98,6 +98,12 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
         .notification.hide {
             opacity: 0;
         }
+
+        .table-container {
+    height: 25rem; /* Fixed height for the table container */
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Optional: disable horizontal scrolling */
+}
     </style>
 </head>
 <body>
@@ -184,40 +190,42 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
 
             <!-- Quiz Results Table -->
             <h2>Quiz Results</h2>
-            <table border="1">
-                <tr>
-                    <th>Student Number</th>
-                    <th>Username</th>
-                    <th>Name</th>
-                    <th>Quiz Title</th>
-                    <th>Subject</th>
-                    <th>Score</th>
-                </tr>
-                <?php
-                $studentNamesQuiz = [];
-                $quizScores = [];
-                if ($result_results->num_rows > 0) {
-                    while ($row = $result_results->fetch_assoc()) {
-                        echo "<tr>";
-                        echo "<td>" . htmlspecialchars($row['student_number']) . "</td>";
-                        echo "<td>" . htmlspecialchars($row['username']) . "</td>";
-                        echo "<td>" . htmlspecialchars($row['name']) . "</td>";
-                        echo "<td>" . htmlspecialchars($row['quiz_title']) . "</td>";
-                        echo "<td>" . htmlspecialchars($row['subject']) . "</td>";
-                        echo "<td>" . htmlspecialchars($row['score']) . "%</td>";
-                        echo "</tr>";
+            <div class="table-container">
+    <table border="1">
+        <tr>
+            <th>Student Number</th>
+            <th>Username</th>
+            <th>Name</th>
+            <th>Quiz Title</th>
+            <th>Subject</th>
+            <th>Score</th>
+        </tr>
+        <?php
+        $studentNamesQuiz = [];
+        $quizScores = [];
+        if ($result_results->num_rows > 0) {
+            while ($row = $result_results->fetch_assoc()) {
+                echo "<tr>";
+                echo "<td>" . htmlspecialchars($row['student_number']) . "</td>";
+                echo "<td>" . htmlspecialchars($row['username']) . "</td>";
+                echo "<td>" . htmlspecialchars($row['name']) . "</td>";
+                echo "<td>" . htmlspecialchars($row['quiz_title']) . "</td>";
+                echo "<td>" . htmlspecialchars($row['subject']) . "</td>";
+                echo "<td>" . htmlspecialchars($row['score']) . "%</td>";
+                echo "</tr>";
 
-                        $studentNamesQuiz[] = htmlspecialchars($row['name']);
-                        $quizScores[] = htmlspecialchars($row['score']);
-                    }
-                } else {
-                    echo "<tr><td colspan='6'>No quiz results found</td></tr>";
-                }
-                $studentNamesQuizJson = json_encode($studentNamesQuiz);
-                $quizScoresJson = json_encode($quizScores);
-                ?>
+                $studentNamesQuiz[] = htmlspecialchars($row['name']);
+                $quizScores[] = htmlspecialchars($row['score']);
+            }
+        } else {
+            echo "<tr><td colspan='6'>No quiz results found</td></tr>";
+        }
+        $studentNamesQuizJson = json_encode($studentNamesQuiz);
+        $quizScoresJson = json_encode($quizScores);
+        ?>
+    </table>
+</div>
 
-            </table>
 
             <br>
             <!-- Create a chart for Quiz -->
@@ -254,6 +262,7 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
 
             <!-- Exam Results Table -->
             <h2>Exam Results</h2>
+            <div class="table-container">
             <table border="1">
                 <tr>
                     <th>Student Number</th>
@@ -288,6 +297,7 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                 ?>
 
             </table>
+        </div>
             <br>
             <!-- Create a chart for Exam -->
             <h3>Performance Chart (Exam Scores)</h3>
@@ -322,6 +332,7 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
 
             <!-- Assignment Results Table -->
             <h2>Assignment Results</h2>
+        <div class="table-container">
             <table border="1">
                 <tr>
                     <th>Student Number</th>
@@ -356,6 +367,7 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                 ?>
 
             </table>
+            </div>
 
             <!-- Create a chart for Assignment -->
             <br>

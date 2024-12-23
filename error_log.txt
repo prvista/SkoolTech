@@ -83,3 +83,28 @@
     [id] => 1
 )
 
+[05-Dec-2024 05:49:13 Europe/Berlin] Received Data: Array
+(
+    [id] => 38
+)
+
+[05-Dec-2024 05:49:14 Europe/Berlin] Received Data: Array
+(
+    [id] => 24
+)
+
+[05-Dec-2024 05:49:17 Europe/Berlin] Received Data: Array
+(
+    [id] => 10
+)
+
+[05-Dec-2024 05:49:19 Europe/Berlin] Received Data: Array
+(
+    [id] => 2
+)
+
+[05-Dec-2024 12:29:23 Europe/Berlin] Received Data: Array
+(
+    [id] => 34
+)
+
