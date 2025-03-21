@@ -1,0 +1,110 @@
+[29-Nov-2024 13:08:56 Europe/Berlin] Received Data: Array
+(
+    [id] => 2
+)
+
+[03-Dec-2024 07:12:39 Europe/Berlin] Received Data: Array
+(
+    [id] => 2
+)
+
+[03-Dec-2024 07:12:43 Europe/Berlin] Received Data: Array
+(
+    [id] => 8
+)
+
+[03-Dec-2024 07:14:06 Europe/Berlin] Received Data: Array
+(
+    [id] => 20
+)
+
+[03-Dec-2024 07:26:10 Europe/Berlin] Received Data: Array
+(
+    [id] => 1
+)
+
+[03-Dec-2024 07:26:19 Europe/Berlin] Received Data: Array
+(
+    [id] => 4
+)
+
+[03-Dec-2024 07:26:22 Europe/Berlin] Received Data: Array
+(
+    [id] => 16
+)
+
+[04-Dec-2024 15:24:00 Europe/Berlin] Received Data: Array
+(
+    [id] => 40
+)
+
+[04-Dec-2024 15:24:02 Europe/Berlin] Received Data: Array
+(
+    [id] => 28
+)
+
+[04-Dec-2024 15:24:04 Europe/Berlin] Received Data: Array
+(
+    [id] => 16
+)
+
+[04-Dec-2024 15:24:05 Europe/Berlin] Received Data: Array
+(
+    [id] => 4
+)
+
+[04-Dec-2024 15:24:07 Europe/Berlin] Received Data: Array
+(
+    [id] => 1
+)
+
+[05-Dec-2024 01:47:06 Europe/Berlin] Received Data: Array
+(
+    [id] => 36
+)
+
+[05-Dec-2024 01:58:35 Europe/Berlin] Received Data: Array
+(
+    [id] => 32
+)
+
+[05-Dec-2024 01:58:36 Europe/Berlin] Received Data: Array
+(
+    [id] => 18
+)
+
+[05-Dec-2024 01:58:38 Europe/Berlin] Received Data: Array
+(
+    [id] => 4
+)
+
+[05-Dec-2024 01:58:39 Europe/Berlin] Received Data: Array
+(
+    [id] => 1
+)
+
+[05-Dec-2024 05:49:13 Europe/Berlin] Received Data: Array
+(
+    [id] => 38
+)
+
+[05-Dec-2024 05:49:14 Europe/Berlin] Received Data: Array
+(
+    [id] => 24
+)
+
+[05-Dec-2024 05:49:17 Europe/Berlin] Received Data: Array
+(
+    [id] => 10
+)
+
+[05-Dec-2024 05:49:19 Europe/Berlin] Received Data: Array
+(
+    [id] => 2
+)
+
+[05-Dec-2024 12:29:23 Europe/Berlin] Received Data: Array
+(
+    [id] => 34
+)
+

@@ -1,0 +1,148 @@
+.signup{
+    overflow-y: hidden;
+    &__wrapper{
+    height: 100vh;
+        .signup__left__img{
+            img{
+                width: 20rem;
+            }
+        }
+    }
+    &__left{
+        display: flex;
+        justify-content: center;
+        flex: 1;
+        height: 100vh;
+        &__wrapper{
+            text-align: center;
+            align-items: center;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            width: 100rem;
+        }
+
+        &__title{
+            h2{
+                color: $clr-dark;
+            }
+        }
+        &__btn{
+            a{
+                color: $clr-light;
+                text-decoration: none;
+            }
+        }
+        &__login{
+            margin-top: 2rem;
+            h3{
+                color: $clr-dark;
+                font-size: 1rem;
+                font-weight: 500;
+            }
+            a{
+                color: $clr-orange;
+                text-decoration: none;
+                font-size: 1rem;
+            }
+        }
+        &__form{
+            display: flex;
+            flex-direction: column;
+        }
+        &__details{
+            form{
+                label{
+                    color: $clr-dark;
+                    font-weight: 500;
+                    margin-left: 0.5rem;
+                    display: flex;
+                }
+                input{
+                    border-radius: 0.7rem;
+                    padding: 0.5rem;
+                    border-color: transparent;
+                    width: 30rem;
+                    font-size: 16px;
+                    transition: border-color 0.3s ease;
+                    border: 2px solid transparent;
+                    background-color: #f9f9f9;
+                    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+                    font-family: $ff-primary;
+            
+                    &:focus {
+                        border: 2px solid #4A9DEC;
+                        box-shadow: 0px 0px 0px 7px rgb(74, 157, 236, 20%);
+                        background-color: white;
+                    }
+                }
+                select{
+                    border-radius: 0.7rem;
+                    padding: 0.5rem;
+                    border-color: transparent;
+                    width: 30rem;
+                    background-color: $bg-white;
+                    font-family: $ff-primary;
+                    transition: 0.3s ease;
+                    border: 2px solid transparent;
+                    font-size: 16px;
+
+
+
+                    &:focus {
+                        border-color: #80bdff;
+                        outline: none;
+                        transition: 0.3s ease;
+                        border: 2px solid #4A9DEC;
+                        box-shadow: 0px 0px 0px 7px rgb(74, 157, 236, 20%);
+                        background-color: white;
+                        font-size: 16px;
+                    }
+                }
+                .btn__signup{
+                    background-color: $clr-orange;
+                    color: $clr-light;
+                    cursor: pointer;
+                    font-weight: 600;
+                    transition: 0.3s ease;
+
+                    &:hover{
+                        background-color: #1eab77;
+                        transition: 0.3s ease;
+                    }
+                }
+            }
+        }
+
+        &__btn{
+            background-color: $clr-orange;
+            padding: 0.7rem;
+            border-radius: 2rem;
+            a{
+                font-weight: 700;
+            }
+        }
+    }
+    &__desc{
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        align-items: center;
+        background-color: $clr-secondary;
+        padding: 6rem 2rem;
+        color: white;
+        &__wrapper{
+            display: flex;
+            flex-direction: column;
+            gap: 5rem;
+        }
+        &__img{
+            img{
+                width: 45rem;
+            }
+        }
+        &__title{
+            font-size: 2.5rem;
+        }
+    }
+}
